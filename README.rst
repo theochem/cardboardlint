@@ -20,7 +20,8 @@ It can be used as follows:
 - Download and run the linter to your CI tests (or locally)
 
   .. code::
-  
+
+      pip install pyyaml
       wget https://raw.githubusercontent.com/theochem/cardboardlint/master/scripts/cardboardlint
       chmod +x cardboardlint
       ./cardboardlint

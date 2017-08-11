@@ -17,7 +17,7 @@ def main():
 
     retcode = 0
     for lintname, lintconfig in config['linters'].items():
-        messages = [message for message in LINTERS[lintname](lintconfig)
+        messages = [message for message in LINTERS[lintname](lintconfig, files_lines)
                     if message.indiff(files_lines)]
         if len(messages) > 0:
             retcode = -1
@@ -212,30 +212,36 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         return stdout, stderr
 
 
-def linter_cppcheck(lintconfig):
+def linter_cppcheck(lintconfig, files_lines):
     # Get version
     command = ['cppcheck', '--version']
     print 'USING VERSION      :', run_command(command, verbose=False)[0].strip()
 
-    # Call Cppcheck
-    command = ['cppcheck', '.', '-q', '--enable=all', '--std=c++11', '--xml',
-               '--suppress=missingIncludeSystem', '--suppress=unusedFunction']
-    xml_str = run_command(command)[1]
-    etree = ElementTree.fromstring(xml_str)
+    # Get the cpp filenames
+    filenames = [filename for filename in files_lines
+                 if filename[filename.rfind('.'):] in ['.h', '.h.in', '.cpp', '.c']]
 
-    # Parse the output of Cppcheck into standard return values
     messages = set([])
-    for error in etree:
-        if 'file' not in error.attrib:
-            continue
-        key = '%15s  %40s  %30s' % (
-            error.attrib['severity'],
-            error.attrib['file'].ljust(40),
-            error.attrib['id'].ljust(30),
-        )
-        text = '%s %s %s' % (error.attrib['severity'], error.attrib['id'], error.attrib['msg'])
-        messages.add(Message(error.attrib['file'], int(error.attrib['line']),
-                             None, text))
+    if len(filenames) > 0:
+        # Call Cppcheck
+        command = ['cppcheck'] + filenames + ['-q', '--enable=all', '--language=c++',
+                   '--std=c++11', '--xml', '--suppress=missingIncludeSystem',
+                   '--suppress=unusedFunction']
+        xml_str = run_command(command)[1]
+        etree = ElementTree.fromstring(xml_str)
+
+        # Parse the output of Cppcheck into standard return values
+        for error in etree:
+            if 'file' not in error.attrib:
+                continue
+            key = '%15s  %40s  %30s' % (
+                error.attrib['severity'],
+                error.attrib['file'].ljust(40),
+                error.attrib['id'].ljust(30),
+            )
+            text = '%s %s %s' % (error.attrib['severity'], error.attrib['id'], error.attrib['msg'])
+            messages.add(Message(error.attrib['file'], int(error.attrib['line']),
+                                 None, text))
     return messages
 
 

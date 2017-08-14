@@ -1,4 +1,6 @@
 """Collection of classes and methods shared between different linters."""
+import os
+from fnmatch import fnmatch
 import subprocess
 
 
@@ -173,3 +175,44 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         raise RuntimeError('Subprocess returned non-zero exit status %i' % proc.returncode)
     else:
         return stdout, stderr
+
+
+def get_filenames(directories, include, exclude):
+    """Return a list of file names
+
+    Parameters
+    ----------
+    directories : list of str
+        List of directories from which the files will be searched
+    include : list of str
+        List of regular expressions that the filename must satisfy
+    exclude : list of str
+        List of regular expressions that the filename must not satisfy
+
+    Returns
+    -------
+    filenames : list
+        List of filenames that satisfies the conditions in the config file
+    """
+    if not isinstance(directories, (list, tuple)):
+        raise TypeError('directories must be given as a list or tuple')
+    if not isinstance(include, (list, tuple)):
+        raise TypeError('include must be given as a list or tuple')
+    if not isinstance(exclude, (list, tuple)):
+        raise TypeError('exclude must be given as a list or tuple')
+
+    # Loop over all files in given directories
+    result = []
+    for directory in directories:
+        for dirpath, _, filenames in os.walk(directory):
+            # NOTE: replace unix filename pattern matching (fnmatch) with regular expression?
+            if any(fnmatch(dirpath, e) for e in exclude):
+                continue
+            for filename in filenames:
+                if not any(fnmatch(filename, i) or fnmatch(dirpath, i) for i in include):
+                    continue
+                if any(fnmatch(filename, e) for e in exclude):
+                    continue
+
+                result.append(os.path.join(dirpath, filename))
+    return result

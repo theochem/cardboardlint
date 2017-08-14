@@ -1,88 +1,5 @@
-#!/usr/bin/env python
-
-import argparse
+"""Collection of classes and methods shared between different linters."""
 import subprocess
-import sys
-
-import yaml
-import lint_cppcheck
-
-
-def main():
-    # get arguments
-    args = parse_args()
-
-    # get git diff
-    files_lines = run_diff(args.refspec)
-
-    # load lint configuration for module
-    with open('.cardboardlint.yml') as fh:
-        config = yaml.load(fh)
-
-    # select specific linter if desired
-    if args.selection is None:
-        config_linters = config['linters']
-    else:
-        config_linters = {args.selection: config['linters'][args.selection]}
-
-    returncode = 0
-    for lintname, lintconfig in config_linters.items():
-        messages = [message for message in LINTERS[lintname](lintconfig, files_lines)
-                    if message.indiff(files_lines)]
-        if len(messages) > 0:
-            returncode = -1
-        for message in messages:
-            print(message)
-    sys.exit(returncode)
-
-
-def parse_args():
-    """Parse the arguments given to the script."""
-    parser = argparse.ArgumentParser(prog='cardboardlint')
-    parser.add_argument('refspec', help='The parent commit used to compute the diff.')
-    # The next argument should become a lot smarter in future, e.g. select all static or
-    # dynamic linters, or a fraction of them, e.g. "dynamic 0%-33%".
-    parser.add_argument('selection', nargs='?', default=None, help='Run just the given linter.')
-    return parser.parse_args()
-
-
-def run_diff(refspec_parent):
-    """Run git diff with respect to current branch
-
-    Parameters
-    ----------
-    refspec_parent : str
-        Reference to the parent branch
-
-    Returns
-    -------
-    files_lines : dict
-        Dictionary of filename to the set of line numbers (that have been modified)
-    """
-    # generate 0 lines of context (i.e. only the lines that differ)
-    # FIXME: gitpython?
-    command = ['git', 'diff', '-U0', refspec_parent]
-    diff_output = subprocess.check_output(command)
-
-    # parse git diff output
-    files_lines = {}
-    current_filename = None
-    for line in diff_output.splitlines():
-        if line.startswith('+++ b/'):
-            current_filename = line[6:]
-        elif line.startswith('@@ '):
-            added_str = line.split()[2]
-            # multiple lines added/modified
-            if added_str.count(',') == 1:
-                offset, nlines = added_str.split(',')
-                line_numbers = set(range(int(offset), int(offset) + int(nlines) + 1))
-            # single line added/modified
-            else:
-                offset = int(added_str)
-                line_numbers = set([offset])
-            # store line numbers
-            files_lines.setdefault(current_filename, set()).update(line_numbers)
-    return files_lines
 
 
 class Message(object):
@@ -204,7 +121,7 @@ class Message(object):
         ----------
         files_lines : dict
             Dictionary of filename to the set of line numbers (that have been modified)
-            Result of git diff from rundiff function
+            Result of git diff from run_diff function
         """
         line_numbers = files_lines.get(self._filename)
         return line_numbers is not None and self._lineno in line_numbers
@@ -256,12 +173,3 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         raise RuntimeError('Subprocess returned non-zero exit status %i' % proc.returncode)
     else:
         return stdout, stderr
-
-
-LINTERS = {
-    'cppcheck': lint_cppcheck.linter_cppcheck
-}
-
-
-if __name__ == '__main__':
-    main()

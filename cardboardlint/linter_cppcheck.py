@@ -22,7 +22,7 @@ def linter_cppcheck(lintconfig, files_lines):
     filenames = [filename for filename in files_lines
                  if filename[filename.rfind('.'):] in ['.h', '.h.in', '.cpp', '.c']]
 
-    messages = set([])
+    messages = set()
     if len(filenames) > 0:
         # Call Cppcheck
         command = (['cppcheck'] + filenames +

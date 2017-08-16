@@ -6,6 +6,7 @@ import sys
 
 import yaml
 from cardboardlint.linter_cppcheck import linter_cppcheck
+from cardboardlint.linter_import import linter_import
 
 
 def main():
@@ -13,17 +14,19 @@ def main():
     args = parse_args()
 
     # get git diff
-    files_lines = run_diff(args.refspec)
+    if args.diffs_only:
+        files_lines = run_diff(args.refspec)
+    else:
+        files_lines = None
 
     # load lint configuration for module
-    with open('.cardboardlint.yml') as fh:
-        config = yaml.load(fh)
+    config = load_config('.cardboardlint.yml')
 
     # select specific linter if desired
-    if args.selection is None:
-        config_linters = config['linters']
+    if args.selections is None:
+        config_linters = config
     else:
-        config_linters = {args.selection: config['linters'][args.selection]}
+        config_linters = {selection: config[selection] for selection in args.selections}
 
     returncode = 0
     for lintname, lintconfig in config_linters.items():
@@ -42,7 +45,10 @@ def parse_args():
     parser.add_argument('refspec', help='The parent commit used to compute the diff.')
     # The next argument should become a lot smarter in future, e.g. select all static or
     # dynamic linters, or a fraction of them, e.g. "dynamic 0%-33%".
-    parser.add_argument('selection', nargs='?', default=None, help='Run just the given linter.')
+    parser.add_argument('--selections', dest='selections', nargs='*', default=None,
+                        help='Run just the given linters.')
+    parser.add_argument('--onlydiffs', dest='diffs_only', action='store_true', default=False,
+                        help='Flag for only applying linters to the diff.')
     return parser.parse_args()
 
 
@@ -85,8 +91,40 @@ def run_diff(refspec_parent):
     return files_lines
 
 
+def load_config(config_file):
+    """Returns dictionary that corresponds to the given yaml file
+
+    Parameters
+    ----------
+    config_file : str
+        Name of the configuration file
+
+    Returns
+    -------
+    real_config : dict
+        Dictionary of the configurations where default values have been applied.
+    """
+    with open(config_file, 'r') as f:
+        config = yaml.load(f)
+
+    # find default configuration
+    default_keys = {key.replace('default_', ''): val for key, val in config.items()
+                    if 'default' in key}
+
+    # apply default configurations to all other keys that have not explicitly over write it
+    real_config = {key: val for key, val in config.items() if 'default' not in key}
+    # replace None
+    real_config = {key: {} if val is None else val for key, val in real_config.items()}
+    for def_key, def_val in default_keys.items():
+        for key, config in real_config.items():
+            config.setdefault(def_key, def_val)
+
+    return real_config
+
+
 LINTERS = {
-    'cppcheck': linter_cppcheck
+    'cppcheck': linter_cppcheck,
+    'import': linter_import,
 }
 
 

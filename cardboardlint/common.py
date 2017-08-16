@@ -2,6 +2,7 @@
 import os
 from fnmatch import fnmatch
 import subprocess
+import yaml
 
 
 class Message(object):
@@ -216,3 +217,26 @@ def get_filenames(directories, include, exclude):
 
                 result.append(os.path.join(dirpath, filename))
     return result
+
+
+def load_config(config_file):
+    """Read in a json config file and return corresponding dictionary.
+
+    Parameters
+    ----------
+    config_file : str
+        Name of the configuration file
+    """
+    with open(config_file, 'r') as f:
+        config = yaml.load(f)
+
+    # find default configuration
+    default_keys = {key.replace('default_', ''): val for key, val in config if 'default' in key}
+
+    # apply default configurations to all other keys that have not explicitly over write it
+    real_config = {key: val for key, val in config if 'default' not in key}
+    for def_key, def_val in default_keys.items():
+        for config in real_config.values():
+            config.setdefault(def_key, default=def_val)
+
+    return real_config

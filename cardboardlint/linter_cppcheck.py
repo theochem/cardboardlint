@@ -1,5 +1,5 @@
 from xml.etree import ElementTree
-from common import run_command, Message
+from cardboardlint.common import run_command, Message
 
 
 def linter_cppcheck(lintconfig, files_lines):
@@ -7,8 +7,8 @@ def linter_cppcheck(lintconfig, files_lines):
 
     Parameters
     ----------
-    lintconfig : str
-        File for configuring cppcheck
+    config : dict
+        Dictionary that contains the configuration for the linter
         Not supported
     files_lines : dict
         Dictionary of filename to the set of line numbers (that have been modified)

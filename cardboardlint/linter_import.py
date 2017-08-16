@@ -1,24 +1,20 @@
 import os
 import codecs
-from common import Message, get_filenames, load_config
+from cardboardlint.common import Message, get_filenames
 
 
-def linter_import(lintconfig, files_lines):
+def linter_import(config, files_lines):
     """Linter for checking import statements.
 
     Parameters
     ----------
-    lintconfig : str
-        File for configuring linter.
-        Not supported
+    config : dict
+        Dictionary that contains the configuration for the linter
     files_lines : dict
         Dictionary of filename to the set of line numbers (that have been modified).
         See `run_diff` method in `carboardlint`
     """
     messages = set()
-
-    # load configuration
-    config = load_config(lintconfig)
 
     # Find all (sub)package names, from which one should not import directly
     packages = []

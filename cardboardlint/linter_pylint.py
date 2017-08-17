@@ -1,6 +1,17 @@
 """Linter using pylint.
 
 This test calls the pylint program, see http://docs.pylint.org/index.html.
+
+If multiple configuration files are needed for the linter, e.g. use one set of configurations format
+the core code and other for tests, then they should be specified in the yml file.
+
+* `x_config_file` is a configuration file.
+* `x_include` is the unix shell-style wildcard search keywords that specify the files that will be
+  tested using `x_config_file`.
+* `x_exclude` is the unix shell-style wildcard search keywords that specify the files that will not
+  be tested using `x_config_file`.
+* `config_file` is the configuration that will be used to test all the other files that have
+  yet been tested (specified by `directories`, `include`, and `exclude`).
 """
 from cardboardlint.common import Message, get_filenames, run_command
 
@@ -17,7 +28,7 @@ def linter_pylint(config, files_lines):
         See `run_diff` method in `carboardlint`
     """
     # get Pylint version
-    command = ['pylint', '--version', '--rcfile={0}'.format(config['default_config_file'])]
+    command = ['pylint', '--version', '--rcfile={0}'.format(config['config_file'])]
     print(run_command(command, verbose=False)[0])
     version_info = ''.join(run_command(command, verbose=False)[0].split('\n')[:2])
     print('USING              : {0}'.format(version_info))
@@ -29,7 +40,7 @@ def linter_pylint(config, files_lines):
     for key, config_file in config.items():
         # NOTE: hopefully other custom configurations do not depend on the order because it might
         #       not be conserved. i.e. each rc file should correspond to a disjoint set of files
-        if key == 'default_config_file' or 'config_file' not in key:
+        if key == 'config_file' or 'config_file' not in key:
             continue
 
         # collect files
@@ -52,12 +63,12 @@ def linter_pylint(config, files_lines):
         # exclude files that ran in the future
         config['exclude'].extend(files_to_test)
 
-    # call Pylint on all the files that haven't been tested using the default_config_file
+    # call Pylint on all the files that haven't been tested using the config_file
     files_to_test = get_filenames(directories=config['directories'], include=config['include'],
                                   exclude=config['exclude'], files_lines=files_lines)
     if len(files_to_test) != 0:
         output += run_command(['pylint'] + files_to_test +
-                              ['--rcfile={0}'.format(config['default_config_file']), '-j 2'],
+                              ['--rcfile={0}'.format(config['config_file']), '-j 2'],
                               has_failed=(lambda returncode, stdout, stderr:
                                           not 0 <= returncode < 32))[0]
 

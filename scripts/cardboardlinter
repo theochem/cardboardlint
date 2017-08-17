@@ -71,7 +71,6 @@ def run_diff(refspec_parent):
         Dictionary of filename to the set of line numbers (that have been modified)
     """
     # generate 0 lines of context (i.e. only the lines that differ)
-    # FIXME: gitpython?
     command = ['git', 'diff', '-U0', refspec_parent]
     diff_output = subprocess.check_output(command).decode('utf-8')
 

@@ -18,12 +18,14 @@ def linter_import(config, files_lines):
 
     # Find all (sub)package names, from which one should not import directly
     packages = []
-    for filename in get_filenames(config['directories'], config['include'], config['exclude']):
+    filenames = get_filenames(config['directories'], config['include'], config['exclude'],
+                              files_lines=files_lines)
+    for filename in filenames:
         if filename.endswith('/__init__.py'):
             packages.append(filename[:-12].replace('/', '.'))
 
     # Loop all python and cython files
-    for filename in get_filenames(config['directories'], config['include'], config['exclude']):
+    for filename in filenames:
         # Only consider relevant files
         if os.path.basename(filename).startswith('test_'):
             continue

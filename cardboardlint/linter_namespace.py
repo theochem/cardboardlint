@@ -22,7 +22,8 @@ def linter_namespace(config, files_lines):
 
     # Find all module names and load namespaces
     namespace = {}
-    for filename in get_filenames(config['directories'], config['include'], config['exclude']):
+    for filename in get_filenames(config['directories'], config['include'], config['exclude'],
+                                  files_lines=files_lines):
         # remove extension and replace / by .
         modulename = os.path.splitext(filename)[0].replace('/', '.')
 

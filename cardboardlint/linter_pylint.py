@@ -16,7 +16,7 @@ def linter_pylint(config, files_lines):
     command = ['pylint', '--version', '--rcfile={0}'.format(config['default_config_file'])]
     print(run_command(command, verbose=False)[0])
     version_info = ''.join(run_command(command, verbose=False)[0].split('\n')[:2])
-    print('USING              :', version_info)
+    print('USING              : {0}'.format(version_info))
 
     # Collect python files (pylint ignore is quite bad.. need to ignore manually)
     # i.e. create a list of all the files that will be tested for each rcfile/config file
@@ -35,10 +35,12 @@ def linter_pylint(config, files_lines):
                          'include': config.get('{0}_include'.format(index), config['include']),
                          'exclude': config.get('{0}_exclude'.format(index), [])}
         file_criteria['exclude'].extend(config['exclude'])
-        files_to_test = get_filenames(**file_criteria)
+        files_to_test = get_filenames(files_lines=files_lines, **file_criteria)
 
         # call Pylint
-        output += run_command(['pylint', *files_to_test] +
+        if len(files_to_test) == 0:
+            continue
+        output += run_command(['pylint'] + files_to_test,
                               ['--rcfile={0}'.format(config_file), '-j 2'],
                               has_failed=(lambda returncode, stdout, stderr:
                                           not 0 <= returncode < 32))[0]
@@ -47,18 +49,23 @@ def linter_pylint(config, files_lines):
         config['exclude'].extend(files_to_test)
 
     # call Pylint on all the files that haven't been tested using the default_config_file
-    output += run_command(['pylint'] +
-                          get_filenames(directories=config['directories'],
-                                        include=config['include'],
-                                        exclude=config['exclude']) +
-                          ['--rcfile={0}'.format(config['default_config_file']), '-j 2'],
-                          has_failed=lambda returncode, stdout, stderr: not 0 <= returncode < 32)[0]
+    files_to_test = get_filenames(directories=config['directories'], include=config['include'],
+                                  exclude=config['exclude'], files_lines=files_lines)
+    if len(files_to_test) != 0:
+        output += run_command(['pylint'] + files_to_test +
+                              ['--rcfile={0}'.format(config['default_config_file']), '-j 2'],
+                              has_failed=(lambda returncode, stdout, stderr:
+                                          not 0 <= returncode < 32))[0]
+
+    messages = set()
+    if len(output) == 0:
+        print('No files were selected. PyLint will not be run.')
+        return messages
 
     # parse the output of Pylint into standard return values
     lines = output.split('\n')[:-1]
     score = lines[-2].split()[6]
-    print('SCORE              :', score)
-    messages = set()
+    print('SCORE              : {0}'.format(score))
     for line in lines:
         # skip lines that don't contain error messages
         if '.py:' not in line:

@@ -1,10 +1,16 @@
-default_directories: [packagename]
-default_include: ["*py"]
-default_exclude: []
+default_directories:
+  - packagename
+default_include:
+  - "*py"
+default_exclude:
+  []
 
 import:
 
 namespace:
+  exclude:
+    - "__init__.py"
+    - "test_*.py"
 
 flake8:
   config_file:
@@ -13,8 +19,11 @@ pylint:
   config_file: pylintrc
 
 cppcheck:
-  include: ["*.cpp"]
-  exclude: ["*_inc.cpp", "cext.cpp"]
+  include:
+    - "*.cpp"
+  exclude:
+    - "*_inc.cpp"
+    - "cext.cpp"
 
 cpplint:
 

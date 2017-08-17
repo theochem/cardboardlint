@@ -14,10 +14,10 @@ def main():
     args = parse_args()
 
     # get git diff
-    if args.diffs_only:
-        files_lines = run_diff(args.refspec)
-    else:
+    if args.refspec is None:
         files_lines = None
+    else:
+        files_lines = run_diff(args.refspec)
 
     # load lint configuration for module
     config = load_config('.cardboardlint.yml')
@@ -30,6 +30,8 @@ def main():
 
     returncode = 0
     for lintname, lintconfig in config_linters.items():
+        if lintname not in LINTERS:
+            continue
         messages = [message for message in LINTERS[lintname](lintconfig, files_lines)
                     if message.indiff(files_lines)]
         if len(messages) > 0:
@@ -42,13 +44,14 @@ def main():
 def parse_args():
     """Parse the arguments given to the script."""
     parser = argparse.ArgumentParser(prog='cardboardlint')
-    parser.add_argument('refspec', help='The parent commit used to compute the diff.')
+    parser.add_argument('--refspec', dest='refspec', nargs='?', default=None,
+                        help=('The parent commit used to compute the diff. If given, only the files'
+                              ' that have been changed will be compared. Otherwise, all files are '
+                              'compared.'))
     # The next argument should become a lot smarter in future, e.g. select all static or
     # dynamic linters, or a fraction of them, e.g. "dynamic 0%-33%".
     parser.add_argument('--selections', dest='selections', nargs='*', default=None,
                         help='Run just the given linters.')
-    parser.add_argument('--onlydiffs', dest='diffs_only', action='store_true', default=False,
-                        help='Flag for only applying linters to the diff.')
     return parser.parse_args()
 
 

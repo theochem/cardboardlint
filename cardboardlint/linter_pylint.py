@@ -57,7 +57,7 @@ def linter_pylint(config, files_lines):
                               has_failed=(lambda returncode, stdout, stderr:
                                           not 0 <= returncode < 32))[0]
 
-    messages = set()
+    messages = []
     if len(output) == 0:
         print('No files were selected. PyLint will not be run.')
         return messages
@@ -80,5 +80,5 @@ def linter_pylint(config, files_lines):
         charno = int(charno)
         if charno == 0:
             charno = None
-        messages.add(Message(filename, lineno, charno, '{0} {1}'.format(msg_id, msg)))
+        messages.append(Message(filename, lineno, charno, '{0} {1}'.format(msg_id, msg)))
     return messages

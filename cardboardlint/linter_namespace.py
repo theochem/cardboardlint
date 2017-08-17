@@ -15,7 +15,7 @@ def linter_namespace(config, files_lines):
         Dictionary of filename to the set of line numbers (that have been modified).
         See `run_diff` method in `carboardlint`
     """
-    messages = set()
+    messages = []
 
     # Make sure we test the source tree and not some locally installed copy of HORTON.
     sys.path.insert(0, '.')
@@ -35,14 +35,14 @@ def linter_namespace(config, files_lines):
                 if name in module.__all__:
                     namespace.setdefault(name, []).append(modulename)
                     if name in config['exclude']:
-                        messages.add(Message(filename, None, None,
-                                             'Invalid name in namespace: {0}'.format(name)))
+                        messages.append(Message(filename, None, None,
+                                                'Invalid name in namespace: {0}'.format(name)))
         else:
-            messages.add(Message(filename, None, None, 'Missing __all__'))
+            messages.append(Message(filename, None, None, 'Missing __all__'))
 
     # Detect collisions
     for name, modules in namespace.items():
         if len(modules) > 1:
             text = "Name '{0}' found in modules {1}".format(name, ' '.join(modules))
-            messages.add(Message(None, None, None, text))
+            messages.append(Message(None, None, None, text))
     return messages

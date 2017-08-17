@@ -37,73 +37,20 @@ class Message(object):
             raise TypeError('`lineno` must be an integer or None')
         if charno is not None and not isinstance(charno, int):
             raise TypeError('`charno` must be an integer or None')
-        # FIXME: is it necessary for these attributes to be private?
-        self._filename = filename
-        self._lineno = lineno
-        self._charno = charno
-        self._text = text
-        self._context = context
+        self.filename = filename
+        self.lineno = lineno
+        self.charno = charno
+        self.text = text
+        self.context = context
 
-    @property
-    def filename(self):
-        return self._filename
-
-    @property
-    def lineno(self):
-        return self._lineno
-
-    @property
-    def charno(self):
-        return self._charno
-
-    @property
-    def text(self):
-        return self._text
-
-    @property
-    def context(self):
-        return self._context
-
-    def __eq__(self, other):
-        """Test if two Message's are equal."""
-        # First come the usualy things for comparisons...
-        if not (self.__class__ == other.__class__
-                and self._filename == other._filename
-                and self._charno == other._charno
-                and self._text == other._text
-                and self._context == other._context):
-            return False
-        # If still equal, then only use line numbers if no context is available.
-        elif self._context is None and other._context is None:
-            return self._lineno == other._lineno
-        else:
-            return True
-
-    def __hash__(self):
-        """Return a fast hash.
-
-        The hash only includes the lineno if no context is present. If a context is
-        present, it is used instead and the line number is not included in the hash. This
-        convention is compatible with the code in __eq__.
-        """
-        if self._context is None:
-            return hash((self._filename, self._lineno, self._charno, self._text))
-        else:
-            return hash((self._filename, self._charno, self._text, self._context))
-
+    # FIXME: is this needed? __eq__ and __has__ were removed (not sure )
     def __lt__(self, other):
         """Test if one Message is less than another."""
         if self.__class__ != other.__class__:
             return self < other
-        tup_self = (self._filename, self._lineno, self._charno, self._text, self._context)
-        tup_other = (other._filename, other._lineno, other._charno, other._text, other._context)
+        tup_self = (self.filename, self.lineno, self.charno, self.text, self.context)
+        tup_other = (other.filename, other.lineno, other.charno, other.text, other.context)
         return tup_self < tup_other
-
-    def add_context(self, context):
-        """Return an identical Message with context."""
-        if self._context is not None:
-            raise ValueError('This message already has context.')
-        return Message(self._filename, self._lineno, self._charno, self._text, context)
 
     def __str__(self):
         """Return a nicely formatted string representation of the message."""
@@ -126,8 +73,8 @@ class Message(object):
             Result of git diff from run_diff function
         """
         if files_lines is not None:
-            line_numbers = files_lines.get(self._filename)
-            return line_numbers is not None and self._lineno in line_numbers
+            line_numbers = files_lines.get(self.filename)
+            return line_numbers is not None and self.lineno in line_numbers
         else:
             return True
 
@@ -180,7 +127,7 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         return stdout.decode('utf-8'), stderr.decode('utf-8')
 
 
-def get_filenames(directories, include, exclude, files_lines=None):
+def getfilenames(directories, include, exclude, files_lines=None):
     """Return a list of file names
 
     Parameters

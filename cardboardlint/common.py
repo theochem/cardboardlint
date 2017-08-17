@@ -114,10 +114,10 @@ class Message(object):
             location = str(self.filename)
             location += '{:>6}'.format('' if self.lineno is None else self.lineno)
             location += '{:>6}'.format('' if self.charno is None else self.charno)
-        return '{0:>70s}   {1}' % (location, self.text)
+        return '{0:>70}   {1}'.format(location, self.text)
 
     def indiff(self, files_lines):
-        """Test if Message occurs in git diff results by chcking the line numbers.
+        """Test if Message occurs in git diff results by checking the line numbers.
 
         Parameters
         ----------
@@ -125,8 +125,11 @@ class Message(object):
             Dictionary of filename to the set of line numbers (that have been modified)
             Result of git diff from run_diff function
         """
-        line_numbers = files_lines.get(self._filename)
-        return line_numbers is not None and self._lineno in line_numbers
+        if files_lines is not None:
+            line_numbers = files_lines.get(self._filename)
+            return line_numbers is not None and self._lineno in line_numbers
+        else:
+            return True
 
 
 def run_command(command, verbose=True, cwd=None, has_failed=None):
@@ -172,7 +175,7 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         print('STDERR')
         print('------')
         print(stderr)
-        raise RuntimeError('Subprocess returned non-zero exit status %i' % proc.returncode)
+        raise RuntimeError('Subprocess returned non-zero exit status {0}'.format(proc.returncode))
     else:
         return stdout, stderr
 

@@ -20,6 +20,8 @@ def linter_import(config, files_lines):
     packages = []
     filenames = get_filenames(config['directories'], config['include'], config['exclude'],
                               files_lines=files_lines)
+    # NOTE: does this include the top module's __init__.py? e.g. 'from cardboardlint import'
+    # FIXME: assumes that each filename starts from only the module's directory (without ./)
     for filename in filenames:
         if filename.endswith('/__init__.py'):
             packages.append(filename[:-12].replace('/', '.'))
@@ -35,9 +37,10 @@ def linter_import(config, files_lines):
         with codecs.open(filename, encoding='utf-8') as f:
             for lineno, line in enumerate(f):
                 for package in packages:
-                    # FIXME: i'm not too sure why all first import needs to have __version__
-                    if (u'from {0} import'.format(package) in line and
-                            line != u'from {0} import __version__\n'.format(package)):
+                    # skip version import
+                    if line != u'from {0} import __version__\n'.format(package):
+                        continue
+                    if u'from {0} import'.format(package) in line:
                         text = 'Wrong import from {0}'.format(package)
                         messages.append(Message(filename, lineno+1, None, text))
     return messages

@@ -171,13 +171,13 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
     if has_failed(proc.returncode, stdout, stderr):
         print('STDOUT')
         print('------')
-        print(stdout)
+        print(stdout.decode('utf-8'))
         print('STDERR')
         print('------')
-        print(stderr)
+        print(stderr.decode('utf-8'))
         raise RuntimeError('Subprocess returned non-zero exit status {0}'.format(proc.returncode))
     else:
-        return stdout, stderr
+        return stdout.decode('utf-8'), stderr.decode('utf-8')
 
 
 def get_filenames(directories, include, exclude):
@@ -209,12 +209,14 @@ def get_filenames(directories, include, exclude):
     for directory in directories:
         for dirpath, _, filenames in os.walk(directory):
             # NOTE: replace unix filename pattern matching (fnmatch) with regular expression?
-            if any(fnmatch(dirpath, e) for e in exclude):
+            if any(fnmatch(one_dir, e) for e in exclude for one_dir in dirpath.split(os.sep)):
                 continue
             for filename in filenames:
-                if not any(fnmatch(filename, i) or fnmatch(dirpath, i) for i in include):
-                    continue
                 if any(fnmatch(filename, e) for e in exclude):
+                    continue
+                if not any(fnmatch(filename, i) or
+                           any(fnmatch(one_dir, i) for one_dir in dirpath.split(os.sep))
+                           for i in include):
                     continue
 
                 result.append(os.path.join(dirpath, filename))

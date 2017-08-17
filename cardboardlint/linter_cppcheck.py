@@ -1,3 +1,7 @@
+"""Linter using Cppcheck.
+
+This test calls the cppcheck program, see http://cppcheck.sourceforge.net/.
+"""
 from xml.etree import ElementTree
 from cardboardlint.common import run_command, Message
 

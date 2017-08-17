@@ -1,3 +1,7 @@
+"""Linter for namespace collisions.
+
+This script imports every module in HORTON and checks for overlapping name spaces
+"""
 import os
 import sys
 import importlib

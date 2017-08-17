@@ -1,3 +1,7 @@
+"""Linter using pylint.
+
+This test calls the pylint program, see http://docs.pylint.org/index.html.
+"""
 from cardboardlint.common import Message, get_filenames, run_command
 
 

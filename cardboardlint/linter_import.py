@@ -1,3 +1,13 @@
+"""Linter for import conventions.
+
+This script counts the number of bad imports. The following is not allowed in a package:
+
+* Importing from the top-level of its own package, e.g.:
+
+  .. code-block:: python
+
+        from package import foo
+"""
 import os
 import codecs
 from cardboardlint.common import Message, get_filenames

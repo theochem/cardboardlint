@@ -16,7 +16,9 @@ flake8:
   config_file:
 
 pylint:
-  config_file: pylintrc
+  default_config_file: pylintrc
+  1_config_file: pylintrc_2
+  1_include: ["*.py"]
 
 cppcheck:
   include:

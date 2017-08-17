@@ -8,6 +8,7 @@ import yaml
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
+from cardboardlint.linter_pylint import linter_pylint
 
 
 def main():
@@ -72,7 +73,7 @@ def run_diff(refspec_parent):
     # generate 0 lines of context (i.e. only the lines that differ)
     # FIXME: gitpython?
     command = ['git', 'diff', '-U0', refspec_parent]
-    diff_output = subprocess.check_output(command)
+    diff_output = subprocess.check_output(command).decode('utf-8')
 
     # parse git diff output
     files_lines = {}
@@ -130,6 +131,7 @@ LINTERS = {
     'cppcheck': linter_cppcheck,
     'import': linter_import,
     'namespace': linter_namespace,
+    'pylint': linter_pylint,
 }
 
 

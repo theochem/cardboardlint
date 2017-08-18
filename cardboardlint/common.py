@@ -127,7 +127,7 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         return stdout.decode('utf-8'), stderr.decode('utf-8')
 
 
-def getfilenames(directories, include, exclude, files_lines=None):
+def get_filenames(directories, include, exclude, files_lines=None):
     """Return a list of file names
 
     Parameters

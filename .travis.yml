@@ -45,6 +45,7 @@ install:
 # Needed for compiler('c') function, temporary solution:
 # https://github.com/conda/conda-build/issues/2263
 - conda config --add channels theochem
+- conda config --add channels c3i_test
 - conda update -q conda
 # Get the right python version for building. This only does something for 3.5.
 # Install extra package needed to make things work. Most things can be listed as

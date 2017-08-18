@@ -1,0 +1,138 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import sys
+
+import yaml
+from cardboardlint.linter_cppcheck import linter_cppcheck
+from cardboardlint.linter_import import linter_import
+from cardboardlint.linter_namespace import linter_namespace
+from cardboardlint.linter_pylint import linter_pylint
+
+
+def main():
+    # get arguments
+    args = parse_args()
+
+    # get git diff
+    if args.refspec is None:
+        files_lines = None
+    else:
+        files_lines = run_diff(args.refspec)
+
+    # load lint configuration for module
+    config = load_config('.cardboardlint.yml')
+
+    # select specific linter if desired
+    if args.selections is None:
+        config_linters = config
+    else:
+        config_linters = {selection: config[selection] for selection in args.selections}
+
+    returncode = 0
+    for lintname, lintconfig in config_linters.items():
+        if lintname not in LINTERS:
+            continue
+        messages = [message for message in LINTERS[lintname](lintconfig, files_lines)
+                    if message.indiff(files_lines)]
+        if len(messages) > 0:
+            returncode = -1
+        for message in messages:
+            print(message)
+    sys.exit(returncode)
+
+
+def parse_args():
+    """Parse the arguments given to the script."""
+    parser = argparse.ArgumentParser(prog='cardboardlint')
+    parser.add_argument('--refspec', dest='refspec', nargs='?', default=None,
+                        help=('The parent commit used to compute the diff. If given, only the files'
+                              ' that have been changed will be compared. Otherwise, all files are '
+                              'compared.'))
+    # The next argument should become a lot smarter in future, e.g. select all static or
+    # dynamic linters, or a fraction of them, e.g. "dynamic 0%-33%".
+    parser.add_argument('--selections', dest='selections', nargs='*', default=None,
+                        help='Run just the given linters.')
+    return parser.parse_args()
+
+
+def run_diff(refspec_parent):
+    """Run git diff with respect to current branch
+
+    Parameters
+    ----------
+    refspec_parent : str
+        Reference to the parent branch
+
+    Returns
+    -------
+    files_lines : dict
+        Dictionary of filename to the set of line numbers (that have been modified)
+    """
+    # generate 0 lines of context (i.e. only the lines that differ)
+    command = ['git', 'diff', '-U0', refspec_parent]
+    diff_output = subprocess.check_output(command).decode('utf-8')
+
+    # parse git diff output
+    files_lines = {}
+    current_filename = None
+    for line in diff_output.splitlines():
+        if line.startswith('+++ b/'):
+            current_filename = line[6:]
+        elif line.startswith('@@ '):
+            added_str = line.split()[2]
+            # multiple lines added/modified
+            if added_str.count(',') == 1:
+                offset, nlines = added_str.split(',')
+                line_numbers = set(range(int(offset), int(offset) + int(nlines) + 1))
+            # single line added/modified
+            else:
+                offset = int(added_str)
+                line_numbers = set([offset])
+            # store line numbers
+            files_lines.setdefault(current_filename, set()).update(line_numbers)
+    return files_lines
+
+
+def load_config(config_file):
+    """Returns dictionary that corresponds to the given yaml file
+
+    Parameters
+    ----------
+    config_file : str
+        Name of the configuration file
+
+    Returns
+    -------
+    real_config : dict
+        Dictionary of the configurations where default values have been applied.
+    """
+    with open(config_file, 'r') as f:
+        config = yaml.load(f)
+
+    # find default configuration
+    default_keys = {key.replace('default_', ''): val for key, val in config.items()
+                    if 'default' in key}
+
+    # apply default configurations to all other keys that have not explicitly over write it
+    real_config = {key: val for key, val in config.items() if 'default' not in key}
+    # replace None
+    real_config = {key: {} if val is None else val for key, val in real_config.items()}
+    for def_key, def_val in default_keys.items():
+        for key, config in real_config.items():
+            config.setdefault(def_key, def_val)
+
+    return real_config
+
+
+LINTERS = {
+    'cppcheck': linter_cppcheck,
+    'import': linter_import,
+    'namespace': linter_namespace,
+    'pylint': linter_pylint,
+}
+
+
+if __name__ == '__main__':
+    main()

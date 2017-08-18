@@ -58,7 +58,7 @@ install:
 
 script:
 # Run the program on itself
-- python scripts/cardboardlinter
+- PYTHONPATH=$PWD python scripts/cardboardlinter
 
 # Build source package, should work too and needed for deployment to Github and
 # PyPI.

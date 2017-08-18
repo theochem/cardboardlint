@@ -43,7 +43,6 @@ class Message(object):
         self.text = text
         self.context = context
 
-    # FIXME: is this needed? __eq__ and __has__ were removed (not sure )
     def __lt__(self, other):
         """Test if one Message is less than another."""
         if self.__class__ != other.__class__:

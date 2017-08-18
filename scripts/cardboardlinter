@@ -22,20 +22,19 @@ def main():
         files_lines = run_diff(args.refspec)
 
     # load lint configuration for module
-    config = load_config('.cardboardlint.yml')
+    configs = load_config('.cardboardlint.yml')
 
     # select specific linter if desired
-    if args.selections is None:
-        config_linters = config
-    else:
-        config_linters = {selection: config[selection] for selection in args.selections}
+    if args.selections is not None:
+        configs = [(linter_name, linter_config) for linter_name, linter_config in configs
+                   if linter_name in args.selection]
 
     returncode = 0
-    for lintname, lintconfig in config_linters.items():
-        if lintname not in LINTERS:
-            continue
-        messages = [message for message in LINTERS[lintname](lintconfig, files_lines)
+    for linter_name, linter_config in configs:
+        messages = [message for message
+                    in LINTERS[linter_name](linter_config, files_lines)
                     if message.indiff(files_lines)]
+        messages.sort()
         if len(messages) > 0:
             returncode = -1
         for message in messages:
@@ -109,21 +108,23 @@ def load_config(config_file):
         Dictionary of the configurations where default values have been applied.
     """
     with open(config_file, 'r') as f:
-        config = yaml.load(f)
+        raw_config = yaml.load(f)
 
     # find default configuration
-    default_keys = {key.replace('default_', ''): val for key, val in config.items()
-                    if 'default' in key}
+    defaults = raw_config['defaults']
+    configs = []
 
-    # apply default configurations to all other keys that have not explicitly over write it
-    real_config = {key: val for key, val in config.items() if 'default' not in key}
-    # replace None
-    real_config = {key: {} if val is None else val for key, val in real_config.items()}
-    for def_key, def_val in default_keys.items():
-        for key, config in real_config.items():
-            config.setdefault(def_key, def_val)
+    for mapping in raw_config['linters']:
+        print mapping
+        if len(mapping) != 1:
+            raise IOError('Every item in the linter section should only specify one linter.')
+        linter_name, linter_config_overlay = mapping.popitem()
+        linter_config = defaults.copy()
+        if linter_config_overlay is not None:
+            linter_config.update(linter_config_overlay)
+        configs.append((linter_name, linter_config))
 
-    return real_config
+    return configs
 
 
 LINTERS = {

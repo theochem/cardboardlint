@@ -60,7 +60,7 @@ install:
 script:
 # Run the program on itself, in case of pull requests
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    PYTHONPATH=$PWD python scripts/cardboardlinter --refspec $TRAVIS_PULL_REQUEST_BRANCH;
+    PYTHONPATH=$PWD python scripts/cardboardlinter --refspec $TRAVIS_BRANCH;
   fi
 
 # Build source package, should work too and needed for deployment to Github and

@@ -1,7 +1,11 @@
 """Collection of classes and methods shared between different linters."""
-import os
-from fnmatch import fnmatch
+from __future__ import print_function
+
 import subprocess
+from fnmatch import fnmatch
+
+
+__all__ = ['Message', 'run_command', 'filter_filenames']
 
 
 class Message(object):
@@ -71,11 +75,9 @@ class Message(object):
             Dictionary of filename to the set of line numbers (that have been modified)
             Result of git diff from run_diff function
         """
-        if files_lines is not None:
-            line_numbers = files_lines.get(self.filename)
-            return line_numbers is not None and self.lineno in line_numbers
-        else:
-            return True
+        line_numbers = files_lines.get(self.filename)
+        return line_numbers is not None and (
+            self.lineno in line_numbers or self.lineno is None)
 
 
 def run_command(command, verbose=True, cwd=None, has_failed=None):
@@ -104,7 +106,7 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
     on screen and RuntimeError is raised.
     """
     # Functions to detect failure
-    def default_has_failed(returncode, stdout, stderr):
+    def default_has_failed(returncode, _stdout, _stderr):
         """Default function to detect failed subprocess."""
         return returncode != 0
     if has_failed is None:
@@ -126,62 +128,38 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         return stdout.decode('utf-8'), stderr.decode('utf-8')
 
 
-def get_filenames(directories, include, exclude, files_lines=None):
-    """Return a list of file names
+def filter_filenames(filenames, include, exclude):
+    """Filter a list of filenames using include and exclude rules.
+
+    First each filename is checked against the include rules. If matching an include rule,
+    any exclude rule can still prevent the inclusion of that file.
 
     Parameters
     ----------
-    directories : list of str
-        List of directories from which the files will be searched
-    include : list of str
-        List of regular expressions that the filename must satisfy
-    exclude : list of str
-        List of regular expressions that the filename must not satisfy
-    files_lines : dict
-        Dictionary of files and lines that have been changed.
-        Instead of searching for all files in the provided directories, only the provided files will
-        be searched.
-        Default searches through all files in the directories.
+    filenames : list
+        The list of filenames
+    include : list
+        A list of fnmatch patterns to include.
+    exclude : list
+        A list of fnmatch patterns to exclude.
 
     Returns
     -------
-    filenames : list
-        List of filenames that satisfies the conditions in the config file
+    filtered_filenames: list
+        The list of filenames that passes the filters.
     """
-    if not isinstance(directories, (list, tuple)):
-        raise TypeError('directories must be given as a list or tuple')
-    if not isinstance(include, (list, tuple)):
-        raise TypeError('include must be given as a list or tuple')
-    if not isinstance(exclude, (list, tuple)):
-        raise TypeError('exclude must be given as a list or tuple')
-
-    # Loop over all files in given directories
     result = []
-
-    # get list of directories and files to loop through
-    if files_lines is None:
-        dirs_files = ((dirpath, filenames) for directory in directories
-                      for dirpath, _, filenames in os.walk(directory))
-    else:
-        dirs_files = []
-        for filename in files_lines:
-            dirpath, filenames = os.path.split(filename)
-            if any(os.path.abspath(dirpath).startswith(os.path.abspath(directory))
-                   for directory in directories):
-                dirs_files.append((dirpath, filenames))
-
-    # find files that satisfy the conditions
-    for dirpath, filenames in dirs_files:
-        # NOTE: replace unix filename pattern matching (fnmatch) with regular expression?
-        if any(fnmatch(one_dir, e) for e in exclude for one_dir in dirpath.split(os.sep)):
-            continue
-        for filename in filenames:
-            if any(fnmatch(filename, e) for e in exclude):
-                continue
-            if not any(fnmatch(filename, i) or
-                       any(fnmatch(one_dir, i) for one_dir in dirpath.split(os.sep))
-                       for i in include):
-                continue
-
-            result.append(os.path.join(dirpath, filename))
+    for filename in filenames:
+        accept = False
+        for pattern in include:
+            if fnmatch(filename, pattern):
+                accept = True
+                break
+        if accept:
+            for pattern in exclude:
+                if fnmatch(filename, pattern):
+                    accept = False
+                    break
+        if accept:
+            result.append(filename)
     return result

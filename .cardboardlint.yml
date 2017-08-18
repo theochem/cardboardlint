@@ -1,17 +1,5 @@
-defaults:
-  directories:
-  - cardboardlint
-  include:
-  - "*.py"
-  exclude: []
-
 linters:
   - import:
-
+      packages: ['cardboardlint']
   - namespace:
-      exclude:
-      - "__init__.py"
-      - "test_*.py"
-
   - pylint:
-      config_file: .pylintrc

@@ -115,7 +115,6 @@ def load_config(config_file):
     configs = []
 
     for mapping in raw_config['linters']:
-        print mapping
         if len(mapping) != 1:
             raise IOError('Every item in the linter section should only specify one linter.')
         linter_name, linter_config_overlay = mapping.popitem()

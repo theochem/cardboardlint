@@ -11,7 +11,7 @@ It can be used as follows:
 - Add a .cardboardlint.yml to the root of your source tree. It should at least contain the following:
 
   .. code::
-  
+
       linters:
           name_of_linter1:
           name_of_linter2:

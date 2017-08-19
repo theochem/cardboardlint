@@ -30,7 +30,7 @@ def linter_namespace(linter_config, files_lines):
         Dictionary that contains the configuration for the linter
     files_lines : dict
         Dictionary of filename to the set of line numbers (that have been modified).
-        See `run_diff` method in `carboardlint`
+        See `run_diff` function in `carboardlinter`.
     """
     config = DEFAULT_CONFIG.copy()
     config.update(linter_config)

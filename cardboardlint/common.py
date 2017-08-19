@@ -146,7 +146,7 @@ def filter_filenames(filenames, include, exclude):
     Returns
     -------
     filtered_filenames: list
-        The list of filenames that passes the filters.
+        The list of filenames that pass the filters.
     """
     result = []
     for filename in filenames:

@@ -104,8 +104,7 @@ def run_diff(refspec_parent):
         command = ['git', 'ls-files']
         ls_output = run_command(command)[0]
         for filename in ls_output.splitlines():
-            with open(filename) as f:
-                files_lines[filename] = set(i for i, line in enumerate(f))
+            files_lines[filename] = None
 
     return files_lines
 

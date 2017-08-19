@@ -73,11 +73,13 @@ class Message(object):
         ----------
         files_lines : dict
             Dictionary of filename to the set of line numbers (that have been modified)
-            Result of git diff from run_diff function
+            Result of git diff from run_diff function. The set of line numbers may also
+            be None, indicating that all lines should be considered in that file.
         """
-        line_numbers = files_lines.get(self.filename)
-        return line_numbers is not None and (
-            self.lineno in line_numbers or self.lineno is None)
+        if self.filename in files_lines:
+            line_numbers = files_lines[self.filename]
+            return line_numbers is None or self.lineno is None or self.lineno in line_numbers
+        return False
 
 
 def run_command(command, verbose=True, cwd=None, has_failed=None):

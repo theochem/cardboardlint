@@ -30,7 +30,11 @@ It can be used as follows:
   code.
 
 - Install the linters you intend to run (either locally or in your CI environment). These
-  dependencies are not installed automatically because you may not want to use all of them.
+  dependencies are not installed automatically because you may not want to use all of
+  them.
+
+  We do provide conda packages for linters, when needed in our channel on Anaconda.org:
+  https://anaconda.org/theochem. For now, we have only added a package for ``cppcheck``.
 
 - Download and install the latest version from git and run the cardboardlinter.
 

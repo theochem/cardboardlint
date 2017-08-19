@@ -13,6 +13,7 @@ if __name__ == '__main__':
         version='0.0.0',
         description='Cheap lint solution for PRs.',
         scripts=glob("scripts/*"),
+        install_requires=['pyyaml'],
         classifiers=[
             'Environment :: Console',
             'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',

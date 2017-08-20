@@ -64,7 +64,7 @@ def parse_args():
 
 
 def run_diff(refspec_parent):
-    """Run git diff with respect to current branch
+    """Run git diff with respect to current branch.
 
     Parameters
     ----------
@@ -74,7 +74,9 @@ def run_diff(refspec_parent):
     Returns
     -------
     files_lines : dict
-        Dictionary of filename to the set of line numbers (that have been modified)
+        Dictionary with (filename,  line_numbers) to represent all changed lines in a way
+        that allows efficient testing in the `indiff` method of the Message class. When
+        line_numbers is None, it means that all lines should be considered for testing.
     """
     # generate 0 lines of context (i.e. only the lines that differ)
     files_lines = {}
@@ -110,7 +112,7 @@ def run_diff(refspec_parent):
 
 
 def load_config(config_file):
-    """Returns dictionary that corresponds to the given yaml file
+    """Returns dictionary that corresponds to the given yaml file.
 
     Parameters
     ----------
@@ -119,8 +121,8 @@ def load_config(config_file):
 
     Returns
     -------
-    real_config : dict
-        Dictionary of the configurations where default values have been applied.
+    configs : list
+        A list of (linter_name, linter_config) tuples.
     """
     with open(config_file, 'r') as f:
         raw_config = yaml.load(f)

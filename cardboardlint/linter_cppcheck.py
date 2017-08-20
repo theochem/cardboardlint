@@ -6,14 +6,17 @@ from __future__ import print_function
 
 from xml.etree import ElementTree
 
-from cardboardlint.common import run_command, Message, filter_filenames
+from cardboardlint.common import run_command, Message, filter_filenames, \
+    document_default_config
 
 
 __all__ = ['linter_cppcheck']
 
 
 DEFAULT_CONFIG = {
+    # Filename patterns to be considered for cppcheck.
     'include': ['*.h', '*.h.in', '*.cpp', '*.c'],
+    # Optionally, exclusion rules that override the 'include' config above.
     'exclude': [],
 }
 

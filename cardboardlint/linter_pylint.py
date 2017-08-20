@@ -1,12 +1,6 @@
 """Linter using pylint.
 
 This test calls the pylint program, see http://docs.pylint.org/index.html.
-
-* `config_file` is a configuration file.
-* `include` is the unix shell-style wildcard search keywords that specify the files that will be
-  tested using.
-* `exclude` is the unix shell-style wildcard search keywords that specify the files that will not
-  be tested using.
 """
 from __future__ import print_function
 
@@ -19,8 +13,11 @@ __all__ = ['linter_pylint']
 
 
 DEFAULT_CONFIG = {
+    # Filename patterns to be considered for Pylint.
     'include': ['*.py', 'scripts/*'],
+    # Optionally, exclusion rules that override the 'include' config above.
     'exclude': ['test_*.py'],
+    # Location of the Pylint config file.
     'pylintrc': '.pylintrc',
 }
 

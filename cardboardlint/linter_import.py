@@ -19,8 +19,11 @@ __all__ = ['linter_import']
 
 
 DEFAULT_CONFIG = {
+    # Filename patterns to be considered for the import linter.
     'include': ['*.py', '*.pyx'],
+    # Optionally, exclusion rules that override the 'include' config above.
     'exclude': ['test_*.py'],
+    # Names of python packages in the project (no longer searched automatically).
     'packages': [],
 }
 

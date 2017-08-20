@@ -1,6 +1,8 @@
 """Linter for namespace collisions.
 
-This script imports every module in the packages and checks for overlapping name spaces
+This script imports every module in the packages and checks for overlapping name spaces.
+It also checks if __all__ is missing and if some forbidden names are present in the
+public namespace of a module.
 """
 from __future__ import print_function
 
@@ -15,8 +17,11 @@ __all__ = ['linter_namespace']
 
 
 DEFAULT_CONFIG = {
+    # Filename patterns to be considered for the namespace linter.
     'include': ['*.py', '*.pyx'],
+    # Optionally, exclusion rules that override the 'include' config above.
     'exclude': ['test_*.py', 'setup.py'],
+    # Names that are not allowed in the public namespace.
     'forbidden': ['numpy', 'scipy', 'h5py', 'pyplot', 'np', 'h5', 'plt'],
 }
 

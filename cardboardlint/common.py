@@ -79,7 +79,8 @@ class Message(object):
         if self.filename in files_lines:
             line_numbers = files_lines[self.filename]
             return line_numbers is None or self.lineno is None or self.lineno in line_numbers
-        return False
+        else:
+            return False
 
 
 def run_command(command, verbose=True, cwd=None, has_failed=None):

@@ -128,7 +128,9 @@ def load_config(config_file):
     configs = []
     for mapping in raw_config['linters']:
         if len(mapping) != 1:
-            raise IOError('Every item in the linter section should only specify one linter.')
+            raise IOError('Every item in the linter section in .cardboardlint.yml should '
+                          'only specify one linter. You probably have to add a dash in '
+                          'front of a linter name, e.g. `- import` instead of `import`.')
         linter_name, linter_config = mapping.popitem()
         if linter_config is None:
             linter_config = {}

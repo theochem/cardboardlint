@@ -1,3 +1,9 @@
+.. image:: https://codecov.io/gh/theochem/cardboardlint/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/theochem/cardboardlint
+.. image:: https://travis-ci.org/theochem/cardboardlint.svg?branch=master
+    :target: https://travis-ci.org/theochem/cardboardlint
+
+
 cardboardlint
 -------------
 

@@ -1,11 +1,12 @@
 """Collection of classes and methods shared between different linters."""
 from __future__ import print_function
 
-import subprocess
 from fnmatch import fnmatch
+import subprocess
 
 
-__all__ = ['Message', 'run_command', 'filter_filenames']
+__all__ = ['Message', 'run_command', 'filter_filenames', 'filter_selection', 'static',
+           'dynamic']
 
 
 class Message(object):
@@ -166,3 +167,61 @@ def filter_filenames(filenames, include, exclude):
         if accept:
             result.append(filename)
     return result
+
+
+def get_offset_step(suffix):
+    """Return offset and step for a given selection suffix, e.g. '1/3' becomes (0, 3)"""
+    if suffix == '':
+        return 0, 1
+    if suffix.count('/') != 1:
+        raise ValueError('Could not parse selection argument suffix: "{}". It should '
+                         'contain only one /.'.format(suffix))
+    offset, step = suffix.split('/')
+    step = int(step)
+    offset = int(offset)
+    if offset < 1 or offset > step:
+        raise ValueError(('The first integer in the suffix {} should be in the range '
+                          '[1, {}].').format(suffix, step))
+    return offset - 1, step
+
+
+def filter_selection(configs, selection):
+    """Select some linter configs to be executed, based on the selection CLI argument.
+
+    Parameters
+    ----------
+    configs : list
+        A list of (linter_name, linter, linter_config) items.
+    selection : str
+        The argument given to the --selection command-line option.
+
+    Returns
+    -------
+    filtered_configs : list
+        A reduced list of items from configs.
+    """
+    if selection is None or selection == '' or selection == 'all':
+        return configs
+    elif selection.startswith('all'):
+        offset, step = get_offset_step(selection[3:])
+        return configs[offset::step]
+    elif selection.startswith('static'):
+        offset, step = get_offset_step(selection[6:])
+        return [config for config in configs if config[1].static][offset::step]
+    elif selection.startswith('dynamic'):
+        offset, step = get_offset_step(selection[7:])
+        return [config for config in configs if not config[1].static][offset::step]
+    else:
+        return [config for config in configs if config[0] in selection]
+
+
+def static(linter):
+    """Decorator for static linters."""
+    linter.static = True
+    return linter
+
+
+def dynamic(linter):
+    """Decorator for dynamic linters."""
+    linter.static = False
+    return linter

@@ -10,7 +10,7 @@ import os
 import sys
 import importlib
 
-from cardboardlint.common import Message, filter_filenames
+from cardboardlint.common import Message, filter_filenames, static
 
 
 __all__ = ['linter_namespace']
@@ -26,6 +26,7 @@ DEFAULT_CONFIG = {
 }
 
 
+@static
 def linter_namespace(linter_config, files_lines):
     """Linter for checking namespace Python namespace collisions.
 

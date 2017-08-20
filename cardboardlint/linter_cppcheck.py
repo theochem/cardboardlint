@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from xml.etree import ElementTree
 
-from cardboardlint.common import run_command, Message, filter_filenames
+from cardboardlint.common import run_command, Message, filter_filenames, static
 
 
 __all__ = ['linter_cppcheck']
@@ -20,6 +20,7 @@ DEFAULT_CONFIG = {
 }
 
 
+@static
 def linter_cppcheck(linter_config, files_lines):
     """Linter for cppcheck.
 

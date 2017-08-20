@@ -1,3 +1,4 @@
+"""Test some common functions."""
 
 
 from nose.tools import assert_raises
@@ -5,6 +6,7 @@ from nose.tools import assert_raises
 from cardboardlint.common import get_offset_step, filter_selection
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
+
 
 def test_offset_step():
     assert get_offset_step('') == (0, 1)

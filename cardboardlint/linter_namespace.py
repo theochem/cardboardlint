@@ -20,7 +20,7 @@ DEFAULT_CONFIG = {
     # Filename patterns to be considered for the namespace linter.
     'include': ['*.py', '*.pyx'],
     # Optionally, exclusion rules that override the 'include' config above.
-    'exclude': ['test_*.py', 'setup.py'],
+    'exclude': ['*/tests/__init__.py', '*/test_*.py', '*setup.py'],
     # Names that are not allowed in the public namespace.
     'forbidden': ['numpy', 'scipy', 'h5py', 'pyplot', 'np', 'h5', 'plt'],
 }

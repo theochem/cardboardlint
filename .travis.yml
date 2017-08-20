@@ -53,7 +53,7 @@ install:
 # Install conda tools for packaging and uploading
 - conda install python=${MYCONDAPY} cppcheck conda-build anaconda-client
 # Pip install python-based linters
-- pip install pylint
+- pip install pylint codecov coverage
 # Useful for debugging
 - conda info -a
 

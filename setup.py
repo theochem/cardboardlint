@@ -12,7 +12,7 @@ setup(
     scripts=['scripts/cardboardlinter'],
     package_dir={'cardboardlint': 'cardboardlint'},
     packages=['cardboardlint', 'cardboardlint.tests'],
-    install_requires=['pyyaml'],
+    install_requires=['pyyaml', 'nose'],
     zip_safe=False,
     classifiers=[
         'Environment :: Console',

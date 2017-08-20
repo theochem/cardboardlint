@@ -1,10 +1,14 @@
 #!/usr/bin/env python
+"""Cardboard linter driver script. See README.rst for details."""
+
+from __future__ import print_function
 
 import argparse
-import subprocess
 import sys
 
 import yaml
+
+from cardboardlint.common import run_command
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
@@ -12,34 +16,36 @@ from cardboardlint.linter_pylint import linter_pylint
 
 
 def main():
+    """Main routine."""
     # get arguments
     args = parse_args()
 
     # get git diff
-    if args.refspec is None:
-        files_lines = None
-    else:
-        files_lines = run_diff(args.refspec)
+    files_lines = run_diff(args.refspec)
 
     # load lint configuration for module
-    config = load_config('.cardboardlint.yml')
+    configs = load_config('.cardboardlint.yml')
 
     # select specific linter if desired
-    if args.selections is None:
-        config_linters = config
-    else:
-        config_linters = {selection: config[selection] for selection in args.selections}
+    if args.selections is not None:
+        configs = [(linter_name, linter_config) for linter_name, linter_config in configs
+                   if linter_name in args.selection]
 
     returncode = 0
-    for lintname, lintconfig in config_linters.items():
-        if lintname not in LINTERS:
-            continue
-        messages = [message for message in LINTERS[lintname](lintconfig, files_lines)
+    for linter_name, linter_config in configs:
+        print('~'*80)
+        print('### {:^72} ###'.format(linter_name))
+        print('~'*80)
+        messages = [message for message
+                    in LINTERS[linter_name](linter_config, files_lines)
                     if message.indiff(files_lines)]
+        messages.sort()
         if len(messages) > 0:
+            print()
             returncode = -1
-        for message in messages:
-            print(message)
+            for message in messages:
+                print(message)
+        print()
     sys.exit(returncode)
 
 
@@ -58,7 +64,7 @@ def parse_args():
 
 
 def run_diff(refspec_parent):
-    """Run git diff with respect to current branch
+    """Run git diff with respect to current branch.
 
     Parameters
     ----------
@@ -68,35 +74,45 @@ def run_diff(refspec_parent):
     Returns
     -------
     files_lines : dict
-        Dictionary of filename to the set of line numbers (that have been modified)
+        Dictionary with (filename,  line_numbers) to represent all changed lines in a way
+        that allows efficient testing in the `indiff` method of the Message class. When
+        line_numbers is None, it means that all lines should be considered for testing.
     """
     # generate 0 lines of context (i.e. only the lines that differ)
-    command = ['git', 'diff', '-U0', refspec_parent]
-    diff_output = subprocess.check_output(command).decode('utf-8')
-
-    # parse git diff output
     files_lines = {}
-    current_filename = None
-    for line in diff_output.splitlines():
-        if line.startswith('+++ b/'):
-            current_filename = line[6:]
-        elif line.startswith('@@ '):
-            added_str = line.split()[2]
-            # multiple lines added/modified
-            if added_str.count(',') == 1:
-                offset, nlines = added_str.split(',')
-                line_numbers = set(range(int(offset), int(offset) + int(nlines) + 1))
-            # single line added/modified
-            else:
-                offset = int(added_str)
-                line_numbers = set([offset])
-            # store line numbers
-            files_lines.setdefault(current_filename, set()).update(line_numbers)
+    if refspec_parent is not None:
+        command = ['git', 'diff', '-U0', refspec_parent]
+        diff_output = run_command(command)[0]
+
+        # parse git diff output
+        current_filename = None
+        for line in diff_output.splitlines():
+            if line.startswith('+++ b/'):
+                current_filename = line[6:]
+            elif line.startswith('@@ '):
+                added_str = line.split()[2]
+                # multiple lines added/modified
+                if added_str.count(',') == 1:
+                    offset, nlines = added_str.split(',')
+                    line_numbers = set(range(int(offset), int(offset) + int(nlines) + 1))
+                # single line added/modified
+                else:
+                    offset = int(added_str)
+                    line_numbers = set([offset])
+                # store line numbers
+                files_lines.setdefault(current_filename, set()).update(line_numbers)
+    else:
+        # Just get the current list of files in the repo and include all lines
+        command = ['git', 'ls-files']
+        ls_output = run_command(command)[0]
+        for filename in ls_output.splitlines():
+            files_lines[filename] = None
+
     return files_lines
 
 
 def load_config(config_file):
-    """Returns dictionary that corresponds to the given yaml file
+    """Returns dictionary that corresponds to the given yaml file.
 
     Parameters
     ----------
@@ -105,25 +121,23 @@ def load_config(config_file):
 
     Returns
     -------
-    real_config : dict
-        Dictionary of the configurations where default values have been applied.
+    configs : list
+        A list of (linter_name, linter_config) tuples.
     """
     with open(config_file, 'r') as f:
-        config = yaml.load(f)
+        raw_config = yaml.load(f)
 
-    # find default configuration
-    default_keys = {key.replace('default_', ''): val for key, val in config.items()
-                    if 'default' in key}
-
-    # apply default configurations to all other keys that have not explicitly over write it
-    real_config = {key: val for key, val in config.items() if 'default' not in key}
-    # replace None
-    real_config = {key: {} if val is None else val for key, val in real_config.items()}
-    for def_key, def_val in default_keys.items():
-        for key, config in real_config.items():
-            config.setdefault(def_key, def_val)
-
-    return real_config
+    configs = []
+    for mapping in raw_config['linters']:
+        if len(mapping) != 1:
+            raise IOError('Every item in the linter section in .cardboardlint.yml should '
+                          'only specify one linter. You probably have to add a dash in '
+                          'front of a linter name, e.g. `- import` instead of `import`.')
+        linter_name, linter_config = mapping.popitem()
+        if linter_config is None:
+            linter_config = {}
+        configs.append((linter_name, linter_config))
+    return configs
 
 
 LINTERS = {

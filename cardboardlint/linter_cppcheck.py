@@ -2,29 +2,45 @@
 
 This test calls the cppcheck program, see http://cppcheck.sourceforge.net/.
 """
+from __future__ import print_function
+
 from xml.etree import ElementTree
-from cardboardlint.common import run_command, Message
+
+from cardboardlint.common import run_command, Message, filter_filenames
 
 
-def linter_cppcheck(lintconfig, files_lines):
+__all__ = ['linter_cppcheck']
+
+
+DEFAULT_CONFIG = {
+    # Filename patterns to be considered for cppcheck.
+    'include': ['*.h', '*.h.in', '*.cpp', '*.c'],
+    # Optionally, exclusion rules that override the 'include' config above.
+    'exclude': [],
+}
+
+
+def linter_cppcheck(linter_config, files_lines):
     """Linter for cppcheck.
 
     Parameters
     ----------
-    config : dict
+    linter_config : dict
         Dictionary that contains the configuration for the linter
         Not supported
     files_lines : dict
         Dictionary of filename to the set of line numbers (that have been modified)
-        See `run_diff` method in `carboardlint`
+        See `run_diff` function in `carboardlinter`.
     """
-    # Get version
-    print('USING VERSION      :  {0}'.format(run_command(['cppcheck',
-                                                          '--version'], verbose=False)[0].strip()))
+    config = DEFAULT_CONFIG.copy()
+    config.update(linter_config)
 
-    # Get the cpp filenames
-    filenames = [filename for filename in files_lines
-                 if filename[filename.rfind('.'):] in ['.h', '.h.in', '.cpp', '.c']]
+    # Get version
+    print('USING VERSION      : {0}'.format(
+        run_command(['cppcheck', '--version'], verbose=False)[0].strip()))
+
+    # Get the relevant filenames
+    filenames = filter_filenames(files_lines.keys(), config['include'], config['exclude'])
 
     messages = []
     if len(filenames) > 0:
@@ -42,6 +58,8 @@ def linter_cppcheck(lintconfig, files_lines):
             # key = '{:<15}  {:<40}  {:<30}' % (error.attrib['severity'],
             #                                   error.attrib['file'],
             #                                   error.attrib['id'])
-            text = '{} {} {}' % (error.attrib['severity'], error.attrib['id'], error.attrib['msg'])
+            text = '{} {} {}'.format(
+                error.attrib['severity'], error.attrib['id'], error.attrib['msg'])
             messages.append(Message(error.attrib['file'], int(error.attrib['line']), None, text))
+
     return messages

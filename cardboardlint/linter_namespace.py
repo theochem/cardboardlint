@@ -10,7 +10,7 @@ import os
 import sys
 import importlib
 
-from cardboardlint.common import Message, filter_filenames
+from cardboardlint.common import Message, filter_filenames, static
 
 
 __all__ = ['linter_namespace']
@@ -20,12 +20,13 @@ DEFAULT_CONFIG = {
     # Filename patterns to be considered for the namespace linter.
     'include': ['*.py', '*.pyx'],
     # Optionally, exclusion rules that override the 'include' config above.
-    'exclude': ['test_*.py', 'setup.py'],
+    'exclude': ['*/tests/__init__.py', '*/test_*.py', '*setup.py'],
     # Names that are not allowed in the public namespace.
     'forbidden': ['numpy', 'scipy', 'h5py', 'pyplot', 'np', 'h5', 'plt'],
 }
 
 
+@static
 def linter_namespace(linter_config, files_lines):
     """Linter for checking namespace Python namespace collisions.
 

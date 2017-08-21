@@ -8,7 +8,7 @@ import sys
 
 import yaml
 
-from cardboardlint.common import run_command
+from cardboardlint.common import run_command, filter_selection
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
@@ -27,17 +27,15 @@ def main():
     configs = load_config('.cardboardlint.yml')
 
     # select specific linter if desired
-    if args.selections is not None:
-        configs = [(linter_name, linter_config) for linter_name, linter_config in configs
-                   if linter_name in args.selection]
+    configs = filter_selection(configs, args.selections)
 
     returncode = 0
-    for linter_name, linter_config in configs:
+    for linter_name, linter, linter_config in configs:
         print('~'*80)
         print('### {:^72} ###'.format(linter_name))
         print('~'*80)
         messages = [message for message
-                    in LINTERS[linter_name](linter_config, files_lines)
+                    in linter(linter_config, files_lines)
                     if message.indiff(files_lines)]
         messages.sort()
         if len(messages) > 0:
@@ -52,14 +50,18 @@ def main():
 def parse_args():
     """Parse the arguments given to the script."""
     parser = argparse.ArgumentParser(prog='cardboardlint')
-    parser.add_argument('--refspec', dest='refspec', nargs='?', default=None,
+    parser.add_argument('-r', '--refspec', dest='refspec', nargs='?', default=None,
                         help=('The parent commit used to compute the diff. If given, only the files'
                               ' that have been changed will be compared. Otherwise, all files are '
                               'compared.'))
-    # The next argument should become a lot smarter in future, e.g. select all static or
-    # dynamic linters, or a fraction of them, e.g. "dynamic 0%-33%".
-    parser.add_argument('--selections', dest='selections', nargs='*', default=None,
-                        help='Run just the given linters.')
+    parser.add_argument('-s', '--selections', dest='selections', nargs='*', default=None,
+                        help='Run just the given linters. Some special selection rules '
+                             'are supported for running a subset of all linters: all, '
+                             'static or dynamic. A static linter requires none of the '
+                             '(documentation) build steps, otherwise it is dynamic. '
+                             'A suffix N/M can be added where N and M are integers. '
+                             'This means that the tests are divided in M groups of which '
+                             'the Nth is selected, with N going from 1 to N (inclusive).')
     return parser.parse_args()
 
 
@@ -122,7 +124,7 @@ def load_config(config_file):
     Returns
     -------
     configs : list
-        A list of (linter_name, linter_config) tuples.
+        A list of (linter_name, linter, linter_config) tuples.
     """
     with open(config_file, 'r') as f:
         raw_config = yaml.load(f)
@@ -134,9 +136,10 @@ def load_config(config_file):
                           'only specify one linter. You probably have to add a dash in '
                           'front of a linter name, e.g. `- import` instead of `import`.')
         linter_name, linter_config = mapping.popitem()
+        linter = LINTERS[linter_name]
         if linter_config is None:
             linter_config = {}
-        configs.append((linter_name, linter_config))
+        configs.append((linter_name, linter, linter_config))
     return configs
 
 

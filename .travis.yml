@@ -53,16 +53,34 @@ install:
 # Install conda tools for packaging and uploading
 - conda install python=${MYCONDAPY} cppcheck conda-build anaconda-client
 # Pip install python-based linters
-- pip install pylint
+- pip install pylint codecov coverage
 # Useful for debugging
 - conda info -a
 
 script:
-# Run the program on itself, in case of pull requests
+# Install the package
+- python setup.py install
+
+# Run the cardboardlinter, to get the exit code for Travis CI. No arguments because we
+# want everything to be clean from the start.
+- cardboardlinter
+
+# Run tests out of source tree, to make sure that installed version is tested.
+- (cd; nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-erase --cover-inclusive --cover-branches --cover-xml)
+
+# Run the program on itself, in case of pull requests, to get coverage info
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    PYTHONPATH=$PWD python scripts/cardboardlinter --refspec $TRAVIS_BRANCH;
+    coverage run $(which cardboardlinter) --refspec $TRAVIS_BRANCH;
+    coverage xml -o ~/coverage_self_diff.xml;
   fi
+
+# Run the program on itself, just doing everything for improved coverage
+- coverage run $(which cardboardlinter); coverage xml -o ~/coverage_self_all.xml
 
 # Build source package, should work too and needed for deployment to Github and
 # PyPI.
 - python setup.py sdist
+
+after_success:
+# Upload the coverage analysis
+- codecov --file ~/coverage.xml ~/coverage_self_diff.xml ~/coverage_self_all.xml

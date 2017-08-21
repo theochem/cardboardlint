@@ -51,3 +51,6 @@ def test_filter_selection():
     assert filter_selection(configs, 'static2/2') == [configs[3]]
     assert filter_selection(configs, 'dynamic1/2') == [configs[0]]
     assert filter_selection(configs, 'dynamic2/2') == [configs[1]]
+    assert filter_selection(configs, 'dynamic1/3') == [configs[0]]
+    assert filter_selection(configs, 'dynamic2/3') == [configs[1]]
+    assert filter_selection(configs, 'dynamic3/3') == []

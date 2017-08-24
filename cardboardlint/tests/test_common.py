@@ -118,12 +118,20 @@ def test_flags():
     assert not test_foo4.flags['python']
     assert test_foo4.flags['cpp']
 
+    @flag()
+    def test_foo5():
+        pass
+    assert test_foo5.flags['static']
+    assert not test_foo5.flags['dynamic']
+    assert not test_foo5.flags['python']
+    assert not test_foo5.flags['cpp']
+
     with assert_raises(ValueError):
         @flag(dynamic=True, static=True)
-        def test_foo5():  # pylint: disable=unused-variable
+        def test_foo6():  # pylint: disable=unused-variable
             pass
 
     with assert_raises(ValueError):
         @flag(dynamic=True, static=False)
-        def test_foo6():  # pylint: disable=unused-variable
+        def test_foo7():  # pylint: disable=unused-variable
             pass

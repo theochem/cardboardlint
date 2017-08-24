@@ -31,7 +31,7 @@ from __future__ import print_function
 
 import codecs
 
-from cardboardlint.common import Message, filter_filenames, static
+from cardboardlint.common import Message, filter_filenames, flag
 
 
 __all__ = ['linter_import']
@@ -47,7 +47,7 @@ DEFAULT_CONFIG = {
 }
 
 
-@static
+@flag(static=True, python=True)
 def linter_import(linter_config, files_lines):
     """Linter for checking import statements.
 

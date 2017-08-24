@@ -24,8 +24,7 @@ from fnmatch import fnmatch
 import subprocess
 
 
-__all__ = ['Message', 'run_command', 'filter_filenames', 'filter_selection', 'static',
-           'dynamic']
+__all__ = ['Message', 'run_command', 'filter_filenames', 'filter_configs', 'flag']
 
 
 class Message(object):
@@ -190,7 +189,7 @@ def filter_filenames(filenames, include, exclude):
 
 def get_offset_step(suffix):
     """Return offset and step for a given selection suffix, e.g. '1/3' becomes (0, 3)"""
-    if suffix == '':
+    if suffix == '' or suffix is None:
         return 0, 1
     if suffix.count('/') != 1:
         raise ValueError('Could not parse selection argument suffix: "{}". It should '
@@ -204,43 +203,55 @@ def get_offset_step(suffix):
     return offset - 1, step
 
 
-def filter_selection(configs, selection):
+def filter_configs(configs, selection, boolexpr, part):
     """Select some linter configs to be executed, based on the selection CLI argument.
 
     Parameters
     ----------
     configs : list
         A list of (linter_name, linter, linter_config) items.
-    selection : str
-        The argument given to the --selection command-line option.
+    selection : list
+        A list of linter names to be selected. All other linters will be omitted from the
+        returned list of configs.
+    boolexpr : str
+        A boolean expression in terms of flags set on the linters. If it evaluates to
+        False, the linter is omitted as well.
+    part : str
+        A string of the form N/M, to run only a part of the linters retained by the
+        arguments above.
 
     Returns
     -------
     filtered_configs : list
         A reduced list of items from configs.
     """
-    if selection is None or selection == '' or selection == 'all':
-        return configs
-    elif selection.startswith('all'):
-        offset, step = get_offset_step(selection[3:])
-        return configs[offset::step]
-    elif selection.startswith('static'):
-        offset, step = get_offset_step(selection[6:])
-        return [config for config in configs if config[1].static][offset::step]
-    elif selection.startswith('dynamic'):
-        offset, step = get_offset_step(selection[7:])
-        return [config for config in configs if not config[1].static][offset::step]
+    # Pass 1: by linter name (selection list)
+    if not (selection is None or selection == []):
+        configs = [config for config in configs if config[0] in selection]
+    # Pass 2: boolean expression
+    if not (boolexpr is None or boolexpr == ''):
+        configs = [config for config in configs if eval(boolexpr, config[1].flags)]  # pylint: disable=eval-used
+    # Pass 3: part N/M
+    offset, step = get_offset_step(part)
+    configs = configs[offset::step]
+    return configs
+
+
+def flag(dynamic=None, static=None, python=False, cpp=False):
+    """Decorate linter with flags."""
+    if dynamic is None:
+        if static is None:
+            static = True
+            dynamic = False
+        else:
+            dynamic = not static
     else:
-        return [config for config in configs if config[0] in selection]
-
-
-def static(linter):
-    """Decorator for static linters."""
-    linter.static = True
-    return linter
-
-
-def dynamic(linter):
-    """Decorator for dynamic linters."""
-    linter.static = False
-    return linter
+        if static is None:
+            static = not dynamic
+        else:
+            raise ValueError('You cannot set both static and dynamic, seriously!')
+    def decorator(linter):
+        """Assigns flags to a linter."""
+        linter.flags = {'static': static, 'dynamic': dynamic, 'python': python, 'cpp': cpp}
+        return linter
+    return decorator

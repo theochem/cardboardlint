@@ -22,7 +22,7 @@
 
 from nose.tools import assert_raises
 
-from cardboardlint.common import get_offset_step, filter_selection
+from cardboardlint.common import get_offset_step, filter_selection, tag
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
 
@@ -73,3 +73,47 @@ def test_filter_selection():
     assert filter_selection(configs, 'dynamic1/3') == [configs[0]]
     assert filter_selection(configs, 'dynamic2/3') == [configs[1]]
     assert filter_selection(configs, 'dynamic3/3') == []
+
+
+def test_tags():
+    @tag(static=True, python=True)
+    def foo1():
+        pass
+    assert foo1.static
+    assert not foo1.dynamic
+    assert foo1.python
+    assert not foo1.cpp
+
+    @tag(static=False, python=True, cpp=True)
+    def foo2():
+        pass
+    assert not foo2.static
+    assert foo2.dynamic
+    assert foo2.python
+    assert foo2.cpp
+
+    @tag(dynamic=True)
+    def foo3():
+        pass
+    assert not foo3.static
+    assert foo3.dynamic
+    assert not foo3.python
+    assert not foo3.cpp
+
+    @tag(dynamic=False, cpp=True)
+    def foo4():
+        pass
+    assert foo4.static
+    assert not foo4.dynamic
+    assert not foo4.python
+    assert foo4.cpp
+
+    with assert_raises(ValueError):
+        @tag(dynamic=True, static=True)
+        def foo5():
+            pass
+
+    with assert_raises(ValueError):
+        @tag(dynamic=True, static=False)
+        def foo6():
+            pass

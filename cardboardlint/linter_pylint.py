@@ -25,7 +25,7 @@ from __future__ import print_function
 
 import json
 
-from cardboardlint.common import Message, run_command, filter_filenames, dynamic
+from cardboardlint.common import Message, run_command, filter_filenames, tag
 
 
 __all__ = ['linter_pylint']
@@ -41,7 +41,7 @@ DEFAULT_CONFIG = {
 }
 
 
-@dynamic
+@tag(dynamic=True, python=True)
 def linter_pylint(linter_config, files_lines):
     """Linter for checking pylint results.
 

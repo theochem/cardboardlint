@@ -24,8 +24,7 @@ from fnmatch import fnmatch
 import subprocess
 
 
-__all__ = ['Message', 'run_command', 'filter_filenames', 'filter_selection', 'static',
-           'dynamic']
+__all__ = ['Message', 'run_command', 'filter_filenames', 'filter_selection', 'tag']
 
 
 class Message(object):
@@ -234,13 +233,24 @@ def filter_selection(configs, selection):
         return [config for config in configs if config[0] in selection]
 
 
-def static(linter):
-    """Decorator for static linters."""
-    linter.static = True
-    return linter
-
-
-def dynamic(linter):
-    """Decorator for dynamic linters."""
-    linter.static = False
-    return linter
+def tag(dynamic=None, static=None, python=False, cpp=False):
+    """Decorate linter with tags."""
+    if dynamic is None:
+        if static is None:
+            static = True
+            dynamic = False
+        else:
+            dynamic = not static
+    else:
+        if static is None:
+            static = not dynamic
+        else:
+            raise ValueError('You cannot set both static and dynamic, seriously!')
+    def decorator(linter):
+        """Assigns tags to a linter."""
+        linter.static = not dynamic
+        linter.dynamic = dynamic
+        linter.python = python
+        linter.cpp = cpp
+        return linter
+    return decorator

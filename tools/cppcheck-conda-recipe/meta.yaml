@@ -6,14 +6,14 @@ source:
   url: https://github.com/danmar/cppcheck/archive/1.80.tar.gz
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
-  # You need to add an experimental channel for this to work:
-  # conda config --add channels c3i_test
   - cmake
-  - {{ compiler('c') }}
+  - gcc
+  run:
+  - libgcc
 
 about:
   description:

@@ -29,7 +29,7 @@ import os
 import sys
 import importlib
 
-from cardboardlint.common import Message, filter_filenames, tag
+from cardboardlint.common import Message, filter_filenames, flag
 
 
 __all__ = ['linter_namespace']
@@ -45,7 +45,7 @@ DEFAULT_CONFIG = {
 }
 
 
-@tag(static=True, python=True)
+@flag(static=True, python=True)
 def linter_namespace(linter_config, files_lines):
     """Linter for checking namespace Python namespace collisions.
 

@@ -25,7 +25,7 @@ from __future__ import print_function
 
 from xml.etree import ElementTree
 
-from cardboardlint.common import run_command, Message, filter_filenames, tag
+from cardboardlint.common import run_command, Message, filter_filenames, flag
 
 
 __all__ = ['linter_cppcheck']
@@ -39,7 +39,7 @@ DEFAULT_CONFIG = {
 }
 
 
-@tag(static=True, cpp=True)
+@flag(static=True, cpp=True)
 def linter_cppcheck(linter_config, files_lines):
     """Linter for cppcheck.
 

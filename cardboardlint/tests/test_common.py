@@ -22,12 +22,14 @@
 
 from nose.tools import assert_raises
 
-from cardboardlint.common import get_offset_step, filter_selection, tag
+from cardboardlint.common import get_offset_step, filter_selection, flag
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
+from cardboardlint.linter_import import linter_import
 
 
 def test_offset_step():
+    assert get_offset_step(None) == (0, 1)
     assert get_offset_step('') == (0, 1)
     assert get_offset_step('1/1') == (0, 1)
     assert get_offset_step('1/2') == (0, 2)
@@ -53,67 +55,75 @@ def test_filter_selection():
         ('cppcheck', linter_cppcheck, {'include': ['*.h.in']}),
         ('cppcheck', linter_cppcheck, {'include': ['*.h']}),
         ('cppcheck', linter_cppcheck, {'include': ['*.cpp']}),
+        ('import', linter_import, {}),
     ]
-    assert filter_selection(configs, None) == configs
-    assert filter_selection(configs, '') == configs
-    assert filter_selection(configs, 'all') == configs
-    assert filter_selection(configs, 'cppcheck') == [configs[2], configs[3], configs[4]]
-    assert filter_selection(configs, 'pylint') == [configs[0], configs[1]]
-    assert filter_selection(configs, 'static') == [configs[2], configs[3], configs[4]]
-    assert filter_selection(configs, 'dynamic') == [configs[0], configs[1]]
-    assert filter_selection(configs, 'all1/2') == [configs[0], configs[2], configs[4]]
-    assert filter_selection(configs, 'all2/2') == [configs[1], configs[3]]
-    assert filter_selection(configs, 'all1/3') == [configs[0], configs[3]]
-    assert filter_selection(configs, 'all2/3') == [configs[1], configs[4]]
-    assert filter_selection(configs, 'all3/3') == [configs[2]]
-    assert filter_selection(configs, 'static1/2') == [configs[2], configs[4]]
-    assert filter_selection(configs, 'static2/2') == [configs[3]]
-    assert filter_selection(configs, 'dynamic1/2') == [configs[0]]
-    assert filter_selection(configs, 'dynamic2/2') == [configs[1]]
-    assert filter_selection(configs, 'dynamic1/3') == [configs[0]]
-    assert filter_selection(configs, 'dynamic2/3') == [configs[1]]
-    assert filter_selection(configs, 'dynamic3/3') == []
+    assert filter_selection(configs, None, None, None) == configs
+    assert filter_selection(configs, [], '', '') == configs
+    assert filter_selection(configs, [], 'True', '') == configs
+    assert filter_selection(configs, [], 'False', '') == []
+    assert filter_selection(configs, ['cppcheck'], '', '') == \
+        [configs[2], configs[3], configs[4]]
+    assert filter_selection(configs, ['pylint'], '', '') == [configs[0], configs[1]]
+    assert filter_selection(configs, ['pylint', 'import'], '', '') == \
+        [configs[0], configs[1], configs[5]]
+    assert filter_selection(configs, None, 'static', '') == \
+        [configs[2], configs[3], configs[4], configs[5]]
+    assert filter_selection(configs, None, 'dynamic', '') == [configs[0], configs[1]]
+    assert filter_selection(configs, None, '', '1/2') == [configs[0], configs[2], configs[4]]
+    assert filter_selection(configs, None, '', '2/2') == [configs[1], configs[3], configs[5]]
+    assert filter_selection(configs, None, '', '1/3') == [configs[0], configs[3]]
+    assert filter_selection(configs, None, '', '2/3') == [configs[1], configs[4]]
+    assert filter_selection(configs, None, '', '3/3') == [configs[2], configs[5]]
+    assert filter_selection(configs, None, 'static', '1/2') == [configs[2], configs[4]]
+    assert filter_selection(configs, None, 'static', '2/2') == [configs[3], configs[5]]
+    assert filter_selection(configs, None, 'dynamic', '1/2') == [configs[0]]
+    assert filter_selection(configs, None, 'dynamic', '2/2') == [configs[1]]
+    assert filter_selection(configs, None, 'dynamic', '1/3') == [configs[0]]
+    assert filter_selection(configs, None, 'dynamic', '2/3') == [configs[1]]
+    assert filter_selection(configs, None, 'dynamic', '3/3') == []
+    assert filter_selection(configs, None, 'static and python', '') == [configs[5]]
+    assert filter_selection(configs, None, 'static or python', '') == configs
 
 
-def test_tags():
-    @tag(static=True, python=True)
-    def foo1():
+def test_flags():
+    @flag(static=True, python=True)
+    def test_foo1():
         pass
-    assert foo1.static
-    assert not foo1.dynamic
-    assert foo1.python
-    assert not foo1.cpp
+    assert test_foo1.flags['static']
+    assert not test_foo1.flags['dynamic']
+    assert test_foo1.flags['python']
+    assert not test_foo1.flags['cpp']
 
-    @tag(static=False, python=True, cpp=True)
-    def foo2():
+    @flag(static=False, python=True, cpp=True)
+    def test_foo2():
         pass
-    assert not foo2.static
-    assert foo2.dynamic
-    assert foo2.python
-    assert foo2.cpp
+    assert not test_foo2.flags['static']
+    assert test_foo2.flags['dynamic']
+    assert test_foo2.flags['python']
+    assert test_foo2.flags['cpp']
 
-    @tag(dynamic=True)
-    def foo3():
+    @flag(dynamic=True)
+    def test_foo3():
         pass
-    assert not foo3.static
-    assert foo3.dynamic
-    assert not foo3.python
-    assert not foo3.cpp
+    assert not test_foo3.flags['static']
+    assert test_foo3.flags['dynamic']
+    assert not test_foo3.flags['python']
+    assert not test_foo3.flags['cpp']
 
-    @tag(dynamic=False, cpp=True)
-    def foo4():
+    @flag(dynamic=False, cpp=True)
+    def test_foo4():
         pass
-    assert foo4.static
-    assert not foo4.dynamic
-    assert not foo4.python
-    assert foo4.cpp
+    assert test_foo4.flags['static']
+    assert not test_foo4.flags['dynamic']
+    assert not test_foo4.flags['python']
+    assert test_foo4.flags['cpp']
 
     with assert_raises(ValueError):
-        @tag(dynamic=True, static=True)
-        def foo5():
+        @flag(dynamic=True, static=True)
+        def test_foo5():  # pylint: disable=unused-variable
             pass
 
     with assert_raises(ValueError):
-        @tag(dynamic=True, static=False)
-        def foo6():
+        @flag(dynamic=True, static=False)
+        def test_foo6():  # pylint: disable=unused-variable
             pass

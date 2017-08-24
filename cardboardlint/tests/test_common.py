@@ -22,7 +22,7 @@
 
 from nose.tools import assert_raises
 
-from cardboardlint.common import get_offset_step, filter_selection, flag
+from cardboardlint.common import get_offset_step, filter_configs, flag
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_import import linter_import
@@ -46,43 +46,43 @@ def test_offset_step():
     assert_raises(ValueError, get_offset_step, '-1/2')
 
 
-def test_filter_selection():
+def test_filter_configs():
     configs = [
         ('pylint', linter_pylint, {'pylintrc': '1'}),
         ('pylint', linter_pylint, {'pylintrc': '2'}),
         # The following may be a bad idea. cppcheck combines info from related files
-        # when provided. (This is just used here for testing the filter_selection function.)
+        # when provided. (This is just used here for testing the filter_configs function.)
         ('cppcheck', linter_cppcheck, {'include': ['*.h.in']}),
         ('cppcheck', linter_cppcheck, {'include': ['*.h']}),
         ('cppcheck', linter_cppcheck, {'include': ['*.cpp']}),
         ('import', linter_import, {}),
     ]
-    assert filter_selection(configs, None, None, None) == configs
-    assert filter_selection(configs, [], '', '') == configs
-    assert filter_selection(configs, [], 'True', '') == configs
-    assert filter_selection(configs, [], 'False', '') == []
-    assert filter_selection(configs, ['cppcheck'], '', '') == \
+    assert filter_configs(configs, None, None, None) == configs
+    assert filter_configs(configs, [], '', '') == configs
+    assert filter_configs(configs, [], 'True', '') == configs
+    assert filter_configs(configs, [], 'False', '') == []
+    assert filter_configs(configs, ['cppcheck'], '', '') == \
         [configs[2], configs[3], configs[4]]
-    assert filter_selection(configs, ['pylint'], '', '') == [configs[0], configs[1]]
-    assert filter_selection(configs, ['pylint', 'import'], '', '') == \
+    assert filter_configs(configs, ['pylint'], '', '') == [configs[0], configs[1]]
+    assert filter_configs(configs, ['pylint', 'import'], '', '') == \
         [configs[0], configs[1], configs[5]]
-    assert filter_selection(configs, None, 'static', '') == \
+    assert filter_configs(configs, None, 'static', '') == \
         [configs[2], configs[3], configs[4], configs[5]]
-    assert filter_selection(configs, None, 'dynamic', '') == [configs[0], configs[1]]
-    assert filter_selection(configs, None, '', '1/2') == [configs[0], configs[2], configs[4]]
-    assert filter_selection(configs, None, '', '2/2') == [configs[1], configs[3], configs[5]]
-    assert filter_selection(configs, None, '', '1/3') == [configs[0], configs[3]]
-    assert filter_selection(configs, None, '', '2/3') == [configs[1], configs[4]]
-    assert filter_selection(configs, None, '', '3/3') == [configs[2], configs[5]]
-    assert filter_selection(configs, None, 'static', '1/2') == [configs[2], configs[4]]
-    assert filter_selection(configs, None, 'static', '2/2') == [configs[3], configs[5]]
-    assert filter_selection(configs, None, 'dynamic', '1/2') == [configs[0]]
-    assert filter_selection(configs, None, 'dynamic', '2/2') == [configs[1]]
-    assert filter_selection(configs, None, 'dynamic', '1/3') == [configs[0]]
-    assert filter_selection(configs, None, 'dynamic', '2/3') == [configs[1]]
-    assert filter_selection(configs, None, 'dynamic', '3/3') == []
-    assert filter_selection(configs, None, 'static and python', '') == [configs[5]]
-    assert filter_selection(configs, None, 'static or python', '') == configs
+    assert filter_configs(configs, None, 'dynamic', '') == [configs[0], configs[1]]
+    assert filter_configs(configs, None, '', '1/2') == [configs[0], configs[2], configs[4]]
+    assert filter_configs(configs, None, '', '2/2') == [configs[1], configs[3], configs[5]]
+    assert filter_configs(configs, None, '', '1/3') == [configs[0], configs[3]]
+    assert filter_configs(configs, None, '', '2/3') == [configs[1], configs[4]]
+    assert filter_configs(configs, None, '', '3/3') == [configs[2], configs[5]]
+    assert filter_configs(configs, None, 'static', '1/2') == [configs[2], configs[4]]
+    assert filter_configs(configs, None, 'static', '2/2') == [configs[3], configs[5]]
+    assert filter_configs(configs, None, 'dynamic', '1/2') == [configs[0]]
+    assert filter_configs(configs, None, 'dynamic', '2/2') == [configs[1]]
+    assert filter_configs(configs, None, 'dynamic', '1/3') == [configs[0]]
+    assert filter_configs(configs, None, 'dynamic', '2/3') == [configs[1]]
+    assert filter_configs(configs, None, 'dynamic', '3/3') == []
+    assert filter_configs(configs, None, 'static and python', '') == [configs[5]]
+    assert filter_configs(configs, None, 'static or python', '') == configs
 
 
 def test_flags():

@@ -24,7 +24,7 @@ from fnmatch import fnmatch
 import subprocess
 
 
-__all__ = ['Message', 'run_command', 'filter_filenames', 'filter_selection', 'flag']
+__all__ = ['Message', 'run_command', 'filter_filenames', 'filter_configs', 'flag']
 
 
 class Message(object):
@@ -203,7 +203,7 @@ def get_offset_step(suffix):
     return offset - 1, step
 
 
-def filter_selection(configs, selection, boolexpr, part):
+def filter_configs(configs, selection, boolexpr, part):
     """Select some linter configs to be executed, based on the selection CLI argument.
 
     Parameters

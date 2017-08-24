@@ -45,7 +45,7 @@ DEFAULT_CONFIG = {
 }
 
 
-@flag(static=True, python=True)
+@flag(dynamic=True, python=True)
 def linter_namespace(linter_config, files_lines):
     """Linter for checking namespace Python namespace collisions.
 

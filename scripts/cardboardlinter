@@ -32,6 +32,8 @@ from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
 from cardboardlint.linter_pylint import linter_pylint
+from cardboardlint.linter_pycodestyle import linter_pycodestyle
+from cardboardlint.linter_pydocstyle import linter_pydocstyle
 
 
 def main():
@@ -174,6 +176,8 @@ LINTERS = {
     'import': linter_import,
     'namespace': linter_namespace,
     'pylint': linter_pylint,
+    'pycodestyle': linter_pycodestyle,
+    'pydocstyle': linter_pydocstyle,
 }
 
 

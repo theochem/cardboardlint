@@ -28,16 +28,9 @@ __all__ = ['Message', 'run_command', 'filter_filenames', 'filter_configs', 'flag
 
 
 class Message(object):
-    """Error message and meta information.
+    """Error message and meta information."""
 
-    This class contains all the machinery that the trapdoor driver uses to check for new messages.
-    When a context is available, it is used to compare two messages instead of line numbers. If not,
-    the line numbers are used. Line numbers are a relatively poor descriptor for assessing if a
-    message is new. For example, lines may have been inserted or removed, which changes the line
-    numbers without actually changing any of the code.
-    """
-
-    def __init__(self, filename, lineno, charno, text, context=None):
+    def __init__(self, filename, lineno, charno, text):
         """Initialize a message.
 
         Parameters
@@ -52,9 +45,7 @@ class Message(object):
             None if no error/problem is reported.
         text : str
             A description of the error/problem.
-        context : str
-            A string that (almost) uniquely identifies the location of the error without using line
-            numbers.
+
         """
         if lineno is not None and not isinstance(lineno, int):
             raise TypeError('`lineno` must be an integer or None')
@@ -64,14 +55,13 @@ class Message(object):
         self.lineno = lineno
         self.charno = charno
         self.text = text
-        self.context = context
 
     def __lt__(self, other):
         """Test if one Message is less than another."""
         if self.__class__ != other.__class__:
             return self < other
-        tup_self = (self.filename, self.lineno, self.charno, self.text, self.context)
-        tup_other = (other.filename, other.lineno, other.charno, other.text, other.context)
+        tup_self = (self.filename, self.lineno, self.charno, self.text)
+        tup_other = (other.filename, other.lineno, other.charno, other.text)
         return tup_self < tup_other
 
     def __str__(self):
@@ -94,6 +84,7 @@ class Message(object):
             Dictionary of filename to the set of line numbers (that have been modified)
             Result of git diff from run_diff function. The set of line numbers may also
             be None, indicating that all lines should be considered in that file.
+
         """
         if self.filename in files_lines:
             line_numbers = files_lines[self.filename]
@@ -126,10 +117,11 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
     ------
     In case the subprocess returns a non-zero exit code, the stdout and stderr are printed
     on screen and RuntimeError is raised.
+
     """
     # Functions to detect failure
     def default_has_failed(returncode, _stdout, _stderr):
-        """Default function to detect failed subprocess."""
+        """Detect failed subprocess, default implementation."""
         return returncode != 0
     if has_failed is None:
         has_failed = default_has_failed
@@ -139,13 +131,14 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
     proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
     stdout, stderr = proc.communicate()
     if has_failed(proc.returncode, stdout, stderr):
+        print('RETURN CODE: {}'.format(proc.returncode))
         print('STDOUT')
         print('------')
         print(stdout.decode('utf-8'))
         print('STDERR')
         print('------')
         print(stderr.decode('utf-8'))
-        raise RuntimeError('Subprocess returned non-zero exit status {0}'.format(proc.returncode))
+        raise RuntimeError('Subprocess has failed.')
     else:
         return stdout.decode('utf-8'), stderr.decode('utf-8')
 
@@ -169,6 +162,7 @@ def filter_filenames(filenames, include, exclude):
     -------
     filtered_filenames: list
         The list of filenames that pass the filters.
+
     """
     result = []
     for filename in filenames:
@@ -188,7 +182,7 @@ def filter_filenames(filenames, include, exclude):
 
 
 def get_offset_step(suffix):
-    """Return offset and step for a given selection suffix, e.g. '1/3' becomes (0, 3)"""
+    """Return offset and step for a given selection suffix, e.g. '1/3' becomes (0, 3)."""
     if suffix == '' or suffix is None:
         return 0, 1
     if suffix.count('/') != 1:
@@ -224,13 +218,15 @@ def filter_configs(configs, selection, boolexpr, part):
     -------
     filtered_configs : list
         A reduced list of items from configs.
+
     """
     # Pass 1: by linter name (selection list)
     if not (selection is None or selection == []):
         configs = [config for config in configs if config[0] in selection]
     # Pass 2: boolean expression
     if not (boolexpr is None or boolexpr == ''):
-        configs = [config for config in configs if eval(boolexpr, config[1].flags)]  # pylint: disable=eval-used
+        # pylint: disable=eval-used
+        configs = [config for config in configs if eval(boolexpr, config[1].flags)]
     # Pass 3: part N/M
     offset, step = get_offset_step(part)
     configs = configs[offset::step]
@@ -250,8 +246,10 @@ def flag(dynamic=None, static=None, python=False, cpp=False):
             static = not dynamic
         else:
             raise ValueError('You cannot set both static and dynamic, seriously!')
+
     def decorator(linter):
-        """Assigns flags to a linter."""
+        """Assign flags to a linter."""
         linter.flags = {'static': static, 'dynamic': dynamic, 'python': python, 'cpp': cpp}
         return linter
+
     return decorator

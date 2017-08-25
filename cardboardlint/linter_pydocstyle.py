@@ -17,39 +17,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 # --
-"""Linter for import conventions.
+"""Linter using pydocstyle.
 
-This script counts the number of bad imports. The following is not allowed in a package:
-
-* Importing from its own package as follows:
-
-  .. code-block:: python
-
-        from package import foo
+This test calls the flake program, see http://pydocstyle.pycqa.org
 """
 from __future__ import print_function
 
-import codecs
-
-from cardboardlint.common import Message, filter_filenames, flag
+from cardboardlint.common import Message, run_command, filter_filenames, flag
 
 
-__all__ = ['linter_import']
+__all__ = ['linter_pydocstyle']
 
 
 DEFAULT_CONFIG = {
-    # Filename patterns to be considered for the import linter.
-    'include': ['*.py', '*.pyx'],
+    # Filename patterns to be considered for pydocstyle.
+    'include': ['*.py', '*.pyx', '*.pxd', 'scripts/*'],
     # Optionally, exclusion rules that override the 'include' config above.
-    'exclude': ['test_*.py'],
-    # Names of python packages in the project (no longer searched automatically).
-    'packages': [],
+    'exclude': [],
+    # Location of the pydocstyle config file.
+    'config': '.pydocstylerc',
 }
 
 
 @flag(static=True, python=True)
-def linter_import(linter_config, files_lines):
-    """Linter for checking import statements.
+def linter_pydocstyle(linter_config, files_lines):
+    """Linter for checking pydocstyle results.
 
     Parameters
     ----------
@@ -68,24 +60,33 @@ def linter_import(linter_config, files_lines):
     config = DEFAULT_CONFIG.copy()
     config.update(linter_config)
 
+    # get pydocstyle version
+    command = ['pydocstyle', '--version']
+    version_info = run_command(command, verbose=False)[0]
+    print('USING              : {0}'.format(version_info))
+
     # Get all relevant filenames
     filenames = filter_filenames(files_lines.keys(), config['include'], config['exclude'])
 
-    # Loop all python and cython files
+    def has_failed(returncode, _stdout, _stderr):
+        """Determine if pydocstyle ran correctly."""
+        return not 0 <= returncode < 2
+
     messages = []
-    if len(config['packages']) > 0:
-        for filename in filenames:
-            # Only consider relevant files
-            if filename.endswith('/__init__.py'):
-                continue
-            # Look for bad imports
-            with codecs.open(filename, encoding='utf-8') as f:
-                for lineno, line in enumerate(f):
-                    for package in config['packages']:
-                        # skip version import
-                        if line != u'from {0} import __version__\n'.format(package):
-                            continue
-                        if u'from {0} import'.format(package) in line:
-                            text = 'Wrong import from {0}'.format(package)
-                            messages.append(Message(filename, lineno+1, None, text))
+    if len(filenames) > 0:
+        command = ['pydocstyle'] + filenames
+        command += ['--config={0}'.format(config['config'])]
+        output = run_command(command, has_failed=has_failed)[0]
+        lines = output.split('\n')[:-1]
+        while len(lines) > 0:
+            if 'WARNING: ' in lines[0]:
+                lines.pop(0)
+            else:
+                words = lines.pop(0).split()
+                filename, lineno = words[0].split(':')
+                code, description = lines.pop(0).split(':', 1)
+                code = code.strip()
+                description = description.strip()
+                messages.append(Message(
+                    filename, int(lineno), None, '%s %s' % (code, description)))
     return messages

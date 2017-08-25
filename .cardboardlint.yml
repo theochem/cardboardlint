@@ -2,4 +2,7 @@ linters:
   - import:
       packages: ['cardboardlint']
   - namespace:
+      exclude: ['*/__init__.py', '*setup.py', '*test_*.py', '*/tests/__init__.py']
   - pylint:
+  - pycodestyle:
+  - pydocstyle:

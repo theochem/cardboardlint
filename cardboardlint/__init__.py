@@ -17,12 +17,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 # --
-"""Package initializer for cardboardlint."""
-
-__all__ = []
-
-import cardboardlint.common
-import cardboardlint.linter_cppcheck
-import cardboardlint.linter_import
-import cardboardlint.linter_namespace
-import cardboardlint.linter_pylint
+"""Cardboardlint library."""

@@ -29,6 +29,7 @@ import yaml
 
 from cardboardlint.common import run_command, matches_filefilter, filter_configs
 from cardboardlint.linter_cppcheck import linter_cppcheck
+from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
 from cardboardlint.linter_pylint import linter_pylint
@@ -177,6 +178,7 @@ def load_config(config_file):
 
 LINTERS = {
     'cppcheck': linter_cppcheck,
+    'cpplint': linter_cpplint,
     'import': linter_import,
     'namespace': linter_namespace,
     'pylint': linter_pylint,

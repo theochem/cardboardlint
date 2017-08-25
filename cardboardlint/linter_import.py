@@ -31,7 +31,7 @@ from __future__ import print_function
 
 import codecs
 
-from cardboardlint.common import Message, filter_filenames, flag
+from cardboardlint.common import Message, matches_filefilter, flag
 
 
 __all__ = ['linter_import']
@@ -67,7 +67,8 @@ def linter_import(linter_config, files_lines):
     config.update(linter_config)
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
+    filenames = [filename for filename in files_lines
+                 if matches_filefilter(filename, config['filefilter'])]
 
     # Loop all python and cython files
     messages = []

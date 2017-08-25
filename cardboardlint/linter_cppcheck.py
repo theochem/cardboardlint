@@ -25,7 +25,7 @@ from __future__ import print_function
 
 from xml.etree import ElementTree
 
-from cardboardlint.common import run_command, Message, filter_filenames, flag
+from cardboardlint.common import run_command, Message, matches_filefilter, flag
 
 
 __all__ = ['linter_cppcheck']
@@ -64,7 +64,8 @@ def linter_cppcheck(linter_config, files_lines):
         run_command(['cppcheck', '--version'], verbose=False)[0].strip()))
 
     # Get the relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
+    filenames = [filename for filename in files_lines
+                 if matches_filefilter(filename, config['filefilter'])]
 
     messages = []
     if len(filenames) > 0:

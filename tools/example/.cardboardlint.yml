@@ -1,0 +1,9 @@
+linters:
+- import:
+    packages: ['math']
+- namespace:
+    forbidden: ['math']
+- pylint:
+- pycodestyle:
+- pydocstyle:
+- cppcheck:

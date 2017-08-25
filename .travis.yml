@@ -71,8 +71,8 @@ script:
     coverage xml -o ~/coverage_self_diff.xml;
   fi
 
-# Run the program on itself, just doing everything for improved coverage
-- coverage run $(which cardboardlinter); coverage xml -o ~/coverage_self_all.xml
+# Run the program on the example, without using the diff
+- (cd tools/example; coverage run $(which cardboardlinter); coverage xml -o ~/coverage_example_all.xml)
 
 # Build source package, should work too and needed for deployment to Github and
 # PyPI.
@@ -80,4 +80,6 @@ script:
 
 after_success:
 # Upload the coverage analysis
-- codecov --file ~/coverage.xml ~/coverage_self_diff.xml ~/coverage_self_all.xml
+- codecov --file ~/coverage.xml --name unittest
+- codecov --file ~/coverage_self_diff.xml --name self
+- codecov --file ~/coverage_example_all.xml --name example

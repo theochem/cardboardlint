@@ -68,10 +68,9 @@ script:
    coverage xml -o coverage_unittest.xml)
 
 # Run the program on the example, without using the diff
-- (export PYTHONPATH=$PWD;
-   cd tools/example;
-   coverage run --include=*cardboardlint* --omit=*poor* cardboardlinter;
-   coverage run --include=*cardboardlint* --omit=*poor* cardboardlinter --refspec HEAD^;
+- (cd tools/example;
+   coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter);
+   coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter) --refspec HEAD^;
    coverage xml -o ~/coverage_examples.xml)
 
 # Build source package, should work too and needed for deployment to Github and

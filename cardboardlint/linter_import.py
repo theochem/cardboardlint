@@ -38,10 +38,8 @@ __all__ = ['linter_import']
 
 
 DEFAULT_CONFIG = {
-    # Filename patterns to be considered for the import linter.
-    'include': ['*.py', '*.pyx'],
-    # Optionally, exclusion rules that override the 'include' config above.
-    'exclude': ['test_*.py'],
+    # Filename filter rules
+    'filefilter': ['- */test_*.py', '+ *.py', '+ *.pyx'],
     # Names of python packages in the project (no longer searched automatically).
     'packages': [],
 }
@@ -69,7 +67,7 @@ def linter_import(linter_config, files_lines):
     config.update(linter_config)
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['include'], config['exclude'])
+    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
 
     # Loop all python and cython files
     messages = []

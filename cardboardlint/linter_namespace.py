@@ -36,10 +36,8 @@ __all__ = ['linter_namespace']
 
 
 DEFAULT_CONFIG = {
-    # Filename patterns to be considered for the namespace linter.
-    'include': ['*.py', '*.pyx'],
-    # Optionally, exclusion rules that override the 'include' config above.
-    'exclude': ['*/tests/__init__.py', '*/test_*.py', '*setup.py'],
+    # Filename filter rules
+    'filefilter': ['- */tests/__init__.py', '- */test_*.py', '- *setup.py', '+ *.py', '+ *.pyx'],
     # Names that are not allowed in the public namespace.
     'forbidden': ['numpy', 'scipy', 'h5py', 'pyplot', 'np', 'h5', 'plt'],
 }
@@ -67,7 +65,7 @@ def linter_namespace(linter_config, files_lines):
     config.update(linter_config)
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['include'], config['exclude'])
+    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
 
     # Make sure we test the source tree and not some locally installed copy of HORTON.
     sys.path.insert(0, '.')

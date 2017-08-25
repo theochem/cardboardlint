@@ -28,7 +28,6 @@ from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_import import linter_import
 
 
-
 def test_filter_filenames():
     filenames = ['foo/a.py', 'foo/b.py', 'foo/test/test_a.py', 'scripts/runfoo']
     assert filter_filenames(filenames, ['+ *']) == filenames

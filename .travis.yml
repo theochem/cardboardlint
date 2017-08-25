@@ -65,14 +65,16 @@ script:
 # Run tests out of source tree, to make sure that installed version is tested.
 - (cd; nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-erase --cover-inclusive --cover-branches --cover-xml)
 
-# Run the program on itself, in case of pull requests, to get coverage info
+# Run the program on itself, in case of pull requests.
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    coverage run $(which cardboardlinter) --refspec $TRAVIS_BRANCH;
-    coverage xml -o ~/coverage_self_diff.xml;
+    cardboardlinter --refspec $TRAVIS_BRANCH;
   fi
 
 # Run the program on the example, without using the diff
-- (cd tools/example; coverage run $(which cardboardlinter); coverage xml -o ~/coverage_example_all.xml)
+- (export PYTHONPATH=$PWD;
+   cd tools/example;
+   coverage run --include=*cardboardlint* --omit=*poor* ../../scripts/cardboardlinter;
+   coverage xml -o ~/coverage_example_all.xml)
 
 # Build source package, should work too and needed for deployment to Github and
 # PyPI.
@@ -81,5 +83,4 @@ script:
 after_success:
 # Upload the coverage analysis
 - codecov --file ~/coverage.xml --name unittest
-- codecov --file ~/coverage_self_diff.xml --name self
 - codecov --file ~/coverage_example_all.xml --name example

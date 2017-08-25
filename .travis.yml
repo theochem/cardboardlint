@@ -84,4 +84,5 @@ script:
 after_success:
 # Upload the coverage analysis
 - codecov --file ~/coverage.xml --name unittest
+- codecov --file ~/coverage_self_diff.xml --name self
 - codecov --file ~/coverage_example_all.xml --name example

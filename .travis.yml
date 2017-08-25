@@ -64,16 +64,16 @@ script:
 
 # Run tests out of source tree, to make sure that installed version is tested.
 - (cd;
-   coverage erase
+   coverage erase;
    nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-inclusive --cover-branches;
    coverage xml -o coverage_unittest.xml)
 
 # Run the program on the example, without using the diff
 - (cd tools/example;
-   coverage erase
+   coverage erase;
    coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter);
    coverage xml -o ~/coverage_examples_all.xml
-   coverage erase
+   coverage erase;
    coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter) --refspec HEAD^;
    coverage xml -o ~/coverage_examples_refspec.xml)
 

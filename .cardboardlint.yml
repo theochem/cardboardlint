@@ -8,3 +8,5 @@ linters:
   - pylint:
   - pycodestyle:
   - pydocstyle:
+  - whitespace:
+      filefilter: ['- *.patch', '- *.diff', '+ *.*']

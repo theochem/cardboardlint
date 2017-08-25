@@ -55,8 +55,8 @@ install:
 - conda info -a
 
 script:
-# Install the package
-- python setup.py install
+# Install the package, in a way that facilitates coverage analysis on the installed script.
+- python setup.py develop
 
 # Run the cardboardlinter, to get the exit code for Travis CI. No arguments because we
 # want everything to be clean from the start.
@@ -65,9 +65,10 @@ script:
 # Run tests out of source tree, to make sure that installed version is tested.
 - (cd; nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-erase --cover-inclusive --cover-branches --cover-xml)
 
-# Run the program on itself, in case of pull requests.
+# Run the program on itself, in case of pull requests (with coverage).
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    cardboardlinter --refspec $TRAVIS_BRANCH;
+    coverage run --include=*cardboardlint* $(which cardboardlinter) --refspec $TRAVIS_BRANCH;
+    coverage xml -o ~/coverage_self_diff.xml;
   fi
 
 # Run the program on the example, without using the diff

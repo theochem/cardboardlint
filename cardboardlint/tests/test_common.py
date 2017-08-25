@@ -22,10 +22,23 @@
 
 from nose.tools import assert_raises
 
-from cardboardlint.common import get_offset_step, filter_configs, flag
+from cardboardlint.common import filter_filenames, get_offset_step, filter_configs, flag
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_import import linter_import
+
+
+
+def test_filter_filenames():
+    filenames = ['foo/a.py', 'foo/b.py', 'foo/test/test_a.py', 'scripts/runfoo']
+    assert filter_filenames(filenames, ['+ *']) == filenames
+    assert filter_filenames(filenames, ['+ foo/*.py']) == filenames[:3]
+    assert filter_filenames(filenames, ['- */test_*.py', '+ *.py']) == filenames[:2]
+
+    with assert_raises(ValueError):
+        filter_filenames(filenames, ['b *.py'])
+    with assert_raises(ValueError):
+        filter_filenames(filenames, ['bork'])
 
 
 def test_offset_step():

@@ -151,9 +151,9 @@ def filter_filenames(filenames, rules):
     filenames : list
         The list of filenames
     rules : list
-        A list of strings, starting with - (exclude) or + (include), followed by a space
-        and then a glob pattern. Each file is tested against the rules in order. The first
-        matching rule is applied. If no rules match, the file is excluded.
+        A list of strings, starting with - (exclude) or + (include), followed by a glob
+        pattern. Each file is tested against the rules in order. The first matching rule
+        is applied. If no rules match, the file is excluded.
 
     Returns
     -------
@@ -161,22 +161,20 @@ def filter_filenames(filenames, rules):
         The list of filenames that pass the filters.
 
     """
+    # Check format of the rules
+    for rule in rules:
+        if rule[0] not in '+-':
+            raise ValueError('Unexpected first character in filename filter rule: {}'.format(
+                rule[0]))
+
     result = []
     for filename in filenames:
-        accept = False
         for rule in rules:
             pattern = rule[1:].strip()
             if fnmatch(filename, pattern):
                 if rule[0] == '+':
-                    accept = True
-                    break
-                elif rule[0] == '-':
-                    break
-                else:
-                    raise ValueError('Unexpected first character in filename filter '
-                                     'rule: {}'.format(rule[0]))
-        if accept:
-            result.append(filename)
+                    result.append(filename)
+                break
     return result
 
 

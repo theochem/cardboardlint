@@ -31,6 +31,7 @@ from cardboardlint.common import run_command, matches_filefilter, filter_configs
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen
+from cardboardlint.linter_flake8 import linter_flake8
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
 from cardboardlint.linter_pylint import linter_pylint
@@ -181,6 +182,7 @@ LINTERS = {
     'cppcheck': linter_cppcheck,
     'cpplint': linter_cpplint,
     'doxygen': linter_doxygen,
+    'flake8': linter_flake8,
     'import': linter_import,
     'namespace': linter_namespace,
     'pylint': linter_pylint,

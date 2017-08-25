@@ -1,4 +1,10 @@
 linters:
+- cppcheck:
+- cpplint:
+    script: ../../cpplint.py
+- doxygen:
+    root: ./
+- flake8:
 - import:
     packages: ['math']
 - namespace:
@@ -6,8 +12,3 @@ linters:
 - pylint:
 - pycodestyle:
 - pydocstyle:
-- cppcheck:
-- cpplint:
-    script: ../../cpplint.py
-- doxygen:
-    root: ./

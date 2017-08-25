@@ -1,5 +1,10 @@
 // Ugly main program
 #include <iostream>
+#include "poor.h"
+
+double add(double a,b) {
+  return a+b;
+}
 
 int main()
 {

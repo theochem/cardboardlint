@@ -93,7 +93,7 @@ class Message(object):
             return False
 
 
-def run_command(command, verbose=True, cwd=None, has_failed=None):
+def run_command(command, verbose=True, cwd=None, has_failed=None, stdin=''):
     """Run command as subprocess with default settings suitable for trapdoor scripts.
 
     Parameters
@@ -107,6 +107,8 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
     has_failed : function(returncode, stdout, stderr)
         A function that determines if the subprocess has failed. The default
         behavior is to check for a non-zero return code.
+    stdin : str
+        Standard input to be provided to the script.
 
     Returns
     -------
@@ -128,8 +130,10 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
 
     if verbose:
         print('RUNNING            : {0}'.format(' '.join(command)))
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
-    stdout, stderr = proc.communicate()
+    proc = subprocess.Popen(
+        command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, cwd=cwd)
+    stdout, stderr = proc.communicate(stdin)
     if has_failed(proc.returncode, stdout, stderr):
         print('RETURN CODE: {}'.format(proc.returncode))
         print('STDOUT')

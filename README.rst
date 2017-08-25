@@ -12,7 +12,7 @@ Cheap lint solution for PRs.
 This is a wrapper for other linters, which only reports messages related to lines that
 have changed compared to some other commit, e.g. the head of the branch being merged into.
 It is a simple and more customizable alternative to tools like Hound CI, Stickler CI,
-Linthub.io etc.
+Linthub.io, landscape.io etc.
 
 It can be used as follows:
 
@@ -41,13 +41,18 @@ It can be used as follows:
       linters:
       - pylint:
           pylintrc: tools/pylintrc
-          include: *.py
-          exclude: test_*.py
+          filefilter: ['- test_*.py', '+ *.py']
+          exclude:
       - pylint:
           pylintrc: tools/pylintrc_tests
-          include: test_*.py
+          filefilter: ['+ test_*.py']
       - import:
       ...
+
+  Each linte has a `filefilter` option, which is a list of rules to test if a file should
+  be considered for linting or not. Each rule consists of a result, `+` (include) or a `-`
+  (exclude), followed by a glob pattern. If a pattern matches, the result is found and
+  further rules are not considered. If no rules apply, the file is excluded.
 
 - Install the linters you intend to run (either locally or in your CI environment). These
   dependencies are not installed automatically because you may not want to use all of

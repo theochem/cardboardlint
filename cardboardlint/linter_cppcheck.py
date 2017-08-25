@@ -32,8 +32,8 @@ __all__ = ['linter_cppcheck']
 
 
 DEFAULT_CONFIG = {
-    # Filename matching rules
-    'rules': ['+ *.h', '+ *.h.in', '+ *.cpp', '+ *.c'],
+    # Filename filter rules
+    'filefilter': ['+ *.h', '+ *.h.in', '+ *.cpp', '+ *.c'],
 }
 
 
@@ -64,7 +64,7 @@ def linter_cppcheck(linter_config, files_lines):
         run_command(['cppcheck', '--version'], verbose=False)[0].strip()))
 
     # Get the relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['rules'])
+    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
 
     messages = []
     if len(filenames) > 0:

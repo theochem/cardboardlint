@@ -30,8 +30,8 @@ __all__ = ['linter_pycodestyle']
 
 
 DEFAULT_CONFIG = {
-    # Filename matching rules
-    'rules': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ scripts/*'],
+    # Filename filter rules
+    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ scripts/*'],
     # Location of the pycodestyle config file.
     'config': '.pycodestylerc',
 }
@@ -64,7 +64,7 @@ def linter_pycodestyle(linter_config, files_lines):
     print('USING              : {0}'.format(version_info))
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['rules'])
+    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
 
     def has_failed(returncode, _stdout, _stderr):
         """Determine if pycodestyle ran correctly."""

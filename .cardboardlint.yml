@@ -2,7 +2,7 @@ linters:
   - import:
       packages: ['cardboardlint']
   - namespace:
-      rules: ['- */__init__.py', '- */test_*.py', '- *setup.py', '+ *.py', '+ *.pyx']
+      filefilter: ['- */__init__.py', '- */test_*.py', '- *setup.py', '+ *.py', '+ *.pyx']
   - pylint:
   - pycodestyle:
   - pydocstyle:

@@ -38,8 +38,8 @@ __all__ = ['linter_import']
 
 
 DEFAULT_CONFIG = {
-    # Filename matching rules
-    'rules': ['- */test_*.py', '+ *.py', '+ *.pyx'],
+    # Filename filter rules
+    'filefilter': ['- */test_*.py', '+ *.py', '+ *.pyx'],
     # Names of python packages in the project (no longer searched automatically).
     'packages': [],
 }
@@ -67,7 +67,7 @@ def linter_import(linter_config, files_lines):
     config.update(linter_config)
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['rules'])
+    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
 
     # Loop all python and cython files
     messages = []

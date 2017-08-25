@@ -30,10 +30,8 @@ __all__ = ['linter_pydocstyle']
 
 
 DEFAULT_CONFIG = {
-    # Filename matching rules
-    'rules': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ scripts/*'],
-    # Optionally, exclusion rules that override the 'include' config above.
-    'exclude': [],
+    # Filename filter rules
+    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ scripts/*'],
     # Location of the pydocstyle config file.
     'config': '.pydocstylerc',
 }
@@ -66,7 +64,7 @@ def linter_pydocstyle(linter_config, files_lines):
     print('USING              : {0}'.format(version_info))
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['rules'])
+    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
 
     def has_failed(returncode, _stdout, _stderr):
         """Determine if pydocstyle ran correctly."""

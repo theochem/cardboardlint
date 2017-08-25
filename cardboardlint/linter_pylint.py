@@ -32,8 +32,8 @@ __all__ = ['linter_pylint']
 
 
 DEFAULT_CONFIG = {
-    # Filename matching rules
-    'rules': ['+ *.py', '+ scripts/*'],
+    # Filename filter rules
+    'filefilter': ['+ *.py', '+ scripts/*'],
     # Location of the Pylint config file.
     'pylintrc': '.pylintrc',
 }
@@ -68,7 +68,7 @@ def linter_pylint(linter_config, files_lines):
     print('USING              : {0}'.format(version_info))
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['rules'])
+    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
 
     def has_failed(returncode, _stdout, _stderr):
         """Determine if pylint ran correctly."""

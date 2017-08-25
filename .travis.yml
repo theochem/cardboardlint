@@ -51,6 +51,9 @@ install:
 - conda install python=${MYCONDAPY} cppcheck conda-build anaconda-client
 # Pip install python-based linters
 - pip install pylint codecov coverage pycodestyle pydocstyle
+# Get the latest cpplint
+- wget https://raw.githubusercontent.com/google/styleguide/gh-pages/cpplint/cpplint.py
+- chmod +x cpplint.py
 # Useful for debugging
 - conda info -a
 

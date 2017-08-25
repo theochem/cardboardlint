@@ -7,3 +7,5 @@ linters:
 - pycodestyle:
 - pydocstyle:
 - cppcheck:
+- cpplint:
+    script: ../../cpplint.py

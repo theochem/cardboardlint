@@ -143,20 +143,17 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         return stdout.decode('utf-8'), stderr.decode('utf-8')
 
 
-def filter_filenames(filenames, include, exclude):
+def filter_filenames(filenames, rules):
     """Filter a list of filenames using include and exclude rules.
-
-    First each filename is checked against the include rules. If matching an include rule,
-    any exclude rule can still prevent the inclusion of that file.
 
     Parameters
     ----------
     filenames : list
         The list of filenames
-    include : list
-        A list of fnmatch patterns to include.
-    exclude : list
-        A list of fnmatch patterns to exclude.
+    rules : list
+        A list of strings, starting with - (exclude) or + (include), followed by a space
+        and then a glob pattern. Each file is tested against the rules in order. The first
+        matching rule is applied. If no rules match, the file is excluded.
 
     Returns
     -------
@@ -167,15 +164,17 @@ def filter_filenames(filenames, include, exclude):
     result = []
     for filename in filenames:
         accept = False
-        for pattern in include:
+        for rule in rules:
+            pattern = rule[1:].strip()
             if fnmatch(filename, pattern):
-                accept = True
-                break
-        if accept:
-            for pattern in exclude:
-                if fnmatch(filename, pattern):
-                    accept = False
+                if rule[0] == '+':
+                    accept = True
                     break
+                elif rule[0] == '-':
+                    break
+                else:
+                    raise ValueError('Unexpected first character in filename filter '
+                                     'rule: {}'.format(rule[0]))
         if accept:
             result.append(filename)
     return result

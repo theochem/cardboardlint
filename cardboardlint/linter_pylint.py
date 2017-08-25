@@ -32,10 +32,8 @@ __all__ = ['linter_pylint']
 
 
 DEFAULT_CONFIG = {
-    # Filename patterns to be considered for Pylint.
-    'include': ['*.py', 'scripts/*'],
-    # Optionally, exclusion rules that override the 'include' config above.
-    'exclude': ['test_*.py'],
+    # Filename matching rules
+    'rules': ['+ *.py', '+ scripts/*'],
     # Location of the Pylint config file.
     'pylintrc': '.pylintrc',
 }
@@ -70,7 +68,7 @@ def linter_pylint(linter_config, files_lines):
     print('USING              : {0}'.format(version_info))
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['include'], config['exclude'])
+    filenames = filter_filenames(files_lines.keys(), config['rules'])
 
     def has_failed(returncode, _stdout, _stderr):
         """Determine if pylint ran correctly."""

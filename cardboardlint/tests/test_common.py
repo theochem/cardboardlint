@@ -95,6 +95,9 @@ def test_filter_configs():
     assert filter_configs(configs, None, 'dynamic', '3/3') == []
     assert filter_configs(configs, None, 'static and python', '') == [configs[5]]
     assert filter_configs(configs, None, 'static or python', '') == configs
+    assert filter_configs(configs, None, 'name == "pylint"', '') == [configs[0], configs[1]]
+    assert filter_configs(configs, None, 'name != "cppcheck"', '') == \
+        [configs[0], configs[1], configs[5]]
 
 
 def test_flags():

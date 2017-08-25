@@ -222,8 +222,13 @@ def filter_configs(configs, selection, boolexpr, part):
         configs = [config for config in configs if config[0] in selection]
     # Pass 2: boolean expression
     if not (boolexpr is None or boolexpr == ''):
-        # pylint: disable=eval-used
-        configs = [config for config in configs if eval(boolexpr, config[1].flags)]
+        oldconfigs = configs
+        configs = []
+        for config in oldconfigs:
+            namespace = config[1].flags.copy()
+            namespace['name'] = config[0]
+            if eval(boolexpr, namespace):  # pylint: disable=eval-used
+                configs.append(config)
     # Pass 3: part N/M
     offset, step = get_offset_step(part)
     configs = configs[offset::step]

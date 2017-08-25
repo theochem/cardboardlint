@@ -247,10 +247,12 @@ def flag(dynamic=None, static=None, python=False, cpp=False):
             static = not dynamic
         else:
             raise ValueError('You cannot set both static and dynamic, seriously!')
+    generic = not (python or cpp)
 
     def decorator(linter):
         """Assign flags to a linter."""
-        linter.flags = {'static': static, 'dynamic': dynamic, 'python': python, 'cpp': cpp}
+        linter.flags = {'static': static, 'dynamic': dynamic, 'python': python,
+                        'cpp': cpp, 'generic': generic}
         return linter
 
     return decorator

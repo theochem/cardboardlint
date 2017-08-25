@@ -8,6 +8,8 @@ double add(double a,b) {
 
 int main()
 {
-  char a[10];
-  std::cout << "Hello World!" << a[10];
+    char a[10];  
+	std::cout << "Hello World!" << a[10];
 }
+
+

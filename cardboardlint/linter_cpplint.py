@@ -23,8 +23,6 @@ This test calls the cpplint.py program, see https://github.com/google/styleguide
 """
 from __future__ import print_function
 
-from xml.etree import ElementTree
-
 from cardboardlint.common import run_command, Message, matches_filefilter, flag
 
 

@@ -59,23 +59,20 @@ script:
 - python setup.py develop
 
 # Run the cardboardlinter, to get the exit code for Travis CI. No arguments because we
-# want everything to be clean from the start.
+# want everything to be clean.
 - cardboardlinter
 
 # Run tests out of source tree, to make sure that installed version is tested.
-- (cd; nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-erase --cover-inclusive --cover-branches --cover-xml)
-
-# Run the program on itself, in case of pull requests (with coverage).
-- if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    coverage run --include=*cardboardlint* $(which cardboardlinter) --refspec $TRAVIS_BRANCH;
-    coverage xml -o ~/coverage_self_diff.xml;
-  fi
+- (cd;
+   nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-erase --cover-inclusive --cover-branches;
+   coverage xml -o coverage_unittest.xml)
 
 # Run the program on the example, without using the diff
 - (export PYTHONPATH=$PWD;
    cd tools/example;
-   coverage run --include=*cardboardlint* --omit=*poor* ../../scripts/cardboardlinter;
-   coverage xml -o ~/coverage_example_all.xml)
+   coverage run --include=*cardboardlint* --omit=*poor* cardboardlinter;
+   coverage run --include=*cardboardlint* --omit=*poor* cardboardlinter --refspec HEAD^;
+   coverage xml -o ~/coverage_examples.xml)
 
 # Build source package, should work too and needed for deployment to Github and
 # PyPI.
@@ -83,6 +80,5 @@ script:
 
 after_success:
 # Upload the coverage analysis
-- codecov --file ~/coverage.xml --name unittest
-- codecov --file ~/coverage_self_diff.xml --name self
-- codecov --file ~/coverage_example_all.xml --name example
+- codecov --file ~/coverage_unittest.xml --name unittest
+- codecov --file ~/coverage_examples.xml --name examples

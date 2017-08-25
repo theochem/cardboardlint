@@ -160,7 +160,7 @@ def load_config(config_file):
         raw_config = yaml.load(f)
 
     prefilter = raw_config.get('pre_filefilter', ['+ *'])
-    
+
     configs = []
     for mapping in raw_config['linters']:
         if len(mapping) != 1:

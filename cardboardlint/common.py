@@ -159,6 +159,7 @@ def matches_filefilter(filename, rules):
     -------
     accepted: boolean
         True if the file should be included.
+
     """
     # Check format of the rules
     for rule in rules:

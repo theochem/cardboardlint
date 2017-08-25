@@ -1,0 +1,10 @@
+#pre_filefilter: ['+ tools/example/*', '- *']
+
+linters:
+- import:
+    packages: ['math']
+- namespace:
+    forbidden: ['math']
+- pylint:
+- pycodestyle:
+- pydocstyle:

@@ -84,7 +84,7 @@ def linter_namespace(linter_config, files_lines):
         if '__all__' in names:
             for name in names:
                 if name in module.__all__:
-                    namespace.setdefault(name, []).append(modulename)
+                    namespace.setdefault(name, []).append(filename)
                     if name in config['forbidden']:
                         messages.append(Message(
                             filename, None, None,
@@ -96,8 +96,8 @@ def linter_namespace(linter_config, files_lines):
     del sys.path[0]
 
     # Detect collisions
-    for name, modules in namespace.items():
-        if len(modules) > 1:
-            text = "Name '{0}' found in more than one module: {1}".format(name, ' '.join(modules))
-            messages.append(Message(None, None, None, text))
+    for name, filenames in namespace.items():
+        if len(filenames) > 1:
+            text = "Name '{0}' found in more than one module: {1}".format(name, ' '.join(filenames))
+            messages.append(Message(filenames[0], None, None, text))
     return messages

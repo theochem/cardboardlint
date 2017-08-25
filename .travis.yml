@@ -64,18 +64,19 @@ script:
 
 # Run tests out of source tree, to make sure that installed version is tested.
 - (cd;
-   coverage erase;
-   nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-inclusive --cover-branches;
-   coverage xml -o coverage_unittest.xml)
+   coverage erase &&
+   nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-inclusive --cover-branches &&
+   coverage xml -i -o coverage_unittest.xml)
 
 # Run the program on the example, without using the diff
 - (cd tools/example;
-   coverage erase;
-   coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter);
-   coverage xml -o ~/coverage_examples_all.xml
-   coverage erase;
-   coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter) --refspec HEAD^;
-   coverage xml -o ~/coverage_examples_refspec.xml)
+   coverage erase &&
+   coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter) &&
+   coverage xml -i -o ~/coverage_examples_all.xml)
+- (cd tools/example;
+   coverage erase &&
+   coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter) --refspec HEAD^ &&
+   coverage xml -i -o ~/coverage_examples_refspec.xml)
 
 # Build source package, should work too and needed for deployment to Github and
 # PyPI.

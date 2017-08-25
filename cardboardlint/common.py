@@ -24,7 +24,7 @@ from fnmatch import fnmatch
 import subprocess
 
 
-__all__ = ['Message', 'run_command', 'filter_filenames', 'filter_configs', 'flag']
+__all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'flag']
 
 
 class Message(object):
@@ -143,13 +143,13 @@ def run_command(command, verbose=True, cwd=None, has_failed=None):
         return stdout.decode('utf-8'), stderr.decode('utf-8')
 
 
-def filter_filenames(filenames, rules):
-    """Filter a list of filenames using include and exclude rules.
+def matches_filefilter(filename, rules):
+    """Test a filename against a list of filter rules.
 
     Parameters
     ----------
-    filenames : list
-        The list of filenames
+    filename : str
+        A filename to be tested.
     rules : list
         A list of strings, starting with - (exclude) or + (include), followed by a glob
         pattern. Each file is tested against the rules in order. The first matching rule
@@ -157,9 +157,8 @@ def filter_filenames(filenames, rules):
 
     Returns
     -------
-    filtered_filenames: list
-        The list of filenames that pass the filters.
-
+    accepted: boolean
+        True if the file should be included.
     """
     # Check format of the rules
     for rule in rules:
@@ -167,15 +166,10 @@ def filter_filenames(filenames, rules):
             raise ValueError('Unexpected first character in filename filter rule: {}'.format(
                 rule[0]))
 
-    result = []
-    for filename in filenames:
-        for rule in rules:
-            pattern = rule[1:].strip()
-            if fnmatch(filename, pattern):
-                if rule[0] == '+':
-                    result.append(filename)
-                break
-    return result
+    for rule in rules:
+        pattern = rule[1:].strip()
+        if fnmatch(filename, pattern):
+            return rule[0] == '+'
 
 
 def get_offset_step(suffix):

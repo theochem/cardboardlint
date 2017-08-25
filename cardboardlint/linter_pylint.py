@@ -25,7 +25,7 @@ from __future__ import print_function
 
 import json
 
-from cardboardlint.common import Message, run_command, filter_filenames, flag
+from cardboardlint.common import Message, run_command, matches_filefilter, flag
 
 
 __all__ = ['linter_pylint']
@@ -68,7 +68,8 @@ def linter_pylint(linter_config, files_lines):
     print('USING              : {0}'.format(version_info))
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
+    filenames = [filename for filename in files_lines
+                 if matches_filefilter(filename, config['filefilter'])]
 
     def has_failed(returncode, _stdout, _stderr):
         """Determine if pylint ran correctly."""

@@ -23,7 +23,7 @@ This test calls the flake program, see http://pydocstyle.pycqa.org
 """
 from __future__ import print_function
 
-from cardboardlint.common import Message, run_command, filter_filenames, flag
+from cardboardlint.common import Message, run_command, matches_filefilter, flag
 
 
 __all__ = ['linter_pydocstyle']
@@ -64,7 +64,8 @@ def linter_pydocstyle(linter_config, files_lines):
     print('USING              : {0}'.format(version_info))
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
+    filenames = [filename for filename in files_lines
+                 if matches_filefilter(filename, config['filefilter'])]
 
     def has_failed(returncode, _stdout, _stderr):
         """Determine if pydocstyle ran correctly."""

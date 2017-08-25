@@ -27,7 +27,7 @@ import sys
 
 import yaml
 
-from cardboardlint.common import run_command, filter_configs
+from cardboardlint.common import run_command, matches_filefilter, filter_configs
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
@@ -38,16 +38,18 @@ from cardboardlint.linter_pydocstyle import linter_pydocstyle
 
 def main():
     """Main routine."""
-    # get arguments
+    # Get arguments.
     args = parse_args()
 
-    # get git diff
-    files_lines = run_diff(args.refspec)
+    # Load lint configuration for module.
+    prefilter, configs = load_config('.cardboardlint.yml')
 
-    # load lint configuration for module
-    configs = load_config('.cardboardlint.yml')
+    # Process git diff and select only those files that match the prefilter.
+    files_lines = {
+        filename: linenumbers for filename, linenumbers in run_diff(args.refspec).items()
+        if matches_filefilter(filename, prefilter)}
 
-    # select specific linter if desired
+    # Select specific linter if desired.
     configs = filter_configs(configs, args.selection, args.boolexpr, args.part)
 
     returncode = 0
@@ -157,6 +159,8 @@ def load_config(config_file):
     with open(config_file, 'r') as f:
         raw_config = yaml.load(f)
 
+    prefilter = raw_config.get('pre_filefilter', ['+ *'])
+    
     configs = []
     for mapping in raw_config['linters']:
         if len(mapping) != 1:
@@ -168,7 +172,7 @@ def load_config(config_file):
         if linter_config is None:
             linter_config = {}
         configs.append((linter_name, linter, linter_config))
-    return configs
+    return prefilter, configs
 
 
 LINTERS = {

@@ -29,7 +29,7 @@ import os
 import sys
 import importlib
 
-from cardboardlint.common import Message, filter_filenames, flag
+from cardboardlint.common import Message, matches_filefilter, flag
 
 
 __all__ = ['linter_namespace']
@@ -65,7 +65,8 @@ def linter_namespace(linter_config, files_lines):
     config.update(linter_config)
 
     # Get all relevant filenames
-    filenames = filter_filenames(files_lines.keys(), config['filefilter'])
+    filenames = [filename for filename in files_lines
+                 if matches_filefilter(filename, config['filefilter'])]
 
     # Make sure we test the source tree and not some locally installed copy of HORTON.
     sys.path.insert(0, '.')

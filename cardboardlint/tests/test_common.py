@@ -22,22 +22,24 @@
 
 from nose.tools import assert_raises
 
-from cardboardlint.common import filter_filenames, get_offset_step, filter_configs, flag
+from cardboardlint.common import matches_filefilter, get_offset_step, filter_configs, flag
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_import import linter_import
 
 
-def test_filter_filenames():
-    filenames = ['foo/a.py', 'foo/b.py', 'foo/test/test_a.py', 'scripts/runfoo']
-    assert filter_filenames(filenames, ['+ *']) == filenames
-    assert filter_filenames(filenames, ['+ foo/*.py']) == filenames[:3]
-    assert filter_filenames(filenames, ['- */test_*.py', '+ *.py']) == filenames[:2]
+def test_matches_filefilter():
+    assert matches_filefilter('a.py', ['+ *'])
+    assert matches_filefilter('foo/a.py', ['+ *'])
+    assert matches_filefilter('foo/a.py', ['+ foo/*.py'])
+    assert matches_filefilter('foo/a.py', ['- */test_*.py', '+ *.py'])
+    assert not matches_filefilter('foo/test/test_a.py', ['- */test_*.py', '+ *.py'])
+    assert matches_filefilter('scripts/runfoo', ['+ scripts/*'])
 
     with assert_raises(ValueError):
-        filter_filenames(filenames, ['b *.py'])
+        matches_filefilter('foo.py', ['b *.py'])
     with assert_raises(ValueError):
-        filter_filenames(filenames, ['bork'])
+        matches_filefilter('foo.py', ['bork'])
 
 
 def test_offset_step():

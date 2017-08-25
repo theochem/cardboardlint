@@ -64,14 +64,18 @@ script:
 
 # Run tests out of source tree, to make sure that installed version is tested.
 - (cd;
-   nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-erase --cover-inclusive --cover-branches;
+   coverage erase
+   nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG --cover-tests --cover-inclusive --cover-branches;
    coverage xml -o coverage_unittest.xml)
 
 # Run the program on the example, without using the diff
 - (cd tools/example;
+   coverage erase
    coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter);
+   coverage xml -o ~/coverage_examples_all.xml
+   coverage erase
    coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter) --refspec HEAD^;
-   coverage xml -o ~/coverage_examples.xml)
+   coverage xml -o ~/coverage_examples_refspec.xml)
 
 # Build source package, should work too and needed for deployment to Github and
 # PyPI.
@@ -80,4 +84,5 @@ script:
 after_success:
 # Upload the coverage analysis
 - codecov --file ~/coverage_unittest.xml --name unittest
-- codecov --file ~/coverage_examples.xml --name examples
+- codecov --file ~/coverage_examples_all.xml --name examples_all
+- codecov --file ~/coverage_examples_refspec.xml --name examples_refspec

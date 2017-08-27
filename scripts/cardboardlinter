@@ -118,7 +118,9 @@ def run_diff(refspec_parent):
     # generate 0 lines of context (i.e. only the lines that differ)
     files_lines = {}
     if refspec_parent is not None:
-        command = ['git', 'diff', '-U0', refspec_parent]
+        # The option --relative is used to limit the output of git diff to the current
+        # directory, to facilitate test runs in subdirectories.
+        command = ['git', 'diff', '-U0', refspec_parent, '--relative']
         diff_output = run_command(command)[0]
 
         # parse git diff output

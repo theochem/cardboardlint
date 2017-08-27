@@ -31,7 +31,7 @@ __all__ = ['linter_pycodestyle']
 
 DEFAULT_CONFIG = {
     # Filename filter rules
-    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ scripts/*'],
+    'filefilter': ['+ *.py', '+ scripts/*'],
     # Location of the pycodestyle config file.
     'config': '.pycodestylerc',
 }

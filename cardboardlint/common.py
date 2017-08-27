@@ -133,18 +133,20 @@ def run_command(command, verbose=True, cwd=None, has_failed=None, stdin=''):
     proc = subprocess.Popen(
         command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         stderr=subprocess.PIPE, cwd=cwd)
-    stdout, stderr = proc.communicate(stdin)
+    stdout, stderr = proc.communicate(stdin.encode('utf-8'))
+    stdout = stdout.decode('utf-8')
+    stderr = stderr.decode('utf-8')
     if has_failed(proc.returncode, stdout, stderr):
         print('RETURN CODE: {}'.format(proc.returncode))
         print('STDOUT')
         print('------')
-        print(stdout.decode('utf-8'))
+        print(stdout)
         print('STDERR')
         print('------')
-        print(stderr.decode('utf-8'))
+        print(stderr)
         raise RuntimeError('Subprocess has failed.')
     else:
-        return stdout.decode('utf-8'), stderr.decode('utf-8')
+        return stdout, stderr
 
 
 def matches_filefilter(filename, rules):

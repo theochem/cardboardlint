@@ -88,7 +88,7 @@ def linter_header(linter_config, files_lines):
             header_counter = 0
             while header_counter < len(header_lines):
                 try:
-                    lineno, line = iterator.next()
+                    lineno, line = next(iterator)
                 except StopIteration:
                     break
                 if lineno == 0 and line.startswith('#!') and config['shebang'] is not None:

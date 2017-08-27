@@ -7,12 +7,10 @@ source:
   url: ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.13.src.tar.gz
   fn: doxygen-1.8.13.src.tar.gz
   patches:
-  - doxygen_test_patch.diff
   - find_iconv.patch
-  - doxygen-1.8.13-NULL-dereference.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -20,11 +18,11 @@ requirements:
   - libiconv
   - bison
   - flex
-  - gcc
+  - gcc      # [linux]
   run:
   - m4
   - libiconv
-  - libgcc
+  - libgcc   # [linux]
 
 test:
   commands:

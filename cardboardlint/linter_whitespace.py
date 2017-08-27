@@ -64,7 +64,7 @@ def linter_whitespace(linter_config, files_lines):
     filenames = [filename for filename in files_lines
                  if matches_filefilter(filename, config['filefilter'])]
 
-    # Loop all python and cython files
+    # Loop over all files and check whitespace in each file.
     messages = []
     for filename in filenames:
         with codecs.open(filename, encoding='utf-8') as f:

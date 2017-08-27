@@ -32,6 +32,7 @@ from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen
 from cardboardlint.linter_flake8 import linter_flake8
+from cardboardlint.linter_header import linter_header
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
 from cardboardlint.linter_pylint import linter_pylint
@@ -117,7 +118,9 @@ def run_diff(refspec_parent):
     # generate 0 lines of context (i.e. only the lines that differ)
     files_lines = {}
     if refspec_parent is not None:
-        command = ['git', 'diff', '-U0', refspec_parent]
+        # The option --relative is used to limit the output of git diff to the current
+        # directory, to facilitate test runs in subdirectories.
+        command = ['git', 'diff', '-U0', refspec_parent, '--relative']
         diff_output = run_command(command)[0]
 
         # parse git diff output
@@ -184,6 +187,7 @@ LINTERS = {
     'cpplint': linter_cpplint,
     'doxygen': linter_doxygen,
     'flake8': linter_flake8,
+    'header': linter_header,
     'import': linter_import,
     'namespace': linter_namespace,
     'pylint': linter_pylint,

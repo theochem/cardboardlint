@@ -1,6 +1,7 @@
 pre_filefilter: ['- tools/example/*', '+ *']
 
 linters:
+  - header:
   - import:
       packages: ['cardboardlint']
   - namespace:

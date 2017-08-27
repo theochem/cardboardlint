@@ -5,6 +5,8 @@ linters:
 - doxygen:
     root: ./
 - flake8:
+- header:
+    header: ../../HEADER
 - import:
     packages: ['math']
 - namespace:

@@ -6,11 +6,13 @@ package:
 source:
   url: ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.13.src.tar.gz
   fn: doxygen-1.8.13.src.tar.gz
+  sha256: af667887bd7a87dc0dbf9ac8d86c96b552dfb8ca9c790ed1cbffaa6131573f6b
   patches:
   - find_iconv.patch
 
 build:
-  number: 1
+  number: 2
+  string: 2
 
 requirements:
   build:
@@ -31,3 +33,4 @@ test:
 about:
     home: http://www.stack.nl/~dimitri/doxygen/index.html
     license: GPLv3
+    summary: 'Documentation generator for C++ and other languages.'

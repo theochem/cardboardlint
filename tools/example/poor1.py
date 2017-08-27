@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 """Examples of poor python style."""
 __all__ = ['sin']
 def sin(x):

@@ -32,6 +32,7 @@ from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen
 from cardboardlint.linter_flake8 import linter_flake8
+from cardboardlint.linter_header import linter_header
 from cardboardlint.linter_import import linter_import
 from cardboardlint.linter_namespace import linter_namespace
 from cardboardlint.linter_pylint import linter_pylint
@@ -184,6 +185,7 @@ LINTERS = {
     'cpplint': linter_cpplint,
     'doxygen': linter_doxygen,
     'flake8': linter_flake8,
+    'header': linter_header,
     'import': linter_import,
     'namespace': linter_namespace,
     'pylint': linter_pylint,

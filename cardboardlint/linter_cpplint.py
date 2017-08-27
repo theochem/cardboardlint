@@ -77,9 +77,9 @@ def linter_cpplint(linter_config, files_lines):
 
         # Parse the output of cpplint into standard return values
         for line in output.split('\n')[:-1]:
-            if line.startswith('Done') or line.startswith('Total'):
-                continue
             words = line.split()
+            if len(words) == 0 or words[0].count(':') != 2:
+                continue
             filename, lineno = words[0].split(':')[:2]
             description = ' '.join(words[1:-2])
             tag = words[-2]

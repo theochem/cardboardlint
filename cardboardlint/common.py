@@ -60,8 +60,8 @@ class Message(object):
         """Test if one Message is less than another."""
         if self.__class__ != other.__class__:
             return self < other
-        tup_self = (self.filename, self.lineno, self.charno, self.text)
-        tup_other = (other.filename, other.lineno, other.charno, other.text)
+        tup_self = (self.filename, self.lineno, self.charno or 0, self.text)
+        tup_other = (other.filename, other.lineno, other.charno or 0, other.text)
         return tup_self < tup_other
 
     def __str__(self):

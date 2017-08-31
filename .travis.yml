@@ -49,7 +49,7 @@ install:
 # Install conda tools for packaging and uploading
 - conda install python=${MYCONDAPY} cppcheck doxygen conda-build anaconda-client
 # Pip install python-based linters
-- pip install pylint codecov coverage pycodestyle pydocstyle flake8
+- pip install pylint codecov coverage pycodestyle pydocstyle flake8 yamllint
 # Get the latest cpplint
 - wget https://raw.githubusercontent.com/google/styleguide/gh-pages/cpplint/cpplint.py
 - chmod +x cpplint.py

@@ -11,3 +11,4 @@ linters:
   - pydocstyle:
   - whitespace:
       filefilter: ['- *.patch', '- *.diff', '+ *.*']
+  - yamllint:

@@ -15,3 +15,4 @@ linters:
 - pycodestyle:
 - pydocstyle:
 - whitespace:
+- yamllint:

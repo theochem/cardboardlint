@@ -1,4 +1,4 @@
-pre_filefilter: ['- tools/example/*', '+ *']
+pre_filefilter: ['+ tools/example/.cardboardlint.yml', '- tools/example/*', '+ *']
 
 linters:
   - header:

@@ -32,6 +32,8 @@ __all__ = ['linter_yamllint']
 DEFAULT_CONFIG = {
     # Filename filter rules
     'filefilter': ['+ *.yml', '+ *.yaml'],
+    # Optional path to the config file.
+    'config': None
 }
 
 
@@ -72,6 +74,8 @@ def linter_yamllint(linter_config, files_lines):
     messages = []
     if len(filenames) > 0:
         command = ['yamllint', '-f', 'parsable'] + filenames
+        if config['config'] is not None:
+            command += ['-c', config['config']]
         output = run_command(command, has_failed=has_failed)[0]
         if len(output) > 0:
             for line in output.splitlines():

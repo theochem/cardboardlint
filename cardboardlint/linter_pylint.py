@@ -34,8 +34,8 @@ __all__ = ['linter_pylint']
 DEFAULT_CONFIG = {
     # Filename filter rules
     'filefilter': ['+ *.py', '+ scripts/*'],
-    # Location of the Pylint config file.
-    'pylintrc': '.pylintrc',
+    # Optional path to the config file.
+    'config': None
 }
 
 
@@ -63,7 +63,7 @@ def linter_pylint(linter_config, files_lines):
     config.update(linter_config)
 
     # get Pylint version
-    command = ['pylint', '--version', '--rcfile={0}'.format(config['pylintrc'])]
+    command = ['pylint', '--version']
     version_info = ''.join(run_command(command, verbose=False)[0].split('\n')[:2])
     print('USING              : {0}'.format(version_info))
 
@@ -78,8 +78,9 @@ def linter_pylint(linter_config, files_lines):
     messages = []
     if len(filenames) > 0:
         command = ['pylint'] + filenames
-        command += ['--rcfile={0}'.format(config['pylintrc']), '--jobs=2',
-                    '--output-format=json']
+        command += ['--jobs=2', '--output-format=json']
+        if config['config'] is not None:
+            command += ['--rcfile={0}'.format(config['config'])]
         output = run_command(command, has_failed=has_failed)[0]
         if len(output) > 0:
             for plmap in json.loads(output):

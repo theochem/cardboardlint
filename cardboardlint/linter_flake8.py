@@ -32,9 +32,14 @@ __all__ = ['linter_flake8']
 DEFAULT_CONFIG = {
     # Filename filter rules
     'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ scripts/*'],
-    # Location of the flake8 config file.
-    'config': '.flake8',
+    # Optional path to the config file.
+    'config': None
 }
+
+
+def _has_failed(returncode, _stdout, _stderr):
+    """Determine if flake8 ran correctly."""
+    return not 0 <= returncode < 2
 
 
 @flag(static=True, python=True)
@@ -67,15 +72,12 @@ def linter_flake8(linter_config, files_lines):
     filenames = [filename for filename in files_lines
                  if matches_filefilter(filename, config['filefilter'])]
 
-    def has_failed(returncode, _stdout, _stderr):
-        """Determine if flake8 ran correctly."""
-        return not 0 <= returncode < 2
-
     messages = []
     if len(filenames) > 0:
         command = ['flake8'] + filenames
-        command += ['--config={0}'.format(config['config'])]
-        output = run_command(command, has_failed=has_failed)[0]
+        if config['config'] is not None:
+            command += ['--config={0}'.format(config['config'])]
+        output = run_command(command, has_failed=_has_failed)[0]
         if len(output) > 0:
             for line in output.splitlines():
                 words = line.split(':')

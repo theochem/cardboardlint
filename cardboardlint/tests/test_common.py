@@ -22,7 +22,8 @@
 
 from nose.tools import assert_raises
 
-from cardboardlint.common import matches_filefilter, get_offset_step, filter_configs, flag
+from cardboardlint.common import matches_filefilter, get_offset_step, filter_configs, \
+    flag, apply_config_defaults
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_import import linter_import
@@ -152,3 +153,12 @@ def test_flags():
         @flag(dynamic=True, static=False)
         def test_foo7():  # pylint: disable=unused-variable
             pass
+
+
+def test_apply_config_defaults():
+    config = {'a': 1, 'b': 2}
+    default_config = {'a': 0, 'b': -1, 'c': 3}
+    assert apply_config_defaults('boo', config, default_config) == {'a': 1, 'b': 2, 'c': 3}
+    assert apply_config_defaults('boo', {}, default_config) == {'a': 0, 'b': -1, 'c': 3}
+    with assert_raises(ValueError):
+        apply_config_defaults('boo', config, {'a': 1})

@@ -24,7 +24,8 @@ from fnmatch import fnmatch
 import subprocess
 
 
-__all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'flag']
+__all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'flag',
+           'apply_config_defaults']
 
 
 class Message(object):
@@ -258,3 +259,26 @@ def flag(dynamic=None, static=None, python=False, cpp=False):
         return linter
 
     return decorator
+
+
+def apply_config_defaults(linter_name, config, default_config):
+    """Add defaults to a config and check for unknown config settings.
+
+    Parameters
+    ----------
+    linter_name : str
+        The name of the linter
+    config : dict
+        A dictionary with a linter config loaded from the YAML file.
+    default_config : dict
+        A dictionary with the default configuration, which must contain all keys.
+
+    """
+    # Check for unknown config keys
+    for key in config:
+        if key not in default_config:
+            raise ValueError('Unknown config key for linter {}: {}'.format(linter_name, key))
+    # Fill in the default values
+    merged_config = default_config.copy()
+    merged_config.update(config)
+    return merged_config

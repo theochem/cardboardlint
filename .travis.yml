@@ -10,8 +10,8 @@ env:
 language: generic
 os:
   - linux
-#  - osx
-#osx_image: xcode6.4
+#   - osx
+# osx_image: xcode6.4
 dist: trusty
 sudo: false
 

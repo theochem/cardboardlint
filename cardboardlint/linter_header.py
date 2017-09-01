@@ -96,4 +96,5 @@ def run_header(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_header = Linter('header', run_header, DEFAULT_CONFIG)

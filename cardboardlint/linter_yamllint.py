@@ -76,4 +76,5 @@ def run_yamllint(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_yamllint = Linter('yamllint', run_yamllint, DEFAULT_CONFIG, language='yaml')

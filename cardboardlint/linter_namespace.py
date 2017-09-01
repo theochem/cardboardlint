@@ -87,12 +87,14 @@ def run_namespace(config, filenames):
     del sys.path[0]
 
     # Detect collisions
-    for name, filenames in namespace.items():
-        if len(filenames) > 1:
-            text = "Name '{0}' found in more than one module: {1}".format(name, ' '.join(filenames))
-            messages.append(Message(filenames[0], None, None, text))
+    for name, sourcefiles in namespace.items():
+        if len(sourcefiles) > 1:
+            text = "Name '{0}' found in more than one module: {1}".format(
+                name, ' '.join(sourcefiles))
+            messages.append(Message(sourcefiles[0], None, None, text))
     return messages
 
 
+# pylint: disable=invalid-name
 linter_namespace = Linter('namespace', run_namespace, DEFAULT_CONFIG,
                           style='dynamic', language='python')

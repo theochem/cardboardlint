@@ -81,4 +81,5 @@ def run_cpplint(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_cpplint = Linter('cpplint', run_cpplint, DEFAULT_CONFIG, language='cpp')

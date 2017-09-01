@@ -51,7 +51,7 @@ GENERATE_AUTOGEN_DEF   = NO
 """
 
 
-def run_doxygen(config, filenames):
+def run_doxygen(_config, filenames):
     """Linter using doxygen to find undocumented cpp.
 
     Parameters
@@ -95,4 +95,5 @@ def run_doxygen(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_doxygen = Linter('doxygen', run_doxygen, DEFAULT_CONFIG, language='cpp')

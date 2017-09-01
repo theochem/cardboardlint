@@ -34,12 +34,10 @@ __all__ = ['linter_whitespace']
 DEFAULT_CONFIG = {
     # Filename filter rules
     'filefilter': ['+ *.*'],
-    # Names of python packages in the project (no longer searched automatically).
-    'packages': [],
 }
 
 
-def run_whitespace(config, filenames):
+def run_whitespace(_config, filenames):
     """Linter for checking whitespace conventions.
 
     Parameters
@@ -72,4 +70,5 @@ def run_whitespace(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_whitespace = Linter('whitespace', run_whitespace, DEFAULT_CONFIG)

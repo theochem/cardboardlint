@@ -83,4 +83,5 @@ def run_pydocstyle(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_pydocstyle = Linter('pydocstyle', run_pydocstyle, DEFAULT_CONFIG, language='python')

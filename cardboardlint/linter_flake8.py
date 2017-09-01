@@ -77,4 +77,5 @@ def run_flake8(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_flake8 = Linter('flake8', run_flake8, DEFAULT_CONFIG, language='python')

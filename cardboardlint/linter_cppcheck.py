@@ -37,7 +37,7 @@ DEFAULT_CONFIG = {
 }
 
 
-def run_cppcheck(config, filenames):
+def run_cppcheck(_config, filenames):
     """Linter for cppcheck.
 
     Parameters
@@ -80,4 +80,5 @@ def run_cppcheck(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_cppcheck = Linter('cppcheck', run_cppcheck, DEFAULT_CONFIG, language='cpp')

@@ -81,6 +81,8 @@ def run_pylint(config, filenames):
                     '{0} {1}'.format(plmap['symbol'], plmap['message'])))
     return messages
 
+
 # Pylint should be considered dynamic, which is in practice only true for projects with
 # extension modules.
+# pylint: disable=invalid-name
 linter_pylint = Linter('pylint', run_pylint, DEFAULT_CONFIG, style='dynamic', language='python')

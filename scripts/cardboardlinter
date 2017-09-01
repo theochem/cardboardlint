@@ -27,7 +27,7 @@ import sys
 
 import yaml
 
-from cardboardlint.common import run_command, matches_filefilter, filter_configs, Linter
+from cardboardlint.common import run_command, matches_filefilter, filter_configs
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen
@@ -42,7 +42,20 @@ from cardboardlint.linter_whitespace import linter_whitespace
 from cardboardlint.linter_yamllint import linter_yamllint
 
 
-LINTERS = dict((value.name, value) for value in globals().values() if isinstance(value, Linter))
+LINTERS = dict((linter.name, linter) for linter in [
+    linter_cppcheck,
+    linter_cpplint,
+    linter_doxygen,
+    linter_flake8,
+    linter_header,
+    linter_import,
+    linter_namespace,
+    linter_pylint,
+    linter_pycodestyle,
+    linter_pydocstyle,
+    linter_whitespace,
+    linter_yamllint,
+])
 
 
 def main():

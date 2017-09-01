@@ -76,4 +76,5 @@ def run_pycodestyle(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_pycodestyle = Linter('pycodestyle', run_pycodestyle, DEFAULT_CONFIG, language='python')

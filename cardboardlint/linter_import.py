@@ -78,4 +78,5 @@ def run_import(config, filenames):
     return messages
 
 
+# pylint: disable=invalid-name
 linter_import = Linter('import', run_import, DEFAULT_CONFIG, language='python')

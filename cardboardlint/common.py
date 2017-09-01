@@ -24,7 +24,8 @@ from fnmatch import fnmatch
 import subprocess
 
 
-__all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'Linter']
+__all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'Linter',
+           'derive_flags', 'apply_config_defaults']
 
 
 class Message(object):
@@ -81,7 +82,7 @@ class Message(object):
         Parameters
         ----------
         files_lines : dict
-            Dictionary of filename to the set of line numbers (that have been modified)
+            Dictionary of filename to the set of line numbers (that have been modified).
             Result of git diff from run_diff function. The set of line numbers may also
             be None, indicating that all lines should be considered in that file.
 
@@ -237,7 +238,26 @@ def filter_configs(configs, selection, boolexpr, part):
 
 
 class Linter(object):
+    """Run linter function with appropriate argument and keep track of meta info."""
+
     def __init__(self, name, run, default_config, style='static', language='generic'):
+        """Initialize a Linter intsance.
+
+        Parameters
+        ----------
+        name : str
+            A short name for the linter.
+        run : function
+            A function taking two arguments: config (dict) and a list of filenames.
+        default_config : dict
+            The default configuration. All possible keys must be present.
+        style : str
+            "static" or "dynamic"
+        language : str
+            The file format or language the linter is designed for. Use "generic" if any
+            text file can be linted.
+
+        """
         self.name = name
         self.run = run
         self.default_config = default_config
@@ -246,20 +266,29 @@ class Linter(object):
         self.flags = derive_flags(style, language)
 
     def __call__(self, config, files_lines):
-        # Check for unknown config keys
-        for key in config:
-            if key not in self.default_config:
-                raise ValueError('Unknown config key for linter {}: {}'.format(linter_name, key))
-        # Fill in the default values
-        merged_config = self.default_config.copy()
-        merged_config.update(config)
+        """Run the linter.
+
+        Parameters
+        ----------
+        config : dict
+            Cofiguration of the linter, loaded from .cardboardlint.yml
+        files_lines : dict
+            Dictionary of filename to the set of line numbers (that have been modified).
+
+        Returns
+        -------
+        messages : list
+            A list of Message instances.
+
+        """
+        config = apply_config_defaults(self.name, config, self.default_config)
 
         # Get the relevant filenames
         filenames = [filename for filename in files_lines
-                     if matches_filefilter(filename, merged_config['filefilter'])]
+                     if matches_filefilter(filename, config['filefilter'])]
 
         # Call the linter and return messages
-        return self.run(merged_config, filenames)
+        return self.run(config, filenames)
 
 
 def derive_flags(style, language):
@@ -276,3 +305,31 @@ def derive_flags(style, language):
     for name in valid_languages:
         flags[name] = (name == language)
     return flags
+
+
+def apply_config_defaults(linter_name, config, default_config):
+    """Add defaults to a config and check for unknown config settings.
+
+    Parameters
+    ----------
+    linter_name : str
+        The name of the linter
+    config : dict
+        A dictionary with a linter config loaded from the YAML file.
+    default_config : dict
+        A dictionary with the default configuration, which must contain all keys.
+
+    Returns
+    -------
+    merged_config : dict
+        The config with defaults added.
+
+    """
+    # Check for unknown config keys
+    for key in config:
+        if key not in default_config:
+            raise ValueError('Unknown config key for linter {}: {}'.format(linter_name, key))
+    # Fill in the default values
+    merged_config = default_config.copy()
+    merged_config.update(config)
+    return merged_config

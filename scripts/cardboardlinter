@@ -27,7 +27,7 @@ import sys
 
 import yaml
 
-from cardboardlint.common import run_command, matches_filefilter, filter_configs
+from cardboardlint.common import run_command, matches_filefilter, filter_configs, Linter
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen
@@ -40,6 +40,9 @@ from cardboardlint.linter_pycodestyle import linter_pycodestyle
 from cardboardlint.linter_pydocstyle import linter_pydocstyle
 from cardboardlint.linter_whitespace import linter_whitespace
 from cardboardlint.linter_yamllint import linter_yamllint
+
+
+LINTERS = dict((value.name, value) for value in globals().values() if isinstance(value, Linter))
 
 
 def main():
@@ -59,9 +62,9 @@ def main():
     configs = filter_configs(configs, args.selection, args.boolexpr, args.part)
 
     returncode = 0
-    for linter_name, linter, linter_config in configs:
+    for linter, linter_config in configs:
         print('~'*80)
-        print('### {:^72} ###'.format(linter_name))
+        print('### {:^72} ###'.format(linter.name))
         print('~'*80)
         messages = [message for message
                     in linter(linter_config, files_lines)
@@ -179,24 +182,8 @@ def load_config(config_file):
         linter = LINTERS[linter_name]
         if linter_config is None:
             linter_config = {}
-        configs.append((linter_name, linter, linter_config))
+        configs.append((linter, linter_config))
     return prefilter, configs
-
-
-LINTERS = {
-    'cppcheck': linter_cppcheck,
-    'cpplint': linter_cpplint,
-    'doxygen': linter_doxygen,
-    'flake8': linter_flake8,
-    'header': linter_header,
-    'import': linter_import,
-    'namespace': linter_namespace,
-    'pylint': linter_pylint,
-    'pycodestyle': linter_pycodestyle,
-    'pydocstyle': linter_pydocstyle,
-    'whitespace': linter_whitespace,
-    'yamllint': linter_yamllint,
-}
 
 
 if __name__ == '__main__':

@@ -24,8 +24,7 @@ from fnmatch import fnmatch
 import subprocess
 
 
-__all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'flag',
-           'apply_config_defaults']
+__all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'Linter']
 
 
 class Message(object):
@@ -202,7 +201,7 @@ def filter_configs(configs, selection, boolexpr, part):
     Parameters
     ----------
     configs : list
-        A list of (linter_name, linter, linter_config) items.
+        A list of (linter, linter_config) items.
     selection : list
         A list of linter names to be selected. All other linters will be omitted from the
         returned list of configs.
@@ -221,14 +220,14 @@ def filter_configs(configs, selection, boolexpr, part):
     """
     # Pass 1: by linter name (selection list)
     if not (selection is None or selection == []):
-        configs = [config for config in configs if config[0] in selection]
+        configs = [config for config in configs if config[0].name in selection]
     # Pass 2: boolean expression
     if not (boolexpr is None or boolexpr == ''):
         oldconfigs = configs
         configs = []
         for config in oldconfigs:
-            namespace = config[1].flags.copy()
-            namespace['name'] = config[0]
+            namespace = config[0].flags.copy()
+            namespace['name'] = config[0].name
             if eval(boolexpr, namespace):  # pylint: disable=eval-used
                 configs.append(config)
     # Pass 3: part N/M
@@ -237,48 +236,43 @@ def filter_configs(configs, selection, boolexpr, part):
     return configs
 
 
-def flag(dynamic=None, static=None, python=False, cpp=False):
-    """Decorate linter with flags."""
-    if dynamic is None:
-        if static is None:
-            static = True
-            dynamic = False
-        else:
-            dynamic = not static
-    else:
-        if static is None:
-            static = not dynamic
-        else:
-            raise ValueError('You cannot set both static and dynamic, seriously!')
-    generic = not (python or cpp)
+class Linter(object):
+    def __init__(self, name, run, default_config, style='static', language='generic'):
+        self.name = name
+        self.run = run
+        self.default_config = default_config
+        self.style = style
+        self.language = language
+        self.flags = derive_flags(style, language)
 
-    def decorator(linter):
-        """Assign flags to a linter."""
-        linter.flags = {'static': static, 'dynamic': dynamic, 'python': python,
-                        'cpp': cpp, 'generic': generic}
-        return linter
+    def __call__(self, config, files_lines):
+        # Check for unknown config keys
+        for key in config:
+            if key not in self.default_config:
+                raise ValueError('Unknown config key for linter {}: {}'.format(linter_name, key))
+        # Fill in the default values
+        merged_config = self.default_config.copy()
+        merged_config.update(config)
 
-    return decorator
+        # Get the relevant filenames
+        filenames = [filename for filename in files_lines
+                     if matches_filefilter(filename, merged_config['filefilter'])]
+
+        # Call the linter and return messages
+        return self.run(merged_config, filenames)
 
 
-def apply_config_defaults(linter_name, config, default_config):
-    """Add defaults to a config and check for unknown config settings.
-
-    Parameters
-    ----------
-    linter_name : str
-        The name of the linter
-    config : dict
-        A dictionary with a linter config loaded from the YAML file.
-    default_config : dict
-        A dictionary with the default configuration, which must contain all keys.
-
-    """
-    # Check for unknown config keys
-    for key in config:
-        if key not in default_config:
-            raise ValueError('Unknown config key for linter {}: {}'.format(linter_name, key))
-    # Fill in the default values
-    merged_config = default_config.copy()
-    merged_config.update(config)
-    return merged_config
+def derive_flags(style, language):
+    """Create a dictionary of boolean flags."""
+    valid_styles = ['static', 'dynamic']
+    if style not in valid_styles:
+        raise ValueError('Linter style should be one of {}'.format(valid_styles))
+    valid_languages = ['generic', 'python', 'cpp', 'yaml']
+    if language not in valid_languages:
+        raise ValueError('Linter language should be one of {}'.format(valid_languages))
+    flags = {}
+    for name in valid_styles:
+        flags[name] = (name == style)
+    for name in valid_languages:
+        flags[name] = (name == language)
+    return flags

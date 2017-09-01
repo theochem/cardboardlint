@@ -22,7 +22,8 @@
 
 from nose.tools import assert_raises
 
-from cardboardlint.common import matches_filefilter, get_offset_step, filter_configs, flag
+from cardboardlint.common import matches_filefilter, get_offset_step, filter_configs, \
+    derive_flags, apply_config_defaults
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_import import linter_import
@@ -62,14 +63,14 @@ def test_offset_step():
 
 def test_filter_configs():
     configs = [
-        ('pylint', linter_pylint, {'pylintrc': '1'}),
-        ('pylint', linter_pylint, {'pylintrc': '2'}),
+        (linter_pylint, {'pylintrc': '1'}),
+        (linter_pylint, {'pylintrc': '2'}),
         # The following may be a bad idea. cppcheck combines info from related files
         # when provided. (This is just used here for testing the filter_configs function.)
-        ('cppcheck', linter_cppcheck, {'include': ['*.h.in']}),
-        ('cppcheck', linter_cppcheck, {'include': ['*.h']}),
-        ('cppcheck', linter_cppcheck, {'include': ['*.cpp']}),
-        ('import', linter_import, {}),
+        (linter_cppcheck, {'include': ['*.h.in']}),
+        (linter_cppcheck, {'include': ['*.h']}),
+        (linter_cppcheck, {'include': ['*.cpp']}),
+        (linter_import, {}),
     ]
     assert filter_configs(configs, None, None, None) == configs
     assert filter_configs(configs, [], '', '') == configs
@@ -103,52 +104,22 @@ def test_filter_configs():
 
 
 def test_flags():
-    @flag(static=True, python=True)
-    def test_foo1():
-        pass
-    assert test_foo1.flags['static']
-    assert not test_foo1.flags['dynamic']
-    assert test_foo1.flags['python']
-    assert not test_foo1.flags['cpp']
-
-    @flag(static=False, python=True, cpp=True)
-    def test_foo2():
-        pass
-    assert not test_foo2.flags['static']
-    assert test_foo2.flags['dynamic']
-    assert test_foo2.flags['python']
-    assert test_foo2.flags['cpp']
-
-    @flag(dynamic=True)
-    def test_foo3():
-        pass
-    assert not test_foo3.flags['static']
-    assert test_foo3.flags['dynamic']
-    assert not test_foo3.flags['python']
-    assert not test_foo3.flags['cpp']
-
-    @flag(dynamic=False, cpp=True)
-    def test_foo4():
-        pass
-    assert test_foo4.flags['static']
-    assert not test_foo4.flags['dynamic']
-    assert not test_foo4.flags['python']
-    assert test_foo4.flags['cpp']
-
-    @flag()
-    def test_foo5():
-        pass
-    assert test_foo5.flags['static']
-    assert not test_foo5.flags['dynamic']
-    assert not test_foo5.flags['python']
-    assert not test_foo5.flags['cpp']
+    flags = derive_flags('static', 'cpp')
+    assert flags['static']
+    assert not flags['dynamic']
+    assert flags['cpp']
+    assert not flags['python']
 
     with assert_raises(ValueError):
-        @flag(dynamic=True, static=True)
-        def test_foo6():  # pylint: disable=unused-variable
-            pass
-
+        derive_flags('foo', 'cpp')
     with assert_raises(ValueError):
-        @flag(dynamic=True, static=False)
-        def test_foo7():  # pylint: disable=unused-variable
-            pass
+        derive_flags('dynamic', 'bar')
+
+
+def test_apply_config_defaults():
+    config = {'a': 1, 'b': 2}
+    default_config = {'a': 0, 'b': -1, 'c': 3}
+    assert apply_config_defaults('boo', config, default_config) == {'a': 1, 'b': 2, 'c': 3}
+    assert apply_config_defaults('boo', {}, default_config) == {'a': 0, 'b': -1, 'c': 3}
+    with assert_raises(ValueError):
+        apply_config_defaults('boo', config, {'a': 1})

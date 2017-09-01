@@ -1,17 +1,18 @@
 linters:
-- cppcheck:
-- cpplint:
-    script: ../../cpplint.py
-- doxygen:
-    root: ./
-- flake8:
-- header:
-    header: ../../HEADER
-- import:
-    packages: ['math']
-- namespace:
-    forbidden: ['math']
-- pylint:
-- pycodestyle:
-- pydocstyle:
-- whitespace:
+  - cppcheck:
+  - cpplint:
+      script: ../../cpplint.py
+  - doxygen:
+      root: ./
+  - flake8:
+  - header:
+      header: ../../HEADER
+  - import:
+      packages: ['math']
+  - namespace:
+      forbidden: ['math']
+  - pylint:
+  - pycodestyle:
+  - pydocstyle:
+  - whitespace:
+  - yamllint:

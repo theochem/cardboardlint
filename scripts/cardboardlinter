@@ -39,6 +39,7 @@ from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_pycodestyle import linter_pycodestyle
 from cardboardlint.linter_pydocstyle import linter_pydocstyle
 from cardboardlint.linter_whitespace import linter_whitespace
+from cardboardlint.linter_yamllint import linter_yamllint
 
 
 def main():
@@ -194,6 +195,7 @@ LINTERS = {
     'pycodestyle': linter_pycodestyle,
     'pydocstyle': linter_pydocstyle,
     'whitespace': linter_whitespace,
+    'yamllint': linter_yamllint,
 }
 
 

@@ -8,6 +8,7 @@ linters:
       filefilter: ['- */__init__.py', '- */test_*.py', '- *setup.py', '+ *.py', '+ *.pyx']
   - pylint:
   - pycodestyle:
+      config: .pycodestylerc
   - pydocstyle:
   - whitespace:
       filefilter: ['- *.patch', '- *.diff', '+ *.*']

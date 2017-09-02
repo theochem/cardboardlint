@@ -237,6 +237,44 @@ def filter_configs(configs, selection, boolexpr, part):
     return configs
 
 
+def parse_diff(diff_output):
+    """Parse the output of a unified diff and return the files with lines that are new.
+
+    Parameters
+    ----------
+    diff_output : str
+        The standard output of the diff command
+
+    Returns
+    -------
+    files_lines : dict
+        A dictionary with (filename, lines) items, where lines is a set of line numbers.
+
+    """
+    # parse git diff output
+    current_filename = None
+    files_lines = {}
+    for line in diff_output.splitlines():
+        if line.startswith('+++ '):
+            if line.startswith('+++ b/'):
+                current_filename = line[6:]
+            else:
+                current_filename = None
+        elif line.startswith('@@ ') and current_filename is not None:
+            added_str = line.split()[2]
+            # multiple lines added/modified
+            if added_str.count(',') == 1:
+                offset, nlines = added_str.split(',')
+                line_numbers = set(range(int(offset), int(offset) + int(nlines)))
+            # single line added/modified
+            else:
+                offset = int(added_str)
+                line_numbers = set([offset])
+            # store line numbers
+            files_lines.setdefault(current_filename, set()).update(line_numbers)
+    return files_lines
+
+
 class Linter(object):
     """Run linter function with appropriate argument and keep track of meta info."""
 

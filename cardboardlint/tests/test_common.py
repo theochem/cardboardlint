@@ -23,7 +23,7 @@
 from nose.tools import assert_raises
 
 from cardboardlint.common import matches_filefilter, get_offset_step, filter_configs, \
-    derive_flags, apply_config_defaults
+    parse_diff, derive_flags, apply_config_defaults
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_import import linter_import
@@ -101,6 +101,45 @@ def test_filter_configs():
     assert filter_configs(configs, None, 'name == "pylint"', '') == [configs[0], configs[1]]
     assert filter_configs(configs, None, 'name != "cppcheck"', '') == \
         [configs[0], configs[1], configs[5]]
+
+
+DIFFICULT_DIFF = """\
+diff --git a/.travis.yml b/.travis.yml
+index 951e42a..c6323b4 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -44,0 +45 @@ cache:
++  pip: true
+@@ -46 +46,0 @@ cache:
+-    - $HOME/.cache/pip
+diff --git a/python-qcgrids/setup.cfg b/python-qcgrids/setup.cfg
+deleted file mode 100644
+index d25c9ea..0000000
+--- a/python-qcgrids/setup.cfg
++++ /dev/null
+@@ -1,3 +0,0 @@
+-[build_ext]
+-include-dirs = ../
+-library-dirs = ../debug/qcgrids
+index 948bde4..2795244 100644
+--- a/python-qcgrids/tools/conda.recipe/meta.yaml
++++ b/python-qcgrids/tools/conda.recipe/meta.yaml
+@@ -13 +13,6 @@ build:
+-  script: python setup.py install
++  script:
++   - if [[ ${BUILD_TYPE} == "debug" ]]; then
++       python setup.py install --define CYTHON_TRACE_NOGIL;
++     else
++       python setup.py install;
++     fi
+"""
+
+
+def test_parse_diff():
+    files_lines = parse_diff(DIFFICULT_DIFF)
+    assert files_lines == {
+        '.travis.yml': set([45]),
+        'python-qcgrids/tools/conda.recipe/meta.yaml': set([13, 14, 15, 16, 17, 18])}
 
 
 def test_flags():

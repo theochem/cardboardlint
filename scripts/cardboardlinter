@@ -156,6 +156,9 @@ def run_diff(refspec_parent):
                     offset = int(added_str)
                     line_numbers = set([offset])
                 # store line numbers
+                if not isinstance(current_filename, str):
+                    print(diff_output)
+                    raise TypeError('Error parsing diff: no current_filename')
                 files_lines.setdefault(current_filename, set()).update(line_numbers)
     else:
         # Just get the current list of files in the repo and include all lines

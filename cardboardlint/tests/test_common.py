@@ -103,7 +103,7 @@ def test_filter_configs():
         [configs[0], configs[1], configs[5]]
 
 
-difficult_diff = """\
+DIFFICULT_DIFF = """\
 diff --git a/.travis.yml b/.travis.yml
 index 951e42a..c6323b4 100644
 --- a/.travis.yml
@@ -121,7 +121,6 @@ index d25c9ea..0000000
 -[build_ext]
 -include-dirs = ../
 -library-dirs = ../debug/qcgrids
-diff --git a/python-qcgrids/tools/conda.recipe/meta.yaml b/python-qcgrids/tools/conda.recipe/meta.yaml
 index 948bde4..2795244 100644
 --- a/python-qcgrids/tools/conda.recipe/meta.yaml
 +++ b/python-qcgrids/tools/conda.recipe/meta.yaml
@@ -135,8 +134,9 @@ index 948bde4..2795244 100644
 +     fi
 """
 
+
 def test_parse_diff():
-    files_lines = parse_diff(difficult_diff)
+    files_lines = parse_diff(DIFFICULT_DIFF)
     assert files_lines == {
         '.travis.yml': set([45]),
         'python-qcgrids/tools/conda.recipe/meta.yaml': set([13, 14, 15, 16, 17, 18])}

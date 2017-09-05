@@ -51,8 +51,8 @@ install:
   # Pip install python-based linters
   - pip install pylint codecov coverage pycodestyle pydocstyle flake8 yamllint
   # Get the latest cpplint
-  - wget https://raw.githubusercontent.com/google/styleguide/gh-pages/cpplint/cpplint.py
-  - chmod +x cpplint.py
+  - wget https://raw.githubusercontent.com/google/styleguide/gh-pages/cpplint/cpplint.py &&
+    chmod +x cpplint.py
   # Useful for debugging
   - conda info -a
 

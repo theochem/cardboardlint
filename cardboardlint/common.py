@@ -48,10 +48,10 @@ class Message(object):
             A description of the error/problem.
 
         """
-        if lineno is not None and not isinstance(lineno, int):
-            raise TypeError('`lineno` must be an integer or None')
-        if charno is not None and not isinstance(charno, int):
-            raise TypeError('`charno` must be an integer or None')
+        if not (lineno is None or (isinstance(lineno, int) and lineno > 0)):
+            raise TypeError('`lineno` must be a positive integer or None')
+        if not (charno is None or (isinstance(charno, int) and charno > 0)):
+            raise TypeError('`charno` must be a positive integer or None')
         self.filename = filename
         self.lineno = lineno
         self.charno = charno
@@ -60,21 +60,33 @@ class Message(object):
     def __lt__(self, other):
         """Test if one Message is less than another."""
         if self.__class__ != other.__class__:
-            return self < other
-        tup_self = (self.filename, self.lineno, self.charno or 0, self.text)
-        tup_other = (other.filename, other.lineno, other.charno or 0, other.text)
+            raise TypeError('A Message instance can only be compared to another Message instance.')
+        tup_self = (self.filename or '', self.lineno or 0, self.charno or 0, self.text)
+        tup_other = (other.filename or '', other.lineno or 0, other.charno or 0, other.text)
         return tup_self < tup_other
 
-    def __str__(self):
+    def format(self, color=True):
         """Return a nicely formatted string representation of the message."""
+        if color:
+            purple, red, endcolor, bold = '\033[95m', '\033[91m', '\033[0m', '\033[1m'
+        else:
+            purple, red, endcolor, bold = ['']*4
         # Fix the location string
         if self.filename is None:
-            location = '(nofile)            '
+            location = bold + '(nofile)' + endcolor
         else:
-            location = str(self.filename)
-            location += '{:>6}'.format('' if self.lineno is None else self.lineno)
-            location += '{:>6}'.format('' if self.charno is None else self.charno)
-        return '{0:>70}   {1}'.format(location, self.text)
+            linechar = '{}:{}'.format(
+                '-' if self.lineno is None else self.lineno,
+                '-' if self.charno is None else self.charno,
+            )
+            location = '{}{:9s}{} {}{}{}'.format(
+                bold + red, linechar, endcolor, purple, str(self.filename), endcolor)
+        # Return string with location and text
+        return '{}  {}'.format(location, self.text)
+
+    def __str__(self):
+        """Return a human-readable string representation."""
+        return self.format(color=False)
 
     def indiff(self, files_lines):
         """Test if Message occurs in git diff results by checking the line numbers.

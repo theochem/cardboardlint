@@ -20,13 +20,63 @@
 """Test some common functions."""
 
 
+from __future__ import print_function
+
 from nose.tools import assert_raises
 
-from cardboardlint.common import matches_filefilter, get_offset_step, filter_configs, \
-    parse_diff, derive_flags, apply_config_defaults
+from cardboardlint.common import Message, run_command, matches_filefilter, \
+    get_offset_step, filter_configs, parse_diff, derive_flags, apply_config_defaults
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_pylint import linter_pylint
 from cardboardlint.linter_import import linter_import
+
+
+def test_message():
+    # formatting
+    msg1 = Message('test.txt', 1, 4, 'error')
+    assert msg1.format() == '\x1b[1m\x1b[91m1:4      \x1b[0m \x1b[95mtest.txt\x1b[0m  error'
+    assert msg1.format(color=False) == '1:4       test.txt  error'
+    assert msg1.format(color=False) == str(msg1)
+    msg2 = Message('test.txt', None, 4, 'error')
+    assert msg2.format() == '\x1b[1m\x1b[91m-:4      \x1b[0m \x1b[95mtest.txt\x1b[0m  error'
+    assert msg2.format(color=False) == '-:4       test.txt  error'
+    msg3 = Message('test.txt', 1, None, 'error')
+    assert msg3.format() == '\x1b[1m\x1b[91m1:-      \x1b[0m \x1b[95mtest.txt\x1b[0m  error'
+    assert msg3.format(color=False) == '1:-       test.txt  error'
+    msg4 = Message(None, 1, 3, 'error')
+    assert msg4.format() == '\x1b[1m(nofile)\x1b[0m  error'
+    assert msg4.format(color=False) == '(nofile)  error'
+    # comparison
+    assert msg1 > msg3
+    assert msg3 > msg2
+    assert msg2 > msg4
+    with assert_raises(TypeError):
+        print(msg1 < 1)
+    # sorting
+    msgs = sorted([msg1, msg2, msg3, msg4])
+    assert msgs == [msg4, msg2, msg3, msg1]
+    with assert_raises(TypeError):
+        msgs.insert(0, 1)
+        msgs.sort()
+    # wrong arguments
+    with assert_raises(TypeError):
+        Message('foo', -1, 4, 'bar')
+    with assert_raises(TypeError):
+        Message('foo', 4, -1, 'bar')
+    # indiff
+    assert msg1.indiff({'test.txt': set([1])})
+    assert msg1.indiff({'test.txt': None})
+    assert not msg1.indiff({'test.txt': set([2])})
+    assert msg2.indiff({'test.txt': set([1])})
+    assert msg2.indiff({'test.txt': None})
+    assert msg2.indiff({'test.txt': set([2])})
+    assert not msg2.indiff({'foo.txt': set([2])})
+
+
+def test_run_command():
+    assert run_command(['echo', 'foo']) == (u'foo\n', u'')
+    with assert_raises(RuntimeError):
+        run_command(['ls', 'asfdsadsafdasdfasd'])
 
 
 def test_matches_filefilter():

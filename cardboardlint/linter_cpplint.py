@@ -75,8 +75,10 @@ def run_cpplint(config, filenames):
             description = ' '.join(words[1:-2])
             tag = words[-2]
             priority = words[-1]
-
-            messages.append(Message(filename, int(lineno), None, '%s %s %s' % (
+            lineno = int(lineno)
+            if lineno == 0:
+                lineno = None
+            messages.append(Message(filename, lineno, None, '%s %s %s' % (
                 priority, tag, description)))
     return messages
 

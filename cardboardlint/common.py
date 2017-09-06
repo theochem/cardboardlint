@@ -68,7 +68,7 @@ class Message(object):
     def format(self, color=True):
         """Return a nicely formatted string representation of the message."""
         if color:
-            purple, red, endcolor, bold = '\033[95m', '\033[91m', '\033[0m', '\033[1m'
+            purple, red, endcolor, bold = '\033[35m', '\033[31m', '\033[0m', '\033[1m'
         else:
             purple, red, endcolor, bold = ['']*4
         # Fix the location string

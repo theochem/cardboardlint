@@ -49,7 +49,7 @@ It can be used as follows:
       - import:
       ...
 
-  Each linte has a `filefilter` option, which is a list of rules to test if a file should
+  Each linter has a `filefilter` option, which is a list of rules to test if a file should
   be considered for linting or not. Each rule consists of a result, `+` (include) or a `-`
   (exclude), followed by a glob pattern. If a pattern matches, the result is found and
   further rules are not considered. If no rules apply, the file is excluded.

@@ -85,13 +85,13 @@ def run_header(config, filenames):
                 if lineno == 0 and line.startswith('#!') and config['shebang'] is not None:
                     if line[:-1] != config['shebang']:
                         messages.append(Message(
-                            filename, lineno, None,
+                            filename, lineno + 1, None,
                             'Shebang line should be {}.'.format(config['shebang'])))
                 else:
                     expected = header_lines[header_counter]
                     if line[:-1] != expected:
                         messages.append(Message(
-                            filename, lineno, None, 'Line should be: {}'.format(expected)))
+                            filename, lineno + 1, None, 'Line should be: {}'.format(expected)))
                     header_counter += 1
     return messages
 

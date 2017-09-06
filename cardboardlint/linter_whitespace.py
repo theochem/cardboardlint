@@ -62,11 +62,11 @@ def run_whitespace(_config, filenames):
             for lineno, line in enumerate(f):
                 charno = line.find('\t')
                 if charno >= 0:
-                    messages.append(Message(filename, lineno, charno, 'found tab'))
+                    messages.append(Message(filename, lineno + 1, charno + 1, 'tab'))
                 if line[:-1] != line.rstrip():
-                    messages.append(Message(filename, lineno, None, 'found trailing whitespace'))
+                    messages.append(Message(filename, lineno + 1, None, 'trailing whitespace'))
             if line is not None and len(line.strip()) == 0:
-                messages.append(Message(filename, lineno, None, 'found trailing empty line'))
+                messages.append(Message(filename, lineno + 1, None, 'trailing empty line'))
     return messages
 
 

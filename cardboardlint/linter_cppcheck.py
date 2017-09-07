@@ -76,7 +76,10 @@ def run_cppcheck(_config, filenames):
             #                                   error.attrib['id'])
             text = '{} {} {}'.format(
                 error.attrib['severity'], error.attrib['id'], error.attrib['msg'])
-            messages.append(Message(error.attrib['file'], int(error.attrib['line']), None, text))
+            lineno = int(error.attrib['line'])
+            if lineno == 0:
+                lineno = None
+            messages.append(Message(error.attrib['file'], lineno, None, text))
     return messages
 
 

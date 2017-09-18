@@ -60,13 +60,23 @@ def run_whitespace(_config, filenames):
             line = None
             lineno = -1
             for lineno, line in enumerate(f):
+                # Check for tabs
                 charno = line.find('\t')
                 if charno >= 0:
                     messages.append(Message(filename, lineno + 1, charno + 1, 'tab'))
+                # Check for carriage return
+                charno = line.find('\r')
+                if charno >= 0:
+                    messages.append(Message(filename, lineno + 1, charno + 1, 'carriage return'))
+                # Check for trailing whitespace
                 if line[:-1] != line.rstrip():
                     messages.append(Message(filename, lineno + 1, None, 'trailing whitespace'))
-            if line is not None and len(line.strip()) == 0:
-                messages.append(Message(filename, lineno + 1, None, 'trailing empty line'))
+            # Perform some checks on the last line
+            if line is not None:
+                if len(line.strip()) == 0:
+                    messages.append(Message(filename, lineno + 1, None, 'trailing empty line'))
+                if not line.endswith("\n"):
+                    messages.append(Message(filename, lineno + 1, None, 'last line missing \\n'))
     return messages
 
 

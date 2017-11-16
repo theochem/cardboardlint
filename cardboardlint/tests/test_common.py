@@ -85,6 +85,7 @@ def test_matches_filefilter():
     assert matches_filefilter('foo/a.py', ['+ foo/*.py'])
     assert matches_filefilter('foo/a.py', ['- */test_*.py', '+ *.py'])
     assert not matches_filefilter('foo/test/test_a.py', ['- */test_*.py', '+ *.py'])
+    assert not matches_filefilter('foo/test/test_a.py', ['+ *.py', '- */test_*.py'])
     assert matches_filefilter('scripts/runfoo', ['+ scripts/*'])
 
     with assert_raises(ValueError):

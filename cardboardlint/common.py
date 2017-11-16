@@ -171,8 +171,8 @@ def matches_filefilter(filename, rules):
         A filename to be tested.
     rules : list
         A list of strings, starting with - (exclude) or + (include), followed by a glob
-        pattern. Each file is tested against the rules in order. The first matching rule
-        is applied. If no rules match, the file is excluded.
+        pattern. Each file is tested against the rules in order. If no rules match, the
+        file is excluded.
 
     Returns
     -------
@@ -186,10 +186,12 @@ def matches_filefilter(filename, rules):
             raise ValueError('Unexpected first character in filename filter rule: {}'.format(
                 rule[0]))
 
+    accepted = []
     for rule in rules:
         pattern = rule[1:].strip()
         if fnmatch(filename, pattern):
-            return rule[0] == '+'
+            accepted.append(rule[0] == '+')
+    return len(accepted) > 0 and all(accepted)
 
 
 def get_offset_step(suffix):

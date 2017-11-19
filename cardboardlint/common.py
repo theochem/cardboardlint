@@ -20,6 +20,8 @@
 """Collection of classes and methods shared between different linters."""
 from __future__ import print_function
 
+import os
+import re
 from fnmatch import fnmatch
 import subprocess
 
@@ -179,16 +181,30 @@ def matches_filefilter(filename, rules):
     accepted: boolean
         True if the file should be included.
 
+    Raises
+    ------
+    ValueError
+        If first character of the pattern in `rules` is not '+' or '-'.
+        If there is a double backslash in a pattern.
+
     """
-    # Check format of the rules
+    re_dir = re.compile(r'(?<!\\)' + os.sep)
+    filename_split = re_dir.split(filename)
     for rule in rules:
+        pattern_split = re_dir.split(rule[1:].strip())
+
+        # Check format of the rules
         if rule[0] not in '+-':
             raise ValueError('Unexpected first character in filename filter rule: {}'.format(
                 rule[0]))
+        elif '\\' in rule[1:]:
+            raise ValueError('Cannot have double backslash in the pattern.')
+        elif len(pattern_split) > len(filename_split):
+            continue
 
-    for rule in rules:
-        pattern = rule[1:].strip()
-        if fnmatch(filename, pattern):
+        # apply pattern
+        if all(fnmatch(name, pattern)
+               for name, pattern in zip(filename_split[::-1], pattern_split[::-1])):
             return rule[0] == '+'
 
 

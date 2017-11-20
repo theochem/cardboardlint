@@ -74,7 +74,7 @@ def run_pylint(config, filenames):
         if len(output) > 0:
             for plmap in json.loads(output):
                 charno = plmap['column']
-                if charno == 0:
+                if charno in [0, -1]:
                     charno = None
                 messages.append(Message(
                     plmap['path'], plmap['line'], charno,

@@ -23,11 +23,13 @@
 from __future__ import print_function
 
 import argparse
+import codecs
 import sys
 
 import yaml
 
-from cardboardlint.common import run_command, matches_filefilter, filter_configs, parse_diff
+from cardboardlint.common import run_command, matches_filefilter, filter_configs, \
+    parse_diff, Message
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen
@@ -67,14 +69,27 @@ def main():
     prefilter, configs = load_config('.cardboardlint.yml')
 
     # Process git diff and select only those files that match the prefilter.
+    # messages will be generated for files that are not utf-8 encoded.
+    print('~'*80)
+    print('### Collecting files and checking encouding ###')
+    print('~'*80)
+    files_lines, messages = run_diff(args.refspec)
     files_lines = {
-        filename: linenumbers for filename, linenumbers in run_diff(args.refspec).items()
+        filename: linenumbers for filename, linenumbers in files_lines.items()
         if matches_filefilter(filename, prefilter)}
+
+    # Report incorrectly encoded files
+    returncode = 0
+    if len(messages) > 0:
+        print()
+        returncode = -1
+        for message in messages:
+            print(message.format())
+        print()
 
     # Select specific linter if desired.
     configs = filter_configs(configs, args.selection, args.boolexpr, args.part)
 
-    returncode = 0
     for linter, linter_config in configs:
         print('~'*80)
         print('### {:^72} ###'.format(linter.name))
@@ -148,7 +163,17 @@ def run_diff(refspec_parent):
         command = ['git', 'ls-files', '--others', '--exclude-standard']
         ls_output = run_command(command)[0]
         result.update({filename: None for filename in ls_output.splitlines()})
-    return result
+
+    # Check whether all files are utf-8 encoded.
+    messages = []
+    for filename in list(result):
+        try:
+            with codecs.open(filename, encoding='utf-8') as f:
+                f.read()
+        except UnicodeDecodeError as err:
+            del result[filename]
+            messages.append(Message(filename, None, None, str(err)))
+    return result, messages
 
 
 def load_config(config_file):

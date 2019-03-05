@@ -132,18 +132,23 @@ def run_diff(refspec_parent):
         that allows efficient testing in the `indiff` method of the Message class. When
         line_numbers is None, it means that all lines should be considered for testing.
     """
-    # generate 0 lines of context (i.e. only the lines that differ)
     if refspec_parent is not None:
         # The option --relative is used to limit the output of git diff to the current
         # directory, to facilitate test runs in subdirectories.
+        # -U0: generate 0 lines of context (i.e. only the lines that differ)
         command = ['git', 'diff', '-U0', refspec_parent, '--relative']
         diff_output = run_command(command)[0]
-        return parse_diff(diff_output)
+        result = parse_diff(diff_output)
     else:
-        # Just get the current list of files in the repo and include all lines
-        command = ['git', 'ls-files']
+        # Just get the current list of files in the repo, including
+        # untracked files, and include all lines
+        command = ['git', 'ls-files', '--exclude-standard']
         ls_output = run_command(command)[0]
-        return {filename: None for filename in ls_output.splitlines()}
+        result = {filename: None for filename in ls_output.splitlines()}
+        command = ['git', 'ls-files', '--others', '--exclude-standard']
+        ls_output = run_command(command)[0]
+        result.update({filename: None for filename in ls_output.splitlines()})
+    return result
 
 
 def load_config(config_file):

@@ -69,7 +69,6 @@ def main():
     prefilter, configs = load_config('.cardboardlint.yml')
 
     # Process git diff and select only those files that match the prefilter.
-    # messages will be generated for files that are not utf-8 encoded.
     files_lines = {
         filename: linenumbers for filename, linenumbers
         in run_diff(args.refspec).items()

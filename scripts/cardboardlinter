@@ -28,8 +28,8 @@ import sys
 
 import yaml
 
-from cardboardlint.common import run_command, matches_filefilter, filter_configs, \
-    parse_diff, Message
+from cardboardlint.common import (run_command, matches_filefilter,
+                                  filter_configs, parse_diff, Message)
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen

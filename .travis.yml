@@ -23,22 +23,12 @@ branches:
 install:
   # Get miniconda. Take the right version, so re-installing python is only needed for 3.5.
   - mkdir -p $HOME/download;
-    if [[ "$MYCONDAPY" == "2.7" ]]; then
-      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
-          -O $HOME/download/miniconda.sh;
-      else
-        wget https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh
-          -O $HOME/download/miniconda.sh;
-      fi;
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        -O $HOME/download/miniconda.sh;
     else
-      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-          -O $HOME/download/miniconda.sh;
-      else
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-          -O $HOME/download/miniconda.sh;
-      fi;
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+        -O $HOME/download/miniconda.sh;
     fi
   - bash $HOME/download/miniconda.sh -b -p $HOME/miniconda
   - source $HOME/miniconda/bin/activate
@@ -54,7 +44,7 @@ install:
   # Install conda tools for packaging and uploading
   - conda install python=${MYCONDAPY} cppcheck doxygen conda-build anaconda-client
   # Pip install python-based linters
-  - pip install pylint codecov coverage pycodestyle pydocstyle flake8 yamllint
+  - pip install pylint codecov coverage pycodestyle pydocstyle flake8 yamllint nose
   # Get the latest cpplint
   - wget https://raw.githubusercontent.com/google/styleguide/gh-pages/cpplint/cpplint.py &&
     chmod +x cpplint.py

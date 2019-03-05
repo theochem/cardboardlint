@@ -28,7 +28,7 @@ __all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'Li
            'derive_flags', 'apply_config_defaults']
 
 
-class Message():
+class Message:
     """Error message and meta information."""
 
     def __init__(self, filename, lineno, charno, text):
@@ -287,7 +287,7 @@ def parse_diff(diff_output):
     return files_lines
 
 
-class Linter():
+class Linter:
     """Run linter function with appropriate argument and keep track of meta info."""
 
     def __init__(self, name, run, default_config, style='static', language='generic'):

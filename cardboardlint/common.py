@@ -190,6 +190,7 @@ def matches_filefilter(filename, rules):
         pattern = rule[1:].strip()
         if fnmatch(filename, pattern):
             return rule[0] == '+'
+    return False
 
 
 def get_offset_step(suffix):

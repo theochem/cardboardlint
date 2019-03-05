@@ -70,22 +70,24 @@ def main():
 
     # Process git diff and select only those files that match the prefilter.
     # messages will be generated for files that are not utf-8 encoded.
-    print('~'*80)
-    print('### Collecting files and checking encouding ###')
-    print('~'*80)
-    files_lines, messages = run_diff(args.refspec)
     files_lines = {
-        filename: linenumbers for filename, linenumbers in files_lines.items()
+        filename: linenumbers for filename, linenumbers
+        in run_diff(args.refspec).items()
         if matches_filefilter(filename, prefilter)}
 
     # Report incorrectly encoded files
+    print('~'*80)
+    print('### {:^72} ###'.format("Checking encoding"))
+    print('~'*80)
+    files_lines, messages = check_encoding(files_lines)
     returncode = 0
     if len(messages) > 0:
         print()
         returncode = -1
         for message in messages:
             print(message.format())
-        print()
+        print("These files will not be checked with remaining linters.")
+    print()
 
     # Select specific linter if desired.
     configs = filter_configs(configs, args.selection, args.boolexpr, args.part)
@@ -153,27 +155,45 @@ def run_diff(refspec_parent):
         # -U0: generate 0 lines of context (i.e. only the lines that differ)
         command = ['git', 'diff', '-U0', refspec_parent, '--relative']
         diff_output = run_command(command)[0]
-        result = parse_diff(diff_output)
+        files_lines = parse_diff(diff_output)
     else:
         # Just get the current list of files in the repo, including
         # untracked files, and include all lines
         command = ['git', 'ls-files', '--exclude-standard']
         ls_output = run_command(command)[0]
-        result = {filename: None for filename in ls_output.splitlines()}
+        files_lines = {filename: None for filename in ls_output.splitlines()}
         command = ['git', 'ls-files', '--others', '--exclude-standard']
         ls_output = run_command(command)[0]
-        result.update({filename: None for filename in ls_output.splitlines()})
+        files_lines.update({filename: None for filename in ls_output.splitlines()})
+    return files_lines
 
-    # Check whether all files are utf-8 encoded.
+
+def check_encoding(files_lines):
+    """Check that all files are UTF-8 encoded.
+
+    Parameters
+    ----------
+    files_lines : dict
+        Files and corresponding line ranges to be checked with all active
+        linters.
+
+    Returns
+    -------
+    files_lines : dict
+        Updated files to be checked with remaining linters.
+    messages : list
+        A list of messages showing the problematic files.
+
+    """
     messages = []
-    for filename in list(result):
+    for filename in list(files_lines):
         try:
             with codecs.open(filename, encoding='utf-8') as f:
                 f.read()
         except UnicodeDecodeError as err:
-            del result[filename]
+            del files_lines[filename]
             messages.append(Message(filename, None, None, str(err)))
-    return result, messages
+    return files_lines, messages
 
 
 def load_config(config_file):

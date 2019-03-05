@@ -56,6 +56,7 @@ def run_whitespace(_config, filenames):
     # Loop over all files and check whitespace in each file.
     messages = []
     for filename in filenames:
+        print('CHECKING FILE      : {}'.format(filenames))
         with codecs.open(filename, encoding='utf-8') as f:
             line = None
             lineno = -1

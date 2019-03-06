@@ -71,10 +71,6 @@ script:
      coverage erase;
      coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter);
      coverage xml -i -o ~/coverage_examples_all.xml)
-  - (cd tools/example;
-     coverage erase;
-     coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter) --refspec HEAD^;
-     coverage xml -i -o ~/coverage_examples_refspec.xml)
 
   # Build source package, should work too and needed for deployment to Github and
   # PyPI.

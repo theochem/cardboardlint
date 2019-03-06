@@ -23,13 +23,12 @@
 from __future__ import print_function
 
 import argparse
-import codecs
 import sys
 
 import yaml
 
 from cardboardlint.common import (run_command, matches_filefilter,
-                                  filter_configs, parse_diff, Message)
+                                  filter_configs, parse_diff)
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen
@@ -74,23 +73,10 @@ def main():
         in run_diff(args.refspec).items()
         if matches_filefilter(filename, prefilter)}
 
-    # Report incorrectly encoded files
-    print('~'*80)
-    print('### {:^72} ###'.format("Checking encoding"))
-    print('~'*80)
-    files_lines, messages = check_encoding(files_lines)
-    returncode = 0
-    if len(messages) > 0:
-        print()
-        returncode = -1
-        for message in messages:
-            print(message.format())
-        print("These files will not be checked with remaining linters.")
-    print()
-
     # Select specific linter if desired.
     configs = filter_configs(configs, args.selection, args.boolexpr, args.part)
 
+    returncode = 0
     for linter, linter_config in configs:
         print('~'*80)
         print('### {:^72} ###'.format(linter.name))
@@ -165,34 +151,6 @@ def run_diff(refspec_parent):
         ls_output = run_command(command)[0]
         files_lines.update({filename: None for filename in ls_output.splitlines()})
     return files_lines
-
-
-def check_encoding(files_lines):
-    """Check that all files are UTF-8 encoded.
-
-    Parameters
-    ----------
-    files_lines : dict
-        Files and corresponding line ranges to be checked with all active
-        linters.
-
-    Returns
-    -------
-    files_lines : dict
-        Updated files to be checked with remaining linters.
-    messages : list
-        A list of messages showing the problematic files.
-
-    """
-    messages = []
-    for filename in list(files_lines):
-        try:
-            with codecs.open(filename, encoding='utf-8') as f:
-                f.read()
-        except UnicodeDecodeError as err:
-            del files_lines[filename]
-            messages.append(Message(filename, None, None, str(err)))
-    return files_lines, messages
 
 
 def load_config(config_file):

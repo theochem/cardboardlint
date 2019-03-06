@@ -28,7 +28,7 @@ __all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'Li
            'derive_flags', 'apply_config_defaults']
 
 
-class Message(object):
+class Message:
     """Error message and meta information."""
 
     def __init__(self, filename, lineno, charno, text):
@@ -79,8 +79,8 @@ class Message(object):
                 '-' if self.lineno is None else self.lineno,
                 '-' if self.charno is None else self.charno,
             )
-            location = '{}{:9s}{} {}{}{}'.format(
-                bold + red, linechar, endcolor, purple, str(self.filename), endcolor)
+            location = '{0}{1:9s}{2} {3}{4}{2}'.format(
+                bold + red, linechar, endcolor, purple, str(self.filename))
         # Return string with location and text
         return '{}  {}'.format(location, self.text)
 
@@ -158,8 +158,7 @@ def run_command(command, verbose=True, cwd=None, has_failed=None, stdin=''):
         print('------')
         print(stderr)
         raise RuntimeError('Subprocess has failed.')
-    else:
-        return stdout, stderr
+    return stdout, stderr
 
 
 def matches_filefilter(filename, rules):
@@ -190,6 +189,7 @@ def matches_filefilter(filename, rules):
         pattern = rule[1:].strip()
         if fnmatch(filename, pattern):
             return rule[0] == '+'
+    return False
 
 
 def get_offset_step(suffix):
@@ -287,7 +287,7 @@ def parse_diff(diff_output):
     return files_lines
 
 
-class Linter(object):
+class Linter:
     """Run linter function with appropriate argument and keep track of meta info."""
 
     def __init__(self, name, run, default_config, style='static', language='generic'):

@@ -27,7 +27,8 @@ import sys
 
 import yaml
 
-from cardboardlint.common import run_command, matches_filefilter, filter_configs, parse_diff
+from cardboardlint.common import (run_command, matches_filefilter,
+                                  filter_configs, parse_diff)
 from cardboardlint.linter_cppcheck import linter_cppcheck
 from cardboardlint.linter_cpplint import linter_cpplint
 from cardboardlint.linter_doxygen import linter_doxygen
@@ -68,7 +69,8 @@ def main():
 
     # Process git diff and select only those files that match the prefilter.
     files_lines = {
-        filename: linenumbers for filename, linenumbers in run_diff(args.refspec).items()
+        filename: linenumbers for filename, linenumbers
+        in run_diff(args.refspec).items()
         if matches_filefilter(filename, prefilter)}
 
     # Select specific linter if desired.
@@ -132,18 +134,23 @@ def run_diff(refspec_parent):
         that allows efficient testing in the `indiff` method of the Message class. When
         line_numbers is None, it means that all lines should be considered for testing.
     """
-    # generate 0 lines of context (i.e. only the lines that differ)
     if refspec_parent is not None:
         # The option --relative is used to limit the output of git diff to the current
         # directory, to facilitate test runs in subdirectories.
+        # -U0: generate 0 lines of context (i.e. only the lines that differ)
         command = ['git', 'diff', '-U0', refspec_parent, '--relative']
         diff_output = run_command(command)[0]
-        return parse_diff(diff_output)
+        files_lines = parse_diff(diff_output)
     else:
-        # Just get the current list of files in the repo and include all lines
-        command = ['git', 'ls-files']
+        # Just get the current list of files in the repo, including
+        # untracked files, and include all lines
+        command = ['git', 'ls-files', '--exclude-standard']
         ls_output = run_command(command)[0]
-        return {filename: None for filename in ls_output.splitlines()}
+        files_lines = {filename: None for filename in ls_output.splitlines()}
+        command = ['git', 'ls-files', '--others', '--exclude-standard']
+        ls_output = run_command(command)[0]
+        files_lines.update({filename: None for filename in ls_output.splitlines()})
+    return files_lines
 
 
 def load_config(config_file):

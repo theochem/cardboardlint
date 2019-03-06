@@ -16,6 +16,14 @@ Linthub.io, landscape.io etc.
 
 It can be used as follows:
 
+- Install cardboardlint, which requires python 3.6 or 3.7 and PyYaml.
+  At the moment we don't have a release yet, so it needs to be directly
+  installed from our git repository as follows:
+
+  .. code:: bash
+
+      pip install --upgrade git+https://github.com/theochem/cardboardlint.git@master#egg=cardboardlint
+
 - Add a ``.cardboardlint.yml`` to the root of your source tree. It should at least contain
   a `linters` section with a list of linters, e.g.
 

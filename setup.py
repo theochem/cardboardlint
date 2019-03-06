@@ -31,13 +31,13 @@ setup(
     scripts=['scripts/cardboardlinter'],
     package_dir={'cardboardlint': 'cardboardlint'},
     packages=['cardboardlint', 'cardboardlint.tests'],
-    install_requires=['pyyaml', 'nose'],
+    install_requires=['pyyaml'],
     zip_safe=False,
     classifiers=[
         'Environment :: Console',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 )

@@ -27,20 +27,22 @@ import sys
 
 import yaml
 
-from cardboardlint.common import (run_command, matches_filefilter,
-                                  filter_configs, parse_diff)
-from cardboardlint.linter_cppcheck import linter_cppcheck
-from cardboardlint.linter_cpplint import linter_cpplint
-from cardboardlint.linter_doxygen import linter_doxygen
-from cardboardlint.linter_flake8 import linter_flake8
-from cardboardlint.linter_header import linter_header
-from cardboardlint.linter_import import linter_import
-from cardboardlint.linter_namespace import linter_namespace
-from cardboardlint.linter_pylint import linter_pylint
-from cardboardlint.linter_pycodestyle import linter_pycodestyle
-from cardboardlint.linter_pydocstyle import linter_pydocstyle
-from cardboardlint.linter_whitespace import linter_whitespace
-from cardboardlint.linter_yamllint import linter_yamllint
+from .common import run_command, matches_filefilter, filter_configs, parse_diff
+from .linter_cppcheck import linter_cppcheck
+from .linter_cpplint import linter_cpplint
+from .linter_doxygen import linter_doxygen
+from .linter_flake8 import linter_flake8
+from .linter_header import linter_header
+from .linter_import import linter_import
+from .linter_namespace import linter_namespace
+from .linter_pylint import linter_pylint
+from .linter_pycodestyle import linter_pycodestyle
+from .linter_pydocstyle import linter_pydocstyle
+from .linter_whitespace import linter_whitespace
+from .linter_yamllint import linter_yamllint
+
+
+__all__ = ['main']
 
 
 LINTERS = dict((linter.name, linter) for linter in [
@@ -60,7 +62,7 @@ LINTERS = dict((linter.name, linter) for linter in [
 
 
 def main():
-    """Main routine."""
+    """Run selected liners and report."""
     # Get arguments.
     args = parse_args()
 
@@ -133,6 +135,7 @@ def run_diff(refspec_parent):
         Dictionary with (filename,  line_numbers) to represent all changed lines in a way
         that allows efficient testing in the `indiff` method of the Message class. When
         line_numbers is None, it means that all lines should be considered for testing.
+
     """
     if refspec_parent is not None:
         # The option --relative is used to limit the output of git diff to the current
@@ -154,7 +157,7 @@ def run_diff(refspec_parent):
 
 
 def load_config(config_file):
-    """Returns dictionary that corresponds to the given yaml file.
+    """Return dictionary that corresponds to the given yaml file.
 
     Parameters
     ----------
@@ -165,6 +168,7 @@ def load_config(config_file):
     -------
     configs : list
         A list of (linter_name, linter, linter_config) tuples.
+
     """
     with open(config_file, 'r') as f:
         raw_config = yaml.load(f)

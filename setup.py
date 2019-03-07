@@ -28,11 +28,13 @@ setup(
     name='cardboardlint',
     version='0.0.0',
     description='Cheap lint solution for PRs.',
-    scripts=['scripts/cardboardlinter'],
     package_dir={'cardboardlint': 'cardboardlint'},
     packages=['cardboardlint', 'cardboardlint.tests'],
     install_requires=['pyyaml'],
     zip_safe=False,
+    entry_points={
+        'console_scripts': ['cardboardlinter = cardboardlint.__main__:main']
+    },
     classifiers=[
         'Environment :: Console',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',

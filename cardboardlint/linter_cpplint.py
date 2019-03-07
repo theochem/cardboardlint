@@ -33,7 +33,7 @@ DEFAULT_CONFIG = {
     # Filename filter rules
     'filefilter': ['+ *.h', '+ *.h.in', '+ *.cpp', '+ *.c'],
     # Location of the file
-    'script': './cpplint.py'
+    'script': 'cpplint'
 }
 
 

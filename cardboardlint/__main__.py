@@ -142,7 +142,7 @@ def run_diff(refspec_parent):
         # directory, to facilitate test runs in subdirectories.
         # -U0: generate 0 lines of context (i.e. only the lines that differ)
         command = ['git', 'diff', '-U0', refspec_parent, '--relative']
-        diff_output = run_command(command)[0]
+        diff_output = run_command(command, encoding=None)[0]
         files_lines = parse_diff(diff_output)
     else:
         # Just get the current list of files in the repo, including

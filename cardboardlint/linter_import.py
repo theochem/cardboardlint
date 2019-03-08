@@ -96,5 +96,6 @@ def _check_file(filename: str, config: dict, messages: List[str]):
                     text = 'Wrong import from {0}'.format(package)
                     messages.append(Message(filename, lineno+1, None, text))
 
+
 # pylint: disable=invalid-name
 linter_import = Linter('import', run_import, DEFAULT_CONFIG, language='python')

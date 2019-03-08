@@ -118,5 +118,6 @@ def _check_file(filename: str, config: dict, header_lines: List[str],
                         filename, lineno + 1, None, 'Line should be: {}'.format(expected)))
                 header_counter += 1
 
+
 # pylint: disable=invalid-name
 linter_header = Linter('header', run_header, DEFAULT_CONFIG)

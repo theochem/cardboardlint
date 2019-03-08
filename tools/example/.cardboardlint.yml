@@ -1,7 +1,6 @@
 linters:
   - cppcheck:
   - cpplint:
-      script: ../../cpplint.py
   - doxygen:
   - flake8:
   - header:

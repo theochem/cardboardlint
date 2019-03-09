@@ -27,6 +27,7 @@ present, such as a shebang line or a mode line.
 from __future__ import print_function
 
 import codecs
+from typing import List
 
 from cardboardlint.common import Message, Linter
 
@@ -74,26 +75,48 @@ def run_header(config, filenames):
     # Loop all files and check in the header each file.
     messages = []
     for filename in filenames:
-        with codecs.open(filename, encoding='utf-8') as f:
-            iterator = iter(enumerate(f))
-            header_counter = 0
-            while header_counter < len(header_lines):
-                try:
-                    lineno, line = next(iterator)
-                except StopIteration:
-                    break
-                if lineno == 0 and line.startswith('#!') and config['shebang'] is not None:
-                    if line[:-1] != config['shebang']:
-                        messages.append(Message(
-                            filename, lineno + 1, None,
-                            'Shebang line should be {}.'.format(config['shebang'])))
-                else:
-                    expected = header_lines[header_counter]
-                    if line[:-1] != expected:
-                        messages.append(Message(
-                            filename, lineno + 1, None, 'Line should be: {}'.format(expected)))
-                    header_counter += 1
+        try:
+            _check_file(filename, config, header_lines, messages)
+        except UnicodeDecodeError as err:
+            messages.append(Message(filename, None, None, str(err)))
     return messages
+
+
+def _check_file(filename: str, config: dict, header_lines: List[str],
+                messages: List[str]):
+    """Look for bad filename headers.
+
+    Parameters
+    ----------
+    filename
+        File to be checked
+    config
+        Dictionary with configuration of the linters.
+    header_lines
+        The expected header.
+    messages
+        A list of messages to append to. (output arg)
+
+    """
+    with codecs.open(filename, encoding='utf-8') as f:
+        iterator = iter(enumerate(f))
+        header_counter = 0
+        while header_counter < len(header_lines):
+            try:
+                lineno, line = next(iterator)
+            except StopIteration:
+                break
+            if lineno == 0 and line.startswith('#!') and config['shebang'] is not None:
+                if line[:-1] != config['shebang']:
+                    messages.append(Message(
+                        filename, lineno + 1, None,
+                        'Shebang line should be {}.'.format(config['shebang'])))
+            else:
+                expected = header_lines[header_counter]
+                if line[:-1] != expected:
+                    messages.append(Message(
+                        filename, lineno + 1, None, 'Line should be: {}'.format(expected)))
+                header_counter += 1
 
 
 # pylint: disable=invalid-name

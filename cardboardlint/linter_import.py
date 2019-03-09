@@ -30,6 +30,7 @@ This script counts the number of bad imports. The following is not allowed in a 
 from __future__ import print_function
 
 import codecs
+from typing import List
 
 from cardboardlint.common import Message, Linter
 
@@ -65,17 +66,35 @@ def run_import(config, filenames):
     messages = []
     if len(config['packages']) > 0:
         for filename in filenames:
-            # Look for bad imports
-            with codecs.open(filename, encoding='utf-8') as f:
-                for lineno, line in enumerate(f):
-                    for package in config['packages']:
-                        # skip version import
-                        if line == u'from {0} import __version__\n'.format(package):
-                            continue
-                        if u'from {0} import'.format(package) in line:
-                            text = 'Wrong import from {0}'.format(package)
-                            messages.append(Message(filename, lineno+1, None, text))
+            try:
+                _check_file(filename, config, messages)
+            except UnicodeDecodeError as err:
+                messages.append(Message(filename, None, None, str(err)))
     return messages
+
+
+def _check_file(filename: str, config: dict, messages: List[str]):
+    """Look for bad imports in the given file.
+
+    Parameters
+    ----------
+    filename
+        File to be checked
+    config
+        Dictionary with configuration of the linters.
+    messages
+        A list of messages to append to. (output arg)
+
+    """
+    with codecs.open(filename, encoding='utf-8') as f:
+        for lineno, line in enumerate(f):
+            for package in config['packages']:
+                # skip version import
+                if line == u'from {0} import __version__\n'.format(package):
+                    continue
+                if u'from {0} import'.format(package) in line:
+                    text = 'Wrong import from {0}'.format(package)
+                    messages.append(Message(filename, lineno+1, None, text))
 
 
 # pylint: disable=invalid-name

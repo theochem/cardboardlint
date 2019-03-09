@@ -106,7 +106,7 @@ class Message:
             return False
 
 
-def run_command(command, verbose=True, cwd=None, has_failed=None, stdin=''):
+def run_command(command, verbose=True, cwd=None, has_failed=None, stdin='', encoding='utf-8'):
     """Run command as subprocess with default settings suitable for trapdoor scripts.
 
     Parameters
@@ -122,6 +122,8 @@ def run_command(command, verbose=True, cwd=None, has_failed=None, stdin=''):
         behavior is to check for a non-zero return code.
     stdin : str
         Standard input to be provided to the script.
+    encoding : str or None
+        The encoding to be used for in- and output.
 
     Returns
     -------
@@ -146,9 +148,12 @@ def run_command(command, verbose=True, cwd=None, has_failed=None, stdin=''):
     proc = subprocess.Popen(
         command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         stderr=subprocess.PIPE, cwd=cwd)
-    stdout, stderr = proc.communicate(stdin.encode('utf-8'))
-    stdout = stdout.decode('utf-8')
-    stderr = stderr.decode('utf-8')
+    if encoding is None:
+        stdout, stderr = proc.communicate(stdin)
+    else:
+        stdout, stderr = proc.communicate(stdin.encode(encoding))
+        stdout = stdout.decode(encoding)
+        stderr = stderr.decode(encoding)
     if has_failed(proc.returncode, stdout, stderr):
         print('RETURN CODE: {}'.format(proc.returncode))
         print('STDOUT')
@@ -254,36 +259,37 @@ def parse_diff(diff_output):
 
     Parameters
     ----------
-    diff_output : str
+    diff_output : bytes
         The standard output of the diff command
 
     Returns
     -------
     files_lines : dict
-        A dictionary with (filename, lines) items, where lines is a set of line numbers.
+        A dictionary with (filename, lines) items, where filename is a str
+        object and lines is a set of line numbers.
 
     """
     # parse git diff output
     current_filename = None
     files_lines = {}
     for line in diff_output.splitlines():
-        if line.startswith('+++ '):
-            if line.startswith('+++ b/'):
+        if line.startswith(b'+++ '):
+            if line.startswith(b'+++ b/'):
                 current_filename = line[6:]
             else:
                 current_filename = None
-        elif line.startswith('@@ ') and current_filename is not None:
+        elif line.startswith(b'@@ ') and current_filename is not None:
             added_str = line.split()[2]
             # multiple lines added/modified
-            if added_str.count(',') == 1:
-                offset, nlines = added_str.split(',')
+            if added_str.count(b',') == 1:
+                offset, nlines = added_str.split(b',')
                 line_numbers = set(range(int(offset), int(offset) + int(nlines)))
             # single line added/modified
             else:
                 offset = int(added_str)
                 line_numbers = set([offset])
             # store line numbers
-            files_lines.setdefault(current_filename, set()).update(line_numbers)
+            files_lines.setdefault(current_filename.decode('utf-8'), set()).update(line_numbers)
     return files_lines
 
 

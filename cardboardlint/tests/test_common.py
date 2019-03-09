@@ -153,7 +153,7 @@ def test_filter_configs():
         [configs[0], configs[1], configs[5]]
 
 
-DIFFICULT_DIFF = """\
+DIFFICULT_DIFF = b"""\
 diff --git a/.travis.yml b/.travis.yml
 index 951e42a..c6323b4 100644
 --- a/.travis.yml

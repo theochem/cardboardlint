@@ -24,6 +24,7 @@ This script checks for three ugly things: tabs, trailing whitespace and trailing
 from __future__ import print_function
 
 import codecs
+from typing import List
 
 from cardboardlint.common import Message, Linter
 
@@ -56,28 +57,45 @@ def run_whitespace(_config, filenames):
     # Loop over all files and check whitespace in each file.
     messages = []
     for filename in filenames:
-        with codecs.open(filename, encoding='utf-8') as f:
-            line = None
-            lineno = -1
-            for lineno, line in enumerate(f):
-                # Check for tabs
-                charno = line.find('\t')
-                if charno >= 0:
-                    messages.append(Message(filename, lineno + 1, charno + 1, 'tab'))
-                # Check for carriage return
-                charno = line.find('\r')
-                if charno >= 0:
-                    messages.append(Message(filename, lineno + 1, charno + 1, 'carriage return'))
-                # Check for trailing whitespace
-                if line[:-1] != line.rstrip():
-                    messages.append(Message(filename, lineno + 1, None, 'trailing whitespace'))
-            # Perform some checks on the last line
-            if line is not None:
-                if len(line.strip()) == 0:
-                    messages.append(Message(filename, lineno + 1, None, 'trailing empty line'))
-                if not line.endswith("\n"):
-                    messages.append(Message(filename, lineno + 1, None, 'last line missing \\n'))
+        try:
+            _check_file(filename, messages)
+        except UnicodeDecodeError as err:
+            messages.append(Message(filename, None, None, str(err)))
     return messages
+
+
+def _check_file(filename: str, messages: List[str]):
+    """Look for white-space issues.
+
+    Parameters
+    ----------
+    filename
+        File to be checked
+    messages
+        A list of messages to append to. (output arg)
+
+    """
+    with codecs.open(filename, encoding='utf-8') as f:
+        line = None
+        lineno = -1
+        for lineno, line in enumerate(f):
+            # Check for tabs
+            charno = line.find('\t')
+            if charno >= 0:
+                messages.append(Message(filename, lineno + 1, charno + 1, 'tab'))
+            # Check for carriage return
+            charno = line.find('\r')
+            if charno >= 0:
+                messages.append(Message(filename, lineno + 1, charno + 1, 'carriage return'))
+            # Check for trailing whitespace
+            if line[:-1] != line.rstrip():
+                messages.append(Message(filename, lineno + 1, None, 'trailing whitespace'))
+        # Perform some checks on the last line
+        if line is not None:
+            if len(line.strip()) == 0:
+                messages.append(Message(filename, lineno + 1, None, 'trailing empty line'))
+            if not line.endswith("\n"):
+                messages.append(Message(filename, lineno + 1, None, 'last line missing \\n'))
 
 
 # pylint: disable=invalid-name

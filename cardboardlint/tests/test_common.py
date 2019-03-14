@@ -87,10 +87,18 @@ def test_matches_filefilter():
     assert not matches_filefilter('foo/test/test_a.py', ['- */test_*.py', '+ *.py'])
     assert matches_filefilter('scripts/runfoo', ['+ scripts/*'])
 
-    with assert_raises(ValueError):
-        matches_filefilter('foo.py', ['b *.py'])
-    with assert_raises(ValueError):
-        matches_filefilter('foo.py', ['bork'])
+    assert matches_filefilter('foo/a.py', ['+ *.py'])
+    assert not matches_filefilter('foo/a.py', ['+ bar/*.py'])
+    assert not matches_filefilter('a.py', ['+ bar/*.py'])
+
+    assert matches_filefilter('foo\\/a.py', ['+ foo*.py'])
+    assert not matches_filefilter(r'foo\\/a.py', ['+ a.py'])
+    assert not matches_filefilter(r'foo/\\/a.py', ['+ foo*.py'])
+    assert matches_filefilter(r'foo/\\/a.py', ['+ foo/*.py'])
+
+    assert_raises(ValueError, matches_filefilter, 'foo.py', ['b *.py'])
+    assert_raises(ValueError, matches_filefilter, 'foo.py', ['bork'])
+    assert_raises(ValueError, matches_filefilter, 'foo.py', ['+ \\*py'])
 
 
 def test_offset_step():

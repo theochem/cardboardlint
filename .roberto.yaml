@@ -1,0 +1,46 @@
+project:
+  name: cardboardlint
+  packages:
+    - conda_name: cardboardlint
+      tools:
+        - write-py-version
+        - test-example
+        - cardboardlint-static
+        - cardboardlint-dynamic
+        - nose
+        - build-py-source
+        - build-conda
+        - deploy-pypi
+        - deploy-conda
+        - deploy-github
+tools:
+  # override the default config, add pip install from current directory
+  cardboardlint-static:
+    pip_requirements: []
+    commands_master:
+      - pip install .
+      - cardboardlinter -f static
+    commands_feature:
+      - pip install .
+      - 'cardboardlinter -r {config.git.merge_branch} -f static'
+
+  # override the default config, add pip install from current directory
+  cardboardlint-dynamic:
+    pip_requirements: []
+    commands_master:
+      - pip install .
+      - cardboardlinter -f dynamic
+    commands_feature:
+      - pip install .
+      - 'cardboardlinter -r {config.git.merge_branch} -f dynamic'
+
+  # new tool, to run on the example directory
+  test-example:
+    task: test-inplace
+    conda_requirements:
+      - coverage
+    commands:
+      - pip install .
+      - cd tools/example; coverage erase;
+        coverage run --include=*cardboardlint* --omit=*poor* -m cardboardlint;
+        coverage xml -i -o ../../coverage_examples_all.xml

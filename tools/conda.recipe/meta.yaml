@@ -1,0 +1,39 @@
+package:
+  version: "{{ PROJECT_VERSION }}"
+  name: 'cardboardlint'
+
+source:
+  path: ../../
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps"
+  entry_points:
+    - cardboardlinter = cardboardlint.__main__:main
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - pyyaml
+
+test:
+  requires:
+    - nose
+  imports:
+    - cardboardlint
+  commands:
+    - nosetests -v cardboardlint
+
+about:
+  dev_url: https://github.com/theochem/cardboardlint
+  description: Collection of configurable development workflows
+  license: GNU General Public License v3 or later (GPLv3+)
+  license_family: GPL3
+  home: https://github.com/theochem/cardboardlint
+  license_file: LICENSE.txt
+  doc_url: https://github.com/theochem/cardboardlint

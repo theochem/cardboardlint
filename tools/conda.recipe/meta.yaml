@@ -31,9 +31,9 @@ test:
 
 about:
   dev_url: https://github.com/theochem/cardboardlint
-  description: Collection of configurable development workflows
-  license: GNU General Public License v3 or later (GPLv3+)
-  license_family: GPL3
+  description: Cheap lint solution for pull requests
+  license: GPL-3.0
+  license_family: GPL
   home: https://github.com/theochem/cardboardlint
   license_file: LICENSE.txt
   doc_url: https://github.com/theochem/cardboardlint

@@ -55,7 +55,6 @@ setup(
     description='Cheap lint solution for PRs.',
     long_description=load_readme(),
     install_requires=['pyyaml'],
-    zip_safe=False,
     entry_points={
         'console_scripts': ['cardboardlinter = cardboardlint.__main__:main']
     },
@@ -65,6 +64,5 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-    ],
-    install_requires=['pyyaml'],
+    ]
 )

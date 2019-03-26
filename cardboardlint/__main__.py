@@ -171,7 +171,7 @@ def load_config(config_file):
 
     """
     with open(config_file, 'r') as f:
-        raw_config = yaml.load(f)
+        raw_config = yaml.safe_load(f)
 
     prefilter = raw_config.get('pre_filefilter', ['+ *'])
 

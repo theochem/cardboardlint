@@ -22,16 +22,39 @@
 
 from __future__ import print_function
 
+import os
+
 from setuptools import setup
 
+
+NAME = 'cardboardlint'
+
+
+def get_version():
+    """Read __version__ from version.py, with exec to avoid importing it."""
+    try:
+        with open(os.path.join(NAME, 'version.py'), 'r') as f:
+            myglobals = {}
+            exec(f.read(), myglobals)  # pylint: disable=exec-used
+        return myglobals['__version__']
+    except IOError:
+        return "0.0.0.post0"
+
+
+def load_readme():
+    """Load README for display on PyPI."""
+    with open('README.rst') as f:
+        return f.read()
+
+
 setup(
-    name='cardboardlint',
-    version='0.0.0',
+    name=NAME,
+    version=get_version(),
+    package_dir={NAME: NAME},
+    packages=[NAME, NAME + '.test'],
     description='Cheap lint solution for PRs.',
-    package_dir={'cardboardlint': 'cardboardlint'},
-    packages=['cardboardlint', 'cardboardlint.tests'],
+    long_description=load_readme(),
     install_requires=['pyyaml'],
-    zip_safe=False,
     entry_points={
         'console_scripts': ['cardboardlinter = cardboardlint.__main__:main']
     },
@@ -41,5 +64,5 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-    ],
+    ]
 )

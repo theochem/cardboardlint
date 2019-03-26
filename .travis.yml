@@ -1,80 +1,87 @@
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      language: generic
+      env:
+        - ROBERTO_CONDA_PINNING="python 3.6"
+        - ROBERTO_DEPLOY_BINARY=1
+    - os: linux
+      dist: xenial
+      language: generic
+      env:
+        - ROBERTO_CONDA_PINNING="python 3.7"
+        - ROBERTO_DEPLOY_NOARCH=1
+        - ROBERTO_DEPLOY_BINARY=1
+    - os: osx
+      osx_image: xcode9.4
+      language: generic
+      env:
+        - ROBERTO_CONDA_PINNING="python 3.6"
+        - ROBERTO_DEPLOY_BINARY=1
+    - os: osx
+      osx_image: xcode9.4
+      language: generic
+      env:
+        - ROBERTO_CONDA_PINNING="python 3.7"
+        - ROBERTO_DEPLOY_BINARY=1
+
 env:
-  matrix:
-    - MYCONDAPY=3.6
-    - MYCONDAPY=3.7
   global:
-    - PYPKG=cardboardlint
-    - GITHUB_REPO_NAME=theochem/cardboardlint
+    # Install conda in a *sub*directory of a directory cached by travis.
+    - ROBERTO_CONDA_BASE_PATH=${HOME}/cache/miniconda3
+    # Tell Roberto to upload coverage results
+    - ROBERTO_UPLOAD_COVERAGE=1
+    # Build conda packages outside the miniconda tree, to avoid caching.
+    # This makes it possible to still deploy packages after cache cleaning.
+    - CONDA_BLD_PATH=${HOME}/conda-bld
+    # Tell roberto which branch is being merged into, in case of a PR.
+    - ROBERTO_MERGE_BRANCH=${TRAVIS_BRANCH}
+    # Debugging options
+    # - HUB_VERBOSE=1
 
-# Do not use Travis Python to save some time.
-language: generic
-os:
-  - linux
-#   - osx
-# osx_image: xcode6.4
-dist: trusty
-sudo: false
+    # GITHUB_TOKEN
+    # yamllint disable-line rule:line-length
+    - secure: "dm5ZCqRe3Bbig6yZ3qRt3Yn8MOn/DSKE7kN+Yu2CS26Ue+A1X9FFYOTGwc30hLIdDJ3tRlEIV0l6PUwKN+49CBkGuF4U0YT9KistXtZpHZxJmLrhNPVwmEcEgXRoRDuazCoKVut86lSgtnGaiF3gCl9Vi2y+wjmuBPiydn8wAwgWBONBbGlrOSsvz6WVvNaaILuPz+0OZ/C1dhUJfEWH8rsJXARR28aqyofMFUbF8n/hMj2DXW7fqkvVFyDK6why+prgex71eUUBCPMFfiR9oN+laGWQ1/ZJbqVQeVWSFereDRhTEjr45Qnk9x+HxGGQ+GFAB5t+Dfe7fOXiIewQn2eO/XwRcZ7XH5r/v0Ut0aq25mK0QVBnimq6nAWG/YgfWqGuiH54Yu9b3GZ6SMn7we8apOy2pJzBKjpl/M6RSN/r7dxby61B3mImvG2j+SUpoaRf8D80df20KFLDvJHxev2qaZa1xHTUEVQWItQgRSGyflUWuCjnl8n/BKqv/uLi+Qj9zttCHT+yF/gArqR9tx7IDlECg8GzQiGqyFW0CboPSkZ8xbxBzob636Sst0B0b5Zw4qUF1UKqYeeOJCdbTqOyGajbt74PqLUSCdFFe2BXIXE+TDECQDr5Bfj++sw1axgK3UXA626vKciAe7siB5R4jaNOLQEJV5aPMn7H/TA="
+    # ANACONDA_API_TOKEN
+    # yamllint disable-line rule:line-length
+    - secure: "M+qeOfcpAknb4DtHuisAQfXN9BsivmivM930who/gSp9oaXPPLhzEpNDT2NWrf7dMsS3jDmYxPn0aH5jEn17WHA22dfeICTEvYkIi3YMIuVYY0uluaDSu16dLwPJcJTdsfniMsnFpasxVZTXDM+qF/9ANSNKP6Mno5qapSQPZnTrhWCcmGwIo5ZH/s6Mq+eTgQI4uQJxNJqV3keEk6YTR/Cml0b5VkWSgl2R+qdBp4YJezuoiYbvrm+pVPzi4vsTV/HptXHvHY67McZB/Y5PEXQqQ+1UpZfIVMzcByBIQWI3SAAOT3+uOdgqEJ5Rw4kWcX+TeDpqCZ3VGQcW2li0QkKrefadS1ncQMqwzQBomzGy+qt43tag4jwyQIJ2Bcw/EWlYAid/nZZba98CA42U4tqtZ2ENKWWVkzoEBpaR247nLzWni+rLszf+nDUOaYcAkVqJlWMfrIbUsAB/exa5poKLS3xwFENjLOA2b458jEYRGTFMgdLkfgFW10SqzvFgoEke1dYeu1OsfZ7snXJks3lwG+OC8Pl89toIQnkF8dMrDFq1O/Ic9LWvYciJdAFB2zHpO6+5cH+NlWpBOpEZzek/aIbg11VZK2j+5SgTqNAO40pqtrKn5ANODuIqQN6dgZrl0qv+aV5yyOGGyrJYWOGpcBW0v4vrlqpYBBmsU/U="
+    # TWINE_PASSWORD
+    # yamllint disable-line rule:line-length
+    - secure: "tVPyMCJBH7nWaRG/IijCv/vmuZbOO8pbzkouVPg9e58bWPa40aFnPbhxmNxc14Oz7FD5dmPRo0r00aEgt+B52fQiHGKZCVbaPkvgqV41XwSMivlJ798F7GJUi7uAvJSwm4737kwAGGaQpPcKb3ydr/3OR59H99BXo0snsfbFXrYhRZNNOmuwC5TMYjrjRVDnP9jg2kJ13oOSDXiOMM3W8/pa6hnTf1wSW1wG3p40PXIbpZBTg4XFzV2gBKSy4hC7vGD9LnVqfeUQVXQMlPQGFuO7et+4SOokdCzXPMmNC3NwgtZaU0JKse4eqKSChHgv80sxzutVQiDcnbElSOuscwM3/Zv7Qq4GOqyrnA0i8Gq6Dx1grvYfxX/92XpzjpfARfoSC2zNKAxlsFjHzULCscaC6/QoSnttO7GWlGgZLKnui9hC+N1YhivRFYELYoNY9EtxkuvBj2mvOEkGM/fBmcW1ed1I5gKhwKJPLL5RZ8eN6ekXZqWA86G+Y6D1d2hn0HqUgm1RzlUOsW96Z/SCuGM+sZpOEaaChLNOIjAfq06MaEJPA5OxWLFw1/sGddKRaWa82CGN19obhAEYj5mEUkXv15MJsrasQrIqqc9e/vcz9xtmF21Lc4nsanbLLpEoZKKcQ4y0wWw4bmNKyHt++CSuZ5lx/HQ0pRgT9JFoxN0="
+    - TWINE_USERNAME: theochem
 
-branches:
-  only:
-    - master
-    - /^[0-9]+\.[0-9]+(\.[0-9]+)?([ab][0-9]+)?$/
+cache:
+  # More time is needed for caching due to the sheer size of the conda env.
+  timeout: 1000
+  directories:
+    - ${HOME}/cache
 
 install:
-  # Get miniconda. Take the right version, so re-installing python is only needed for 3.5.
-  - mkdir -p $HOME/download;
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-        -O $HOME/download/miniconda.sh;
-    else
-      wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-        -O $HOME/download/miniconda.sh;
+  # Disable deployment when TRAVIS_TAG is not set. This avoids duplicate deployments.
+  - if [[ -z $TRAVIS_TAG ]]; then
+      export ROBERTO_DEPLOY_BINARY=0 ROBERTO_DEPLOY_NOARCH=0;
     fi
-  - bash $HOME/download/miniconda.sh -b -p $HOME/miniconda
-  - source $HOME/miniconda/bin/activate
-  - hash -r
-
-  # Configure conda and get a few essentials
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-  # Get the right python version for building. This only does something for 3.5.
-  # Install extra package needed to make things work. Most things can be listed as
-  # dependencies on metal.yaml and setup.py, unless setup.py already imports them.
-  # Install conda tools for packaging and uploading
-  - conda install python=${MYCONDAPY}
-      conda-forge::cppcheck conda-forge::doxygen conda-build anaconda-client
-  # Pip install python-based linters
-  - pip install pylint codecov coverage pycodestyle pydocstyle flake8 yamllint nose cpplint
-  # Useful for debugging
-  - conda info -a
+  # Get a basic python 3 with pip to run roberto
+  - python3 --version
+  - wget --no-clobber -O ${HOME}/cache/get-pip.py https://bootstrap.pypa.io/get-pip.py || true
+  - python3 ${HOME}/cache/get-pip.py --user
+  - python3 -m pip install 'roberto<2.0.0' --user
 
 script:
-  # Install the package, in a way that facilitates coverage analysis on the installed script.
-  - python setup.py develop
+  # Instead of simply calling `rob`, we do something that always works on osx too.
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+      python3 -m roberto robot;
+    else
+      python3 -m roberto;
+    fi
 
-  # Run the cardboardlinter, to get the exit code for Travis CI. No arguments because we
-  # want everything to be clean.
-  - cardboardlinter
-
-  # Run tests out of source tree, to make sure that installed version is tested.
-  - (cd;
-     coverage erase;
-     nosetests $PYPKG -v --detailed-errors --with-coverage --cover-package=$PYPKG
-               --cover-tests --cover-inclusive --cover-branches &&
-     coverage xml -i -o coverage_unittest.xml)
-
-  # Run the program on the example, without using the diff
-  - (cd tools/example;
-     coverage erase;
-     coverage run --include=*cardboardlint* --omit=*poor* $(which cardboardlinter);
-     coverage xml -i -o ~/coverage_examples_all.xml)
-
-  # Build source package, should work too and needed for deployment to Github and
-  # PyPI.
-  - python setup.py sdist
-
-after_success:
-  # Upload the coverage analysis
-  - codecov --file ~/coverage_unittest.xml --name unittest
-  - codecov --file ~/coverage_examples_all.xml --name examples_all
-  - codecov --file ~/coverage_examples_refspec.xml --name examples_refspec
+before_cache:
+  - rm -rf ${ROBERTO_CONDA_BASE_PATH}/conda-bld
+  - rm -rf ${ROBERTO_CONDA_BASE_PATH}/locks
+  - rm -rf ${ROBERTO_CONDA_BASE_PATH}/pkgs
+  - rm -rf ${ROBERTO_CONDA_BASE_PATH}/var
+  - rm -rf ${ROBERTO_CONDA_BASE_PATH}/envs/*/conda-bld
+  - rm -rf ${ROBERTO_CONDA_BASE_PATH}/envs/*/locks
+  - rm -rf ${ROBERTO_CONDA_BASE_PATH}/envs/*/pkgs
+  - rm -rf ${ROBERTO_CONDA_BASE_PATH}/envs/*/var

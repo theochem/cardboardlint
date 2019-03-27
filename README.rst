@@ -25,7 +25,7 @@ It can be used as follows:
       pip install --upgrade git+https://github.com/theochem/cardboardlint.git@master#egg=cardboardlint
 
 - Add a ``.cardboardlint.yml`` to the root of your source tree. It should at least contain
-  a `linters` section with a list of linters, e.g.
+  a ``linters`` section with a list of linters, e.g.
 
   .. code:: yaml
 
@@ -46,6 +46,8 @@ It can be used as follows:
 
   .. code:: yaml
 
+      pre_filefilter: ['+ tools/demo/*.py', '- tools/*', '+ *']
+
       linters:
       - pylint:
           pylintrc: tools/pylintrc
@@ -57,17 +59,39 @@ It can be used as follows:
       - import:
       ...
 
-  Each linter has a `filefilter` option, which is a list of rules to test if a file should
-  be considered for linting or not. Each rule consists of a result, `+` (include) or a `-`
-  (exclude), followed by a glob pattern. If a pattern matches, the result is found and
-  further rules are not considered. If no rules apply, the file is excluded.
+
+  When cardboardlint starts, it makes a list of files not ignored by
+  git in the current repository. These filenames are first filtered by a
+  so-called ``pre_filefilter``. Files that pass the ``pre_filefilter`` are then
+  tested with linter-specific ``filefilters`` to end up with a list of files to
+  be checked by a given linter.
+
+  A ``pre_filefilter`` or ``filefilter`` consists of a list of rules to test if
+  a file should be considered for linting or not. Each rule starts with a
+  possible outcome, ``+`` (include) or a ``-`` (exclude), followed by a glob
+  pattern. At the moment, the pattern ignores the presence of directory
+  separators and treats the complete path as a single string on which the
+  pattern is tested. The rules are tested in order and when a pattern matches,
+  the corresponding decision is made (include and exclude), without considering
+  subsequent rules. When no patterns give a match, the file is excluded.
+
+  The following tricks might be useful:
+
+  - If you would like to include files that did not match any pattern, add
+    ``+ *`` as last pattern, which is often useful for the ``pre_filefilter``.
+
+  - If you would like to include all python files, in all directories, use
+    ``+ *.py``. The wildcard will also match directories containing the Python
+    file. For example it would match ``a/b`` in the path ``a/b.py``.
 
 - Install the linters you intend to run (either locally or in your CI environment). These
   dependencies are not installed automatically because you may not want to use all of
   them.
 
-  We do provide conda packages for linters, when needed in our channel on Anaconda.org:
-  https://anaconda.org/theochem. For now, we have only added a package for ``cppcheck``.
+  Conda packages for all linters supported linters can be found in the conda-forge channel
+  on Anaconda: https://anaconda.org/conda-forge. For now, we have only added a
+  package for ``cppcheck`` and ``cpplint``. All other linters were already available
+  on conda-forge.
 
 - Download and install the latest version from git and run the cardboardlinter.
 
@@ -95,3 +119,7 @@ It can be used as follows:
 
         pip install --upgrade --user git+https://github.com/theochem/cardboardlint.git@master#egg=cardboardlint
         cardboardlinter
+
+  - One can also use Roberto to drive the entire build+test+package workflow,
+    which includes linting with Cardboardlint.
+    See https://theochem.github.io/roberto/

@@ -143,8 +143,8 @@ change log
 - Version 1.0.0 March 27
 
   First release, mainly in anticipation of API-breaking changes, which will
-  result in a major version change. By making a release, we can handle this
-  change in API gracefully. Notable features:
+  result in a major version increase. By making a release, we can handle this
+  change in API gracefully. Notable features include:
 
   - Support for the following linters: cppcheck, ccplint, doxygen, flake8,
     header (internal), import (internal), namespace (internal), pycodestyle,
@@ -155,6 +155,9 @@ change log
     this will then only show errors that are relevant for the code touched in
     the PR. This is intended for making life easy for contributors, i.e. to not
     bother them with linting issues in code they have not touched.
+
+  - Flexible file filtering, essentially a simplified version of rsync's file
+    filtering rules.
 
   - Consistent and colored output for all linters, making it easy to process
     linting issues.

@@ -9,20 +9,31 @@ cardboardlint
 
 Cheap lint solution for PRs.
 
-This is a wrapper for other linters, which only reports messages related to lines that
-have changed compared to some other commit, e.g. the head of the branch being merged into.
-It is a simple and more customizable alternative to tools like Hound CI, Stickler CI,
-Linthub.io, landscape.io etc.
+This is a wrapper for a collection of linters, intended to be used on a project
+in a Git repository. Cardboardlint can report only those messages related to
+lines that have changed in your development branch, compared to another commit,
+e.g. the HEAD of the branch to merge into. This is intended to make life
+easier for contributors to a project: in their pull requests, they will only see
+linting issues related to the code they have touched. Cardboardlint is a simple
+non-hosted and more customizable alternative to commercial services like Hound
+CI, Stickler CI, Linthub.io, landscape.io etc.
 
-It can be used as follows:
+Cardboardlint can be used as follows:
 
-- Install cardboardlint, which requires python 3.6 or 3.7 and PyYaml.
-  At the moment we don't have a release yet, so it needs to be directly
-  installed from our git repository as follows:
+- Install cardboardlint, which requires python 3.6 or 3.7 and PyYaml. You must
+  have Python 3 installed, PyYaml will be installed automatically for you with
+  the instructions below.
 
   .. code:: bash
 
-      pip install --upgrade git+https://github.com/theochem/cardboardlint.git@master#egg=cardboardlint
+      # Install cardboardlint with pip. Any of the following that works for you
+      # is fine:
+      pip install cardboardlint
+      pip install cardboardlint --user
+      python3 -m pip install cardboardlint
+      python3 -m pip install cardboardlint --user
+      # Or install cardboardlint with conda:
+      conda install theochem::cardboardlint
 
 - Add a ``.cardboardlint.yml`` to the root of your source tree. It should at least contain
   a ``linters`` section with a list of linters, e.g.
@@ -124,3 +135,26 @@ It can be used as follows:
   - One can also use Roberto to drive the entire build+test+package workflow,
     which includes linting with Cardboardlint.
     See https://theochem.github.io/roberto/
+
+
+change log
+----------
+
+- Version 1.0.0 March 27
+
+    Firs release, mainly in anticipation of API-breaking changes, which will
+    result in a major version change. By making a release, we can handle this
+    change in API gracefully. Notable features:
+
+    - Support for the following linters: cppcheck, ccplint, doxygen, flake8,
+      header (internal), import (internal), namespace (internal), pycodestyle,
+      pydocstyle, pylint, whitespace (internal), yamllint
+
+    - For all supported linters, the output can be restricted to files and
+      (lines in those files) that have changed between two git commits. In pull
+      requests, this will then only show errors that are relevant for the code
+      touched in the PR. This is intended for making life easy for contributors,
+      i.e. to not bother them with linting issues in code they have not touched.
+
+    - Consistent and colored output for all linters, making it easy to process
+      linting issues.

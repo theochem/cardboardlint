@@ -140,7 +140,11 @@ Cardboardlint can be used as follows:
 change log
 ----------
 
-- Version 1.0.0 March 27
+- Version 1.0.1 March 30, 2019
+
+  - Add missing config options for cpplint.
+
+- Version 1.0.0 March 27, 2019
 
   First release, mainly in anticipation of API-breaking changes, which will
   result in a major version increase. By making a release, we can handle this

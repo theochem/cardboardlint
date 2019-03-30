@@ -33,7 +33,11 @@ DEFAULT_CONFIG = {
     # Filename filter rules
     'filefilter': ['+ *.h', '+ *.h.in', '+ *.cpp', '+ *.c'],
     # Location of the file
-    'script': 'cpplint'
+    'script': 'cpplint',
+    # Rules to include or exclude
+    'filter': '-build/include_order,-runtime/int',
+    # Max line length
+    'linelength': 100,
 }
 
 
@@ -62,7 +66,9 @@ def run_cpplint(config, filenames):
     messages = []
     if len(filenames) > 0:
         # Call cpplint
-        command = ([config['script'], '--linelength=100', '--filter=-runtime/int'] +
+        command = ([config['script'],
+                    '--linelength={}'.format(config['linelength']),
+                    '--filter={}'.format(config['filter'])] +
                    filenames)
         output = run_command(command, has_failed=_has_failed)[1]
 

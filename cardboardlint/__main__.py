@@ -100,7 +100,7 @@ def main():
 def parse_args():
     """Parse the arguments given to the script."""
     def parse_numcpu(string):
-        return len(os.sched_getaffinity(0)) if string == 'auto' else int(string)
+        return os.cpu_count() if string == 'auto' else int(string)
 
     parser = argparse.ArgumentParser(prog='cardboardlint')
     parser.add_argument(
@@ -121,8 +121,8 @@ def parse_args():
     parser.add_argument(
         '-n', '--numproc', default=1, type=parse_numcpu,
         help='The number of cores to use. When auto is given, the number of available '
-             'cores is os.sched_getaffinity. This option is just passed on to linters '
-             'that support it. Cardboardlint still runs all linters serially.')
+             'cores is determined with os.cpu_count(). This option is just passed on '
+             'to linters that support it. Cardboardlint still runs all linters serially.')
     parser.add_argument(
         dest='selection', nargs='*', default=None,
         help='Run just the given linters. List the names to be considered before '

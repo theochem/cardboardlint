@@ -62,7 +62,7 @@ LINTERS = dict((linter.name, linter) for linter in [
 
 
 def main():
-    """Run selected liners and report."""
+    """Run selected linters and report."""
     # Get arguments.
     args = parse_args()
 

@@ -19,20 +19,20 @@ tools:
     pip_requirements: []
     commands_master:
       - pip install .
-      - cardboardlinter -f static
+      - cardboardlinter -f static -n auto
     commands_feature:
       - pip install .
-      - 'cardboardlinter -r {config.git.merge_branch} -f static'
+      - 'cardboardlinter -r {config.git.merge_branch} -f static -n auto'
 
   # override the default config, add pip install from current directory
   cardboardlint-dynamic:
     pip_requirements: []
     commands_master:
       - pip install .
-      - cardboardlinter -f dynamic
+      - cardboardlinter -f dynamic -n auto
     commands_feature:
       - pip install .
-      - 'cardboardlinter -r {config.git.merge_branch} -f dynamic'
+      - 'cardboardlinter -r {config.git.merge_branch} -f dynamic -n auto'
 
   # new tool, to run on the example directory
   test-example:
@@ -42,5 +42,5 @@ tools:
     commands:
       - pip install .
       - cd tools/example; coverage erase;
-        coverage run --include=*cardboardlint* --omit=*poor* -m cardboardlint;
+        coverage run --include=*cardboardlint* --omit=*poor* -m cardboardlint -n auto;
         coverage xml -i -o ../../coverage_examples_all.xml

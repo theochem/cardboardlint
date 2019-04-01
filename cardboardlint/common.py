@@ -22,6 +22,7 @@ from __future__ import print_function
 
 from fnmatch import fnmatch
 import subprocess
+from typing import List, Dict, Set
 
 
 __all__ = ['Message', 'run_command', 'matches_filefilter', 'filter_configs', 'Linter',
@@ -321,19 +322,22 @@ class Linter:
         self.language = language
         self.flags = derive_flags(style, language)
 
-    def __call__(self, config, files_lines):
+    def __call__(self, config: dict, files_lines: Dict[str, Set[int]], numproc: int = 1) \
+            -> List[Message]:
         """Run the linter.
 
         Parameters
         ----------
-        config : dict
-            Cofiguration of the linter, loaded from .cardboardlint.yml
-        files_lines : dict
+        config
+            Dictionary that contains the configuration for the linter.
+        files_lines
             Dictionary of filename to the set of line numbers (that have been modified).
+        numproc
+            The number of processors to use.
 
         Returns
         -------
-        messages : list
+        messages
             A list of Message instances.
 
         """
@@ -344,7 +348,7 @@ class Linter:
                      if matches_filefilter(filename, config['filefilter'])]
 
         # Call the linter and return messages
-        return self.run(config, filenames)
+        return self.run(config, filenames, numproc)
 
 
 def derive_flags(style, language):

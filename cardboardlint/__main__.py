@@ -23,6 +23,7 @@
 from __future__ import print_function
 
 import argparse
+import os
 import sys
 
 import yaml
@@ -84,7 +85,7 @@ def main():
         print('### {:^72} ###'.format(linter.name))
         print('~'*80)
         messages = [message for message
-                    in linter(linter_config, files_lines)
+                    in linter(linter_config, files_lines, args.numproc)
                     if message.indiff(files_lines)]
         messages.sort()
         if len(messages) > 0:
@@ -98,6 +99,9 @@ def main():
 
 def parse_args():
     """Parse the arguments given to the script."""
+    def parse_numcpu(string):
+        return len(os.sched_getaffinity(0)) if string == 'auto' else int(string)
+
     parser = argparse.ArgumentParser(prog='cardboardlint')
     parser.add_argument(
         '-r', '--refspec', dest='refspec', nargs='?', default=None,
@@ -114,6 +118,11 @@ def parse_args():
         help='Specify a subset of the tests to be executed in the form N/M where N and M '
              'are integers. This means that the tests are divided in M groups of which '
              'the Nth is selected, with N going from 1 to N (inclusive).')
+    parser.add_argument(
+        '-n', '--numproc', default=1, type=parse_numcpu,
+        help='The number of cores to use. When auto is given, the number of available '
+             'cores is os.sched_getaffinity. This option is just passed on to linters '
+             'that support it. Cardboardlint still runs all linters serially.')
     parser.add_argument(
         dest='selection', nargs='*', default=None,
         help='Run just the given linters. List the names to be considered before '

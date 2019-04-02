@@ -100,7 +100,13 @@ def main():
 def parse_args():
     """Parse the arguments given to the script."""
     def parse_numcpu(string):
-        return os.cpu_count() if string == 'auto' else int(string)
+        if string == 'auto':
+            if hasattr(os, 'sched_getaffinity'):
+                # Keep pylint happy on OSX.
+                # pylint: disable=no-member
+                return len(os.sched_getaffinity(0))
+            return os.cpu_count()
+        return int(string)
 
     parser = argparse.ArgumentParser(prog='cardboardlint')
     parser.add_argument(

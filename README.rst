@@ -105,7 +105,20 @@ Cardboardlint can be used as follows:
   package for ``cppcheck`` and ``cpplint``. All other linters were already available
   on conda-forge.
 
-- Download and install the latest version from git and run the cardboardlinter.
+- Run the cardboardlinter.
+
+  .. code:: bash
+
+    # runs all linters and use multiple cpus
+    cardboardlinter -n auto
+    # runs all linters and only shows messages for changes relative to master
+    cardboardlinter -r master
+    # run only static linters
+    cardboardlinter -f static
+    # run only dynamic linters, which require in-place build
+    cardboardlinter -f dynamic
+
+- Usage in CI:
 
   - Travis-CI (in ``.travis.yml``). This will only report messages for lines that have
     changed in the PR.
@@ -121,7 +134,7 @@ Cardboardlint can be used as follows:
         script:
         # Run the cardboardlinter, in case of pull requests
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-            cardboardlinter --refspec $TRAVIS_BRANCH;
+            cardboardlinter --refspec $TRAVIS_BRANCH -n auto;
           fi
 
   - Local machine (without venv). This checks all of the code, not just lines that have
@@ -139,6 +152,10 @@ Cardboardlint can be used as follows:
 
 change log
 ----------
+
+- Version 1.1.0 April 1, 2019
+
+  - Add option for number of processors to use.
 
 - Version 1.0.1 March 30, 2019
 

@@ -153,7 +153,7 @@ Cardboardlint can be used as follows:
 change log
 ----------
 
-- Version 1.1.0 April 1, 2019
+- Version 1.1.0 April 3, 2019
 
   - Add option for number of processors to use.
 

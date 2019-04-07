@@ -12,21 +12,25 @@
     :target: https://github.com/theochem/cardboardlint/releases
 
 
-cardboardlint
+Introduction
 -------------
 
-Cheap lint solution for PRs.
+Cardboardlint is a cheap lint solution for pull requests.
 
-This is a wrapper for a collection of linters, intended to be used on a project
-in a Git repository. Cardboardlint can report only those messages related to
-lines that have changed in your development branch, compared to another commit,
-e.g. the HEAD of the branch to merge into. This is intended to make life
-easier for contributors to a project: in their pull requests, they will only see
-linting issues related to the code they have touched. Cardboardlint is a simple
-non-hosted and more customizable alternative to commercial services like Hound
-CI, Stickler CI, Linthub.io, landscape.io etc.
+It is a non-hosted and more customizable alternative to commercial services like
+Hound CI, Stickler CI, Linthub.io, landscape.io etc.
 
-Cardboardlint can be used as follows:
+Cardboardlint wraps a collection of linters, intended to be used on a project
+in a Git repository. Cardboardlint is able to report just those messages related
+to lines that have changed in your development branch, compared to another
+commit, e.g. the HEAD of the master branch. This is intended to make life easier
+for contributors to a project: in their pull requests, they will only see
+linting issues related to the code they have touched. For some linters,
+cardboardlint also supports automatic fixes of linting issues, optionally
+restricted to code that has changed in your development branch.
+
+Usage
+-----
 
 - Install cardboardlint, which requires python 3.6 or 3.7 and PyYaml. You must
   have Python 3 installed, PyYaml will be installed automatically for you with
@@ -108,12 +112,12 @@ Cardboardlint can be used as follows:
   dependencies are not installed automatically because you may not want to use all of
   them.
 
-  Conda packages for all linters supported linters can be found in the conda-forge channel
-  on Anaconda: https://anaconda.org/conda-forge. For now, we have only added a
-  package for ``cppcheck`` and ``cpplint``. All other linters were already available
-  on conda-forge.
+  Conda packages for all supported linters can be found in the conda-forge channel
+  on Anaconda: https://anaconda.org/conda-forge. (We have added packages to
+  conda-forge for ``cppcheck`` and ``cpplint``.) All other linters were already
+  available on conda-forge.
 
-- Run the cardboardlinter.
+- Run the cardboardlinter, which can be done in several ways:
 
   .. code:: bash
 
@@ -126,6 +130,12 @@ Cardboardlint can be used as follows:
     # run only dynamic linters, which require in-place build
     cardboardlinter -f dynamic
 
+    # run fixers, which automaticaly solve trivial problems
+    cardboardlinter -F
+    # run fixers, which automaticaly solve trivial problems, only on those
+    # lines that have changed w.r.t. the master branch.
+    cardboardlinter -F -r master
+
 - Usage in CI:
 
   - Travis-CI (in ``.travis.yml``). This will only report messages for lines that have
@@ -136,7 +146,7 @@ Cardboardlint can be used as follows:
         install:
         # Install the latest cardboardlinter
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-            pip install --upgrade git+https://github.com/theochem/cardboardlint.git@master#egg=cardboardlint;
+            pip install --upgrade cardboardlint
           fi
 
         script:
@@ -145,21 +155,19 @@ Cardboardlint can be used as follows:
             cardboardlinter --refspec $TRAVIS_BRANCH -n auto;
           fi
 
-  - Local machine (without venv). This checks all of the code, not just lines that have
-    changed.
-
-    .. code:: bash
-
-        pip install --upgrade --user git+https://github.com/theochem/cardboardlint.git@master#egg=cardboardlint
-        cardboardlinter
-
   - One can also use Roberto to drive the entire build+test+package workflow,
     which includes linting with Cardboardlint.
     See https://theochem.github.io/roberto/
 
 
-change log
+Change log
 ----------
+
+- Development version (upcoming 1.2.0)
+
+  - Added support for fixers, initially only for the whitespace and header
+    linters.
+  - Removed some Python-2 compatibility code.
 
 - Version 1.1.0 April 3, 2019
 

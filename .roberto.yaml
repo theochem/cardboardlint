@@ -43,4 +43,9 @@ tools:
       - pip install .
       - cd tools/example; coverage erase;
         coverage run --include=*cardboardlint* --omit=*poor* -m cardboardlint -n auto;
-        coverage xml -i -o ../../coverage_examples_all.xml
+        coverage xml -i -o ../../coverage_examples_linter.xml
+      - cp -r tools/example tools/work
+      - cd tools/work; coverage erase;
+        coverage run --include=*cardboardlint* --omit=*poor* -m cardboardlint -n auto -F;
+        coverage xml -i -o ../../coverage_examples_fixer.xml
+      - rm -vrf tools/work

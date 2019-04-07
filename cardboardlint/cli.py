@@ -24,9 +24,12 @@ from importlib import import_module
 import os
 from pkgutil import iter_modules
 import sys
+from typing import Tuple, List
 
 import yaml
 
+from .linter import Linter
+from .report import Report
 from .utils import run_command, matches_filefilter
 
 
@@ -39,7 +42,7 @@ def main():
     args = parse_args()
 
     # Load lint configuration for module.
-    prefilter, configs = load_config('.cardboardlint.yml')
+    prefilter, configs = load_config('.cardboardlint.yml', fixers_only=args.fix)
 
     # Process git diff and select only those files that match the prefilter.
     files_lines = {
@@ -52,19 +55,11 @@ def main():
 
     returncode = 0
     for linter, linter_config in configs:
-        print('~'*80)
-        print('### {:^72} ###'.format(linter.name))
-        print('~'*80)
-        messages = [message for message
-                    in linter(linter_config, files_lines, args.numproc)
-                    if message.indiff(files_lines)]
-        messages.sort()
-        if len(messages) > 0:
-            print()
+        report = Report(linter.name, files_lines)
+        report.show_header()
+        linter(linter_config, report, args.numproc, args.fix)
+        if report.show_messages():
             returncode = -1
-            for message in messages:
-                print(message.format())
-        print()
     sys.exit(returncode)
 
 
@@ -101,6 +96,11 @@ def parse_args():
              'cores is determined with os.cpu_count(). This option is just passed on '
              'to linters that support it. Cardboardlint still runs all linters serially.')
     parser.add_argument(
+        '-F', '--fix', default=False, action='store_true',
+        help='Fix problems reported by linters. This restricts the selection of linters '
+             'to just those that can fix problems. Messages are only printed for '
+             'problems that could be fixed.')
+    parser.add_argument(
         dest='selection', nargs='*', default=None,
         help='Run just the given linters. List the names to be considered before '
              'applying filters. When none given, all configured linters are included.')
@@ -122,18 +122,23 @@ def _find_linters():
 LINTERS = _find_linters()
 
 
-def load_config(config_file):
+def load_config(config_file: str, fixers_only: bool = False) \
+        -> Tuple[List[str], List[Tuple[Linter, dict]]]:
     """Return dictionary that corresponds to the given yaml file.
 
     Parameters
     ----------
-    config_file : str
+    config_file
         Name of the configuration file
+    fixers_only
+        When True, only configs for linters with fixers are loaded.
 
     Returns
     -------
-    configs : list
-        A list of (linter_name, linter, linter_config) tuples.
+    prefilter
+        A list of prefilter strings.
+    configs
+        A list of (linter, linter_config) tuples.
 
     """
     with open(config_file, 'r') as f:
@@ -151,6 +156,8 @@ def load_config(config_file):
         linter = LINTERS.get(linter_name)
         if linter is None:
             raise ValueError("Unknown linter: {}".format(linter_name))
+        if fixers_only and not linter.can_fix:
+            continue
         if linter_config is None:
             linter_config = {}
         configs.append((linter, linter_config))
@@ -168,9 +175,10 @@ def run_diff(refspec_parent):
     Returns
     -------
     files_lines : dict
-        Dictionary with (filename,  line_numbers) to represent all changed lines in a way
-        that allows efficient testing in the `indiff` method of the Message class. When
-        line_numbers is None, it means that all lines should be considered for testing.
+        Dictionary with (filename, line_numbers) to represent all changed lines
+        in a way that allows efficient testing if a message should be reported.
+        When line_numbers is None, it means that all lines should be considered
+        for testing.
 
     """
     if refspec_parent is not None:

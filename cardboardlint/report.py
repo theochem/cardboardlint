@@ -19,26 +19,105 @@
 """Collection of classes and methods shared between different linters."""
 
 
-__all__ = ['Message']
+from .utils import matches_filefilter
+
+
+__all__ = ['Report']
+
+
+class Report:
+    """A collections of filenames (with line numbers( and linter messages."""
+
+    def __init__(self, linter_name: str, files_lines: dict):
+        """Initialize a Report object.
+
+        Parameters
+        ----------
+        linter_name
+            The name of the linter to report on.
+        files_lines
+            Dictionary with (filename, line_numbers) to report on.
+
+        """
+        self.linter_name = linter_name
+        self.files_lines = files_lines
+        self.messages = []
+
+    @property
+    def filenames(self):
+        """Return the filenames to be linted."""
+        return list(self.files_lines.keys())
+
+    def __call__(self, filename: str, lineno: int, charno: int, text: str) -> bool:
+        """Propose a new error message.
+
+        Parameters
+        ----------
+        filename
+            The filename from which the message is reported.
+        lineno
+            The line number at which the error/problem is reported.
+            None if no error/problem is reported.
+        charno
+            The character position at which the error/problem is reported.
+            None if no error/problem is reported.
+        text
+            A description of the error/problem.
+
+        Returns
+        -------
+        accepted
+            True if the error message is relevant for changes in the current
+            branch.
+
+        """
+        if filename in self.files_lines:
+            line_numbers = self.files_lines[filename]
+            if line_numbers is None or lineno is None or lineno in line_numbers:
+                self.messages.append(Message(filename, lineno, charno, text))
+                return True
+        return False
+
+    def filter(self, filefilter):
+        """Restrict the filenames to report on by the given file filters."""
+        self.files_lines = dict(
+            (filename, lines) for filename, lines in self.files_lines.items()
+            if matches_filefilter(filename, filefilter))
+
+    def show_header(self):
+        """Print a report header."""
+        print('~'*80)
+        print('### {:^72} ###'.format(self.linter_name))
+        print('~'*80)
+
+    def show_messages(self):
+        """Print messages for the current linter to stdout."""
+        if self.messages:
+            self.messages.sort()
+            print()
+            for message in self.messages:
+                print(message.format())
+        print()
+        return len(self.messages) > 0
 
 
 class Message:
     """Error message and meta information."""
 
-    def __init__(self, filename, lineno, charno, text):
+    def __init__(self, filename: str, lineno: int, charno: int, text: str):
         """Initialize a message.
 
         Parameters
         ----------
-        filename : str
+        filename
             The filename from which the message is reported.
-        lineno : int (or None)
+        lineno
             The line number at which the error/problem is reported.
             None if no error/problem is reported.
-        charno : int (or None)
+        charno
             The character position at which the error/problem is reported.
             None if no error/problem is reported.
-        text : str
+        text
             A description of the error/problem.
 
         """
@@ -81,20 +160,3 @@ class Message:
     def __str__(self):
         """Return a human-readable string representation."""
         return self.format(color=False)
-
-    def indiff(self, files_lines):
-        """Test if Message occurs in git diff results by checking the line numbers.
-
-        Parameters
-        ----------
-        files_lines : dict
-            Dictionary of filename to the set of line numbers (that have been modified).
-            Result of git diff from run_diff function. The set of line numbers may also
-            be None, indicating that all lines should be considered in that file.
-
-        """
-        if self.filename in files_lines:
-            line_numbers = files_lines[self.filename]
-            return line_numbers is None or self.lineno is None or self.lineno in line_numbers
-        else:
-            return False

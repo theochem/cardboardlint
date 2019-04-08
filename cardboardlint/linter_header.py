@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Cardboardlint is a cheap lint solution for pull requests.
 # Copyright (C) 2011-2017 The Cardboardlint Development Team
 #
@@ -24,7 +23,6 @@ is read in from some file and it is expected that the source files contain this 
 as a comment at the start of the file. Options can be used to allow other lines to be
 present, such as a shebang line or a mode line.
 """
-from __future__ import print_function
 
 import codecs
 from typing import List

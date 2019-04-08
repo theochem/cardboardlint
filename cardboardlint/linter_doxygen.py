@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Cardboardlint is a cheap lint solution for pull requests.
 # Copyright (C) 2011-2017 The Cardboardlint Development Team
 #
@@ -21,7 +20,6 @@
 
 This linter uses doxygen, see http://www.doxygen.org.
 """
-from __future__ import print_function
 
 import os
 from typing import List

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # Cardboardlint is a cheap lint solution for pull requests.
 # Copyright (C) 2011-2017 The Cardboardlint Development Team
 #
@@ -19,8 +17,6 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 # --
 """Cardboard linter driver script. See README.rst for details."""
-
-from __future__ import print_function
 
 import argparse
 import os

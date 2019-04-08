@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Cardboardlint is a cheap lint solution for pull requests.
 # Copyright (C) 2011-2017 The Cardboardlint Development Team
 #
@@ -21,7 +20,6 @@
 
 This test calls the flake program, see http://pydocstyle.pycqa.org
 """
-from __future__ import print_function
 
 from typing import List
 

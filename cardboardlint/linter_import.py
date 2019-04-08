@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Cardboardlint is a cheap lint solution for pull requests.
 # Copyright (C) 2011-2017 The Cardboardlint Development Team
 #
@@ -27,7 +26,6 @@ This script counts the number of bad imports. The following is not allowed in a 
 
         from package import foo
 """
-from __future__ import print_function
 
 import codecs
 from typing import List

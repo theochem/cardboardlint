@@ -2,6 +2,8 @@ pre_filefilter: ['+ tools/example/.cardboardlint.yml', '- tools/example/*', '+ *
 
 linters:
   - header:
+      extra: []
+      shebang: '#!/usr/bin/env python3'
   - import:
       packages: ['cardboardlint']
   - namespace:
@@ -13,3 +15,4 @@ linters:
   - whitespace:
       filefilter: ['- *.patch', '- *.diff', '+ *.*']
   - yamllint:
+      filefilter: ['- *conda.recipe/meta.yaml', '+ *.yml', '+ *.yaml']

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Cardboardlint is a cheap lint solution for pull requests.
 # Copyright (C) 2011-2017 The Cardboardlint Development Team
 #
@@ -21,7 +20,6 @@
 
 This script checks for three ugly things: tabs, trailing whitespace and trailing newlines.
 """
-from __future__ import print_function
 
 import codecs
 from typing import List

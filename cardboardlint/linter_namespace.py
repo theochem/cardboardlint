@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Cardboardlint is a cheap lint solution for pull requests.
 # Copyright (C) 2011-2017 The Cardboardlint Development Team
 #
@@ -23,7 +22,6 @@ This script imports every module in the packages and checks for overlapping name
 It also checks if __all__ is missing and if some forbidden names are present in the
 public namespace of a module.
 """
-from __future__ import print_function
 
 import os
 from typing import List

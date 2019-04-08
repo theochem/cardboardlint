@@ -24,10 +24,11 @@ This script checks for three ugly things: tabs, trailing whitespace and trailing
 import codecs
 from typing import List
 
-from cardboardlint.common import Message, Linter
+from .linter import Linter
+from .message import Message
 
 
-__all__ = ['linter_whitespace']
+__all__ = ['LINTER']
 
 
 DEFAULT_CONFIG = {
@@ -36,8 +37,8 @@ DEFAULT_CONFIG = {
 }
 
 
-def run_whitespace(_config: dict, filenames: List[str], _numproc: int = 1) -> List[Message]:
-    """Linter for checking whitespace conventions.
+def lint(_config: dict, filenames: List[str], _numproc: int = 1) -> List[Message]:
+    """Lint whitespace conventions.
 
     Parameters
     ----------
@@ -45,7 +46,7 @@ def run_whitespace(_config: dict, filenames: List[str], _numproc: int = 1) -> Li
         Dictionary that contains the configuration for the linter.
         _config is not used by this linter.
     filenames
-        A list of filenames to check
+        A list of filenames to check.
     _numproc
         The number of processors to use.
 
@@ -99,5 +100,4 @@ def _check_file(filename: str, messages: List[str]):
                 messages.append(Message(filename, lineno + 1, None, 'last line missing \\n'))
 
 
-# pylint: disable=invalid-name
-linter_whitespace = Linter('whitespace', run_whitespace, DEFAULT_CONFIG)
+LINTER = Linter('whitespace', lint, DEFAULT_CONFIG)

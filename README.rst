@@ -1,7 +1,15 @@
-.. image:: https://codecov.io/gh/theochem/cardboardlint/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/theochem/cardboardlint
 .. image:: https://travis-ci.org/theochem/cardboardlint.svg?branch=master
     :target: https://travis-ci.org/theochem/cardboardlint
+.. image:: https://anaconda.org/theochem/cardboardlint/badges/version.svg
+    :target: https://anaconda.org/theochem/cardboardlint
+.. image:: https://codecov.io/gh/theochem/cardboardlint/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/theochem/cardboardlint
+.. image:: https://img.shields.io/pypi/v/cardboardlint.svg
+    :target: https://pypi.org/project/cardboardlint
+.. image:: https://img.shields.io/pypi/pyversions/cardboardlint.svg
+    :target: https://pypi.org/project/cardboardlint
+.. image:: https://img.shields.io/github/release/theochem/cardboardlint.svg
+    :target: https://github.com/theochem/cardboardlint/releases
 
 
 cardboardlint

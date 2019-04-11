@@ -18,7 +18,7 @@
 # --
 """Linter using pycodestyle.
 
-This test calls the flake program, see http://pycodestyle.pycqa.org
+This test calls the pycodestyle program, see http://pycodestyle.pycqa.org
 """
 
 from .linter import Linter

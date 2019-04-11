@@ -19,7 +19,7 @@
 """Test cardboardlint.linter."""
 
 
-from nose.tools import assert_raises
+from pytest import raises
 
 from ..linter import derive_flags, apply_config_defaults
 
@@ -31,9 +31,9 @@ def test_flags():
     assert flags['cpp']
     assert not flags['python']
 
-    with assert_raises(ValueError):
+    with raises(ValueError):
         derive_flags('foo', 'cpp')
-    with assert_raises(ValueError):
+    with raises(ValueError):
         derive_flags('dynamic', 'bar')
 
 
@@ -42,5 +42,5 @@ def test_apply_config_defaults():
     default_config = {'a': 0, 'b': -1, 'c': 3}
     assert apply_config_defaults('boo', config, default_config) == {'a': 1, 'b': 2, 'c': 3}
     assert apply_config_defaults('boo', {}, default_config) == {'a': 0, 'b': -1, 'c': 3}
-    with assert_raises(ValueError):
+    with raises(ValueError):
         apply_config_defaults('boo', config, {'a': 1})

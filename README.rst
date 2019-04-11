@@ -112,10 +112,19 @@ Usage
   dependencies are not installed automatically because you may not want to use all of
   them.
 
-  Conda packages for all supported linters can be found in the conda-forge channel
-  on Anaconda: https://anaconda.org/conda-forge. (We have added packages to
-  conda-forge for ``cppcheck`` and ``cpplint``.) All other linters were already
-  available on conda-forge.
+  Conda packages for all supported linters can be found in the main conda
+  channels an in conda-forge (https://anaconda.org/conda-forge). We have added
+  packages to conda-forge for ``cppcheck`` and ``cpplint``. All other linters
+  were already available. To install all of them, we can recommend the following
+  commands:
+
+  .. code:: bash
+
+    # Add conda-forga channel with lower priority as the default channels. This
+    # prevents your conda env from being flooded by conda-forga packages.
+    conda config --append channels conda-forge
+    # Install all linters for which cardboardlint has wrappers:
+    conda install pycodestyle pydocstyle cppcheck cpplint yamllint flake8 doxygen pylint
 
 - Run the cardboardlinter, which can be done in several ways:
 
@@ -168,6 +177,7 @@ Change log
   - Added support for fixers, initially only for the whitespace and header
     linters.
   - Removed some Python-2 compatibility code.
+  - Add more context to README
 
 - Version 1.1.0 April 3, 2019
 

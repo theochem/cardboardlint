@@ -28,7 +28,7 @@ test:
   imports:
     - cardboardlint
   commands:
-    - pytest -v --pyargs cardboardlint -n  -n auto
+    - pytest -v --pyargs cardboardlint -n auto
 
 about:
   dev_url: https://github.com/theochem/cardboardlint

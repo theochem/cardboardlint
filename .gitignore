@@ -8,3 +8,4 @@ dist/
 coverage*.xml
 version.py
 activate-*-dev-*.sh
+.pytest_cache

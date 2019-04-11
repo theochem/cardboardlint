@@ -16,12 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 # --
-"""Test cardboardlint.message."""
+"""Test cardboardlint.report."""
 
 
 from nose.tools import assert_raises
 
-from ..message import Message
+from ..report import Message, Report
 
 
 def test_message():
@@ -56,11 +56,27 @@ def test_message():
         Message('foo', -1, 4, 'bar')
     with assert_raises(TypeError):
         Message('foo', 4, -1, 'bar')
-    # indiff
-    assert msg1.indiff({'test.txt': set([1])})
-    assert msg1.indiff({'test.txt': None})
-    assert not msg1.indiff({'test.txt': set([2])})
-    assert msg2.indiff({'test.txt': set([1])})
-    assert msg2.indiff({'test.txt': None})
-    assert msg2.indiff({'test.txt': set([2])})
-    assert not msg2.indiff({'foo.txt': set([2])})
+
+
+def test_indiff1():
+    report = Report('bork', {'test.txt': set([1])})
+    assert report('test.txt', 1, 4, 'error')
+    assert report('test.txt', None, 4, 'error')
+
+
+def test_indiff2():
+    report = Report('bork', {})
+    assert not report('test.txt', 1, 4, 'error')
+    assert not report('test.txt', None, 4, 'error')
+
+
+def test_indiff3():
+    report = Report('bork', {'test.txt': set([2])})
+    assert not report('test.txt', 1, 4, 'error')
+    assert report('test.txt', None, 4, 'error')
+
+
+def test_indiff4():
+    report = Report('bork', {'foo.txt': set([1])})
+    assert not report('test.txt', 1, 4, 'error')
+    assert not report('test.txt', None, 4, 'error')

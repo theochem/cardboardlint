@@ -22,7 +22,6 @@ This test calls the pylint program, see http://docs.pylint.org/index.html.
 """
 
 import json
-from typing import List
 
 from .linter import Linter
 from .report import Report

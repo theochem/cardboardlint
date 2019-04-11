@@ -22,7 +22,6 @@ This script checks for three ugly things: tabs, trailing whitespace and trailing
 """
 
 import codecs
-from typing import List
 
 from .linter import Linter
 from .report import Report

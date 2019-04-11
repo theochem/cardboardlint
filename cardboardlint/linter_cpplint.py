@@ -21,8 +21,6 @@
 This test calls the cpplint.py program, see https://github.com/google/styleguide
 """
 
-from typing import List
-
 from .linter import Linter
 from .report import Report
 from .utils import run_command

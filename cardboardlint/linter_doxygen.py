@@ -22,7 +22,6 @@ This linter uses doxygen, see http://www.doxygen.org.
 """
 
 import os
-from typing import List
 
 from .linter import Linter
 from .report import Report

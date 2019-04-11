@@ -21,8 +21,6 @@
 This test calls the flake program, see https://yamllint.readthedocs.io/en/latest/
 """
 
-from typing import List
-
 from .linter import Linter
 from .report import Report
 from .utils import run_command

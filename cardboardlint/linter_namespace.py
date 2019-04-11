@@ -24,7 +24,6 @@ public namespace of a module.
 """
 
 import os
-from typing import List
 import sys
 import importlib
 

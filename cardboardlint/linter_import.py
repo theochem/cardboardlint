@@ -28,7 +28,6 @@ This script counts the number of bad imports. The following is not allowed in a 
 """
 
 import codecs
-from typing import List
 
 from .linter import Linter
 from .report import Report

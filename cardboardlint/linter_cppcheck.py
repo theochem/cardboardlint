@@ -22,7 +22,6 @@ This test calls the cppcheck program, see http://cppcheck.sourceforge.net/.
 """
 
 from xml.etree import ElementTree
-from typing import List
 
 from .linter import Linter
 from .report import Report

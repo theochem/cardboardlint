@@ -7,7 +7,7 @@ project:
         - test-example
         - cardboardlint-static
         - cardboardlint-dynamic
-        - nose
+        - pytest
         - build-py-source
         - build-conda
         - deploy-pypi

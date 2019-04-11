@@ -19,7 +19,7 @@
 """Test cardboardlint.report."""
 
 
-from nose.tools import assert_raises
+from pytest import raises
 
 from ..report import Message, Report
 
@@ -43,18 +43,18 @@ def test_message():
     assert msg1 > msg3
     assert msg3 > msg2
     assert msg2 > msg4
-    with assert_raises(TypeError):
+    with raises(TypeError):
         print(msg1 < 1)
     # sorting
     msgs = sorted([msg1, msg2, msg3, msg4])
     assert msgs == [msg4, msg2, msg3, msg1]
-    with assert_raises(TypeError):
+    with raises(TypeError):
         msgs.insert(0, 1)
         msgs.sort()
     # wrong arguments
-    with assert_raises(TypeError):
+    with raises(TypeError):
         Message('foo', -1, 4, 'bar')
-    with assert_raises(TypeError):
+    with raises(TypeError):
         Message('foo', 4, -1, 'bar')
 
 

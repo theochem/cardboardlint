@@ -19,14 +19,14 @@
 """Test cardboardlint.utils."""
 
 
-from nose.tools import assert_raises
+from pytest import raises
 
 from ..utils import run_command, matches_filefilter
 
 
 def test_run_command():
     assert run_command(['echo', 'foo']) == (u'foo\n', u'')
-    with assert_raises(RuntimeError):
+    with raises(RuntimeError):
         run_command(['ls', 'asfdsadsafdasdfasd'])
 
 
@@ -38,7 +38,7 @@ def test_matches_filefilter():
     assert not matches_filefilter('foo/test/test_a.py', ['- */test_*.py', '+ *.py'])
     assert matches_filefilter('scripts/runfoo', ['+ scripts/*'])
 
-    with assert_raises(ValueError):
+    with raises(ValueError):
         matches_filefilter('foo.py', ['b *.py'])
-    with assert_raises(ValueError):
+    with raises(ValueError):
         matches_filefilter('foo.py', ['bork'])

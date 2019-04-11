@@ -23,11 +23,12 @@ requirements:
 
 test:
   requires:
-    - nose
+    - pytest
+    - pytest-xdist
   imports:
     - cardboardlint
   commands:
-    - nosetests -v cardboardlint
+    - pytest -v --pyargs cardboardlint -n  -n auto
 
 about:
   dev_url: https://github.com/theochem/cardboardlint

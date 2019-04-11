@@ -19,7 +19,7 @@
 """Test cardboardlint.cli."""
 
 
-from nose.tools import assert_raises
+from pytest import raises
 
 from ..cli import get_offset_step, filter_configs, parse_diff
 from ..linter_cppcheck import LINTER as linter_cppcheck
@@ -37,12 +37,12 @@ def test_offset_step():
     assert get_offset_step('2/3') == (1, 3)
     assert get_offset_step('3/3') == (2, 3)
 
-    assert_raises(ValueError, get_offset_step, '5')
-    assert_raises(ValueError, get_offset_step, '5/5/6')
-    assert_raises(ValueError, get_offset_step, '0/0')
-    assert_raises(ValueError, get_offset_step, '1/0')
-    assert_raises(ValueError, get_offset_step, '3/2')
-    assert_raises(ValueError, get_offset_step, '-1/2')
+    raises(ValueError, get_offset_step, '5')
+    raises(ValueError, get_offset_step, '5/5/6')
+    raises(ValueError, get_offset_step, '0/0')
+    raises(ValueError, get_offset_step, '1/0')
+    raises(ValueError, get_offset_step, '3/2')
+    raises(ValueError, get_offset_step, '-1/2')
 
 
 def test_filter_configs():

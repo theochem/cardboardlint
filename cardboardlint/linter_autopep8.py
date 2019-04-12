@@ -34,7 +34,11 @@ DEFAULT_CONFIG = {
     # Filename filter rules
     'filefilter': ['+ *.py', '+ scripts/*'],
     # Optional path to the config file.
-    'config': None
+    'config': None,
+    # Line range sets a range of line lengths that are tollerated. This
+    # should be a tuple of two integers.
+    'line-range': None,
+
 }
 
 
@@ -64,6 +68,9 @@ def lint(config: dict, report: Report, _numproc: int = 1, fixit: bool = False):
         if config['config'] is not None:
             command += ['--global-config={}'.format(config['config']),
                         '--ignore-local-config']
+        if config['line-range'] is not None:
+            low, high = config['line-range']
+            command += ['--line-range', low, high]
         output = run_command(command)[0]
         if len(output) > 0:
             patch = parse_unified_diff(output, 'original/', 'fixed/')

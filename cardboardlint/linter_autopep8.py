@@ -70,7 +70,7 @@ def lint(config: dict, report: Report, _numproc: int = 1, fixit: bool = False):
                         '--ignore-local-config']
         if config['line-range'] is not None:
             low, high = config['line-range']
-            command += ['--line-range', low, high]
+            command += ['--line-range', str(low), str(high)]
         output = run_command(command)[0]
         if len(output) > 0:
             patch = parse_unified_diff(output, 'original/', 'fixed/')

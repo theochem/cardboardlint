@@ -28,6 +28,7 @@ from typing import Tuple, List
 
 import yaml
 
+from .diff import parse_unified_diff, extract_files_lines
 from .linter import Linter
 from .report import Report
 from .utils import run_command, matches_filefilter
@@ -186,8 +187,10 @@ def run_diff(refspec_parent):
         # directory, to facilitate test runs in subdirectories.
         # -U0: generate 0 lines of context (i.e. only the lines that differ)
         command = ['git', 'diff', '-U0', refspec_parent, '--relative']
-        diff_output = run_command(command, encoding=None)[0]
-        files_lines = parse_diff(diff_output)
+        # git diff should not print out binary data by default
+        diff_output = run_command(command)[0]
+        patch = parse_unified_diff(diff_output, 'a/', 'b/')
+        files_lines = extract_files_lines(patch)
     else:
         # Just get the current list of files in the repo, including
         # untracked files, and include all lines
@@ -197,45 +200,6 @@ def run_diff(refspec_parent):
         command = ['git', 'ls-files', '--others', '--exclude-standard']
         ls_output = run_command(command)[0]
         files_lines.update({filename: None for filename in ls_output.splitlines()})
-    return files_lines
-
-
-def parse_diff(diff_output):
-    """Parse the output of a unified diff and return the files with lines that are new.
-
-    Parameters
-    ----------
-    diff_output : bytes
-        The standard output of the diff command
-
-    Returns
-    -------
-    files_lines : dict
-        A dictionary with (filename, lines) items, where filename is a str
-        object and lines is a set of line numbers.
-
-    """
-    # parse git diff output
-    current_filename = None
-    files_lines = {}
-    for line in diff_output.splitlines():
-        if line.startswith(b'+++ '):
-            if line.startswith(b'+++ b/'):
-                current_filename = line[6:]
-            else:
-                current_filename = None
-        elif line.startswith(b'@@ ') and current_filename is not None:
-            added_str = line.split()[2]
-            # multiple lines added/modified
-            if added_str.count(b',') == 1:
-                offset, nlines = added_str.split(b',')
-                line_numbers = set(range(int(offset), int(offset) + int(nlines)))
-            # single line added/modified
-            else:
-                offset = int(added_str)
-                line_numbers = set([offset])
-            # store line numbers
-            files_lines.setdefault(current_filename.decode('utf-8'), set()).update(line_numbers)
     return files_lines
 
 

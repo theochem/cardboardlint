@@ -12,6 +12,8 @@ linters:
   - pylint:
   - pycodestyle:
       config: .pycodestylerc
+  - autopep8:
+      config: .pycodestylerc
   - pydocstyle:
   - whitespace:
       filefilter: ['- *.patch', '- *.diff', '+ *.*']

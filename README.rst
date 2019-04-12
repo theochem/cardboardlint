@@ -124,7 +124,8 @@ Usage
     # prevents your conda env from being flooded by conda-forga packages.
     conda config --append channels conda-forge
     # Install all linters for which cardboardlint has wrappers:
-    conda install pycodestyle pydocstyle cppcheck cpplint yamllint flake8 doxygen pylint
+    conda install pycodestyle pydocstyle cppcheck cpplint yamllint flake8 \
+                  doxygen pylint autopep8, yapf, black
 
 - Run the cardboardlinter, which can be done in several ways:
 
@@ -174,10 +175,11 @@ Change log
 
 - Development version (upcoming 1.2.0)
 
-  - Added support for fixers, initially only for the whitespace and header
-    linters.
+  - Added support for fixers. The following liners can also fix problems:
+    header, whitespace, autopep8, yapf, black. The latter three are new.
   - Removed some Python-2 compatibility code.
-  - Add more context to README
+  - Replace nosetests by pytest.
+  - Add more context to README.
 
 - Version 1.1.0 April 3, 2019
 

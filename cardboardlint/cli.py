@@ -187,7 +187,8 @@ def run_diff(refspec_parent):
         # directory, to facilitate test runs in subdirectories.
         # -U0: generate 0 lines of context (i.e. only the lines that differ)
         command = ['git', 'diff', '-U0', refspec_parent, '--relative']
-        diff_output = run_command(command, encoding=None)[0]
+        # git diff should not print out binary data by default
+        diff_output = run_command(command)[0]
         patch = parse_unified_diff(diff_output, 'a/', 'b/')
         files_lines = extract_files_lines(patch)
     else:

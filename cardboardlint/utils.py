@@ -25,7 +25,7 @@ import subprocess
 __all__ = ['run_command', 'matches_filefilter']
 
 
-def run_command(command, verbose=True, cwd=None, has_failed=None, stdin='', encoding='utf-8'):
+def run_command(command, verbose=True, cwd=None, has_failed=None, stdin=''):
     """Run command as subprocess with default settings suitable for trapdoor scripts.
 
     Parameters
@@ -41,8 +41,6 @@ def run_command(command, verbose=True, cwd=None, has_failed=None, stdin='', enco
         behavior is to check for a non-zero return code.
     stdin : str
         Standard input to be provided to the script.
-    encoding : str or None
-        The encoding to be used for in- and output.
 
     Returns
     -------
@@ -67,12 +65,9 @@ def run_command(command, verbose=True, cwd=None, has_failed=None, stdin='', enco
     proc = subprocess.Popen(
         command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         stderr=subprocess.PIPE, cwd=cwd)
-    if encoding is None:
-        stdout, stderr = proc.communicate(stdin)
-    else:
-        stdout, stderr = proc.communicate(stdin.encode(encoding))
-        stdout = stdout.decode(encoding)
-        stderr = stderr.decode(encoding)
+    stdout, stderr = proc.communicate(stdin.encode('utf-8'))
+    stdout = stdout.decode('utf-8')
+    stderr = stderr.decode('utf-8')
     if has_failed(proc.returncode, stdout, stderr):
         print('RETURN CODE: {}'.format(proc.returncode))
         print('STDOUT')

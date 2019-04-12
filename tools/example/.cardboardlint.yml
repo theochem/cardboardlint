@@ -11,6 +11,7 @@ linters:
       forbidden: ['math']
   - pylint:
   - pycodestyle:
+  - autopep8:
   - pydocstyle:
   - whitespace:
   - yamllint:

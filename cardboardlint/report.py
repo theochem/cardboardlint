@@ -48,7 +48,8 @@ class Report:
         """Return the filenames to be linted."""
         return list(self.files_lines.keys())
 
-    def __call__(self, filename: str, lineno: int, charno: int, text: str) -> bool:
+    def __call__(self, filename: str, lineno: int, charno: int, text: str,
+                 nline: int = 1) -> bool:
         """Propose a new error message.
 
         Parameters
@@ -56,13 +57,15 @@ class Report:
         filename
             The filename from which the message is reported.
         lineno
-            The line number at which the error/problem is reported.
+            The first line number at which the error/problem is reported.
             None if no error/problem is reported.
         charno
             The character position at which the error/problem is reported.
             None if no error/problem is reported.
         text
             A description of the error/problem.
+        nline
+            The number of lines this message applies to.
 
         Returns
         -------
@@ -73,8 +76,9 @@ class Report:
         """
         if filename in self.files_lines:
             line_numbers = self.files_lines[filename]
-            if line_numbers is None or lineno is None or lineno in line_numbers:
-                self.messages.append(Message(filename, lineno, charno, text))
+            if line_numbers is None or lineno is None or any(
+                    iline in line_numbers for iline in range(lineno, lineno + nline)):
+                self.messages.append(Message(filename, lineno, charno, text, nline))
                 return True
         return False
 
@@ -104,7 +108,7 @@ class Report:
 class Message:
     """Error message and meta information."""
 
-    def __init__(self, filename: str, lineno: int, charno: int, text: str):
+    def __init__(self, filename: str, lineno: int, charno: int, text: str, nline: int = 1):
         """Initialize a message.
 
         Parameters
@@ -112,23 +116,28 @@ class Message:
         filename
             The filename from which the message is reported.
         lineno
-            The line number at which the error/problem is reported.
+            The first line number at which the error/problem is reported.
             None if no error/problem is reported.
         charno
             The character position at which the error/problem is reported.
             None if no error/problem is reported.
         text
             A description of the error/problem.
+        nline
+            The number of lines this message applies to.
 
         """
         if not (lineno is None or (isinstance(lineno, int) and lineno > 0)):
             raise TypeError('`lineno` must be a positive integer or None')
         if not (charno is None or (isinstance(charno, int) and charno > 0)):
             raise TypeError('`charno` must be a positive integer or None')
+        if not (isinstance(nline, int) and nline > 0):
+            raise TypeError('`nline` must be a strictly positive integer, got {}.'.format(nline))
         self.filename = filename
         self.lineno = lineno
         self.charno = charno
         self.text = text
+        self.nline = nline
 
     def __lt__(self, other):
         """Test if one Message is less than another."""
@@ -148,8 +157,9 @@ class Message:
         if self.filename is None:
             location = bold + '(nofile)' + endcolor
         else:
-            linechar = '{}:{}'.format(
+            linechar = '{}{}:{}'.format(
                 '-' if self.lineno is None else self.lineno,
+                '..{}'.format(self.lineno + self.nline - 1) if self.nline > 1 else '',
                 '-' if self.charno is None else self.charno,
             )
             location = '{0}{1:9s}{2} {3}{4}{2}'.format(

@@ -17,3 +17,4 @@ linters:
   - pydocstyle:
   - whitespace:
   - yamllint:
+  - rst-lint:

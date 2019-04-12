@@ -96,7 +96,7 @@ def derive_flags(style, language):
     valid_styles = ['static', 'dynamic']
     if style not in valid_styles:
         raise ValueError('Linter style should be one of {}'.format(valid_styles))
-    valid_languages = ['generic', 'python', 'cpp', 'yaml']
+    valid_languages = ['generic', 'python', 'cpp', 'yaml', 'rst']
     if language not in valid_languages:
         raise ValueError('Linter language should be one of {}'.format(valid_languages))
     flags = {}

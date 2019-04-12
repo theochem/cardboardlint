@@ -173,13 +173,14 @@ Usage
 Change log
 ----------
 
-- Development version (upcoming 1.2.0)
+- Version 1.2.0 April 12, 2019
 
   - Added support for fixers. The following liners can also fix problems:
     header, whitespace, autopep8, yapf, black. The latter three are new.
   - Removed some Python-2 compatibility code.
   - Replace nosetests by pytest.
   - Add more context to README.
+  - Add RST linter.
 
 - Version 1.1.0 April 3, 2019
 

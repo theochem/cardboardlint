@@ -12,6 +12,8 @@ linters:
   - pylint:
   - pycodestyle:
   - autopep8:
+  - black:
+  - yapf:
   - pydocstyle:
   - whitespace:
   - yamllint:

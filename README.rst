@@ -24,7 +24,7 @@ It is a non-hosted and customizable tool similar to commercial services like:
 - landscape.io: https://landscape.io/
 - ...
 
-For more advanced analysis, one could use `Coverty Scan`_.
+For more advanced analysis, one could use Coverty Scan.
 (https://scan.coverity.com/)
 
 Cardboardlint wraps a collection of linters, intended to be used on a project

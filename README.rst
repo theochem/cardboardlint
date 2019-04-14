@@ -189,7 +189,7 @@ Usage
 Change log
 ----------
 
-- Version 1.2.1 April 14, 2019
+- Version 1.3.0 April 14, 2019
 
   - More verbose output. List of selected files for linting is always shown.
   - Fix default location for Python command-line scripts is ./bin, not ./scripts.

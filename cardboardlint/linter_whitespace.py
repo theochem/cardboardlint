@@ -32,7 +32,7 @@ __all__ = ['LINTER']
 
 DEFAULT_CONFIG = {
     # Filename filter rules
-    'filefilter': ['+ *.*'],
+    'filefilter': ['+ *'],
     # The preferred tab width. Tabs will be replaced by the tabwidth number of
     # spaces by the fixer.
     'tabwidth': 4,
@@ -55,6 +55,8 @@ def lint(config: dict, report: Report, _numproc: int = 1, fixit: bool = False):
         file.
 
     """
+    print('CHECKING FILES     : {0}'.format(' '.join(report.filenames)))
+
     # Loop over all files and check whitespace in each file.
     for filename in report.filenames:
         try:
@@ -96,9 +98,8 @@ def _check_file(filename: str, config: dict, report: Report, fixit: bool = False
                     lineno -= 1
                     continue
             if not line.endswith('\n'):
-                fixedline = line + '\n'
                 line = _check_line(filename, lineno, 'last linit missing \\n',
-                                   line, fixedline, report)
+                                   line, line + '\n', report)
         line = _check_line(filename, lineno, 'tab', line,
                            line.replace('\t', ' '*config['tabwidth']), report)
         line = _check_line(filename, lineno, 'carriage return', line,

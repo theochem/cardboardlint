@@ -86,7 +86,7 @@ class Linter:
         # Complete the config dictionary with default values.
         config = apply_config_defaults(self.name, config, self.default_config)
         # Filter files to be reported on.
-        report.filter(config['filefilter'])
+        report.filter_files(config['filefilter'])
         # Call the linter and return messages
         return self.lint(config, report, numproc, fixit)
 

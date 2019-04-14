@@ -58,6 +58,8 @@ def lint(config: dict, report: Report, _numproc: int = 1, _fixit: bool = False):
         file.
 
     """
+    print('CHECKING FILES     : {0}'.format(' '.join(report.filenames)))
+
     # Make sure we test the source tree and not some locally installed copy of HORTON.
     sys.path.insert(0, '.')
 

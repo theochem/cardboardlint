@@ -60,6 +60,9 @@ def lint(config: dict, report: Report, _numproc: int = 1, _fixit: bool = False):
         file.
 
     """
+    print('PACKAGES           : {0}'.format(' '.join(config['packages'])))
+    print('CHECKING FILES     : {0}'.format(' '.join(report.filenames)))
+
     # Loop all python and cython files
     if len(config['packages']) > 0:
         for filename in report.filenames:

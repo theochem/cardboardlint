@@ -82,7 +82,7 @@ class Report:
                 return True
         return False
 
-    def filter(self, filefilter):
+    def filter_files(self, filefilter):
         """Restrict the filenames to report on by the given file filters."""
         self.files_lines = dict(
             (filename, lines) for filename, lines in self.files_lines.items()

@@ -65,6 +65,9 @@ def lint(config: dict, report: Report, _numproc: int = 1, fixit: bool = False):
         file.
 
     """
+    print('HEADER             : {0}'.format(config['header']))
+    print('CHECKING FILES     : {0}'.format(' '.join(report.filenames)))
+
     # Load the header file as a set of lines
     with codecs.open(config['header'], encoding='utf-8') as f:
         header_lines = list(f)

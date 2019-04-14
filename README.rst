@@ -17,8 +17,15 @@ Introduction
 
 Cardboardlint is a cheap lint solution for pull requests.
 
-It is a non-hosted and more customizable alternative to commercial services like
-Hound CI, Stickler CI, Linthub.io, landscape.io etc.
+It is a non-hosted and customizable tool similar to commercial services like:
+
+- Hound CI: https://houndci.com/
+- Stickler CI: https://stickler-ci.com/
+- landscape.io: https://landscape.io/
+- ...
+
+For more advanced analysis, one could use Coverty Scan.
+(https://scan.coverity.com/)
 
 Cardboardlint wraps a collection of linters, intended to be used on a project
 in a Git repository. Cardboardlint is able to report just those messages related
@@ -28,6 +35,15 @@ for contributors to a project: in their pull requests, they will only see
 linting issues related to the code they have touched. For some linters,
 cardboardlint also supports automatic fixes of linting issues, optionally
 restricted to code that has changed in your development branch.
+
+Some example projects that use Cardboardlint:
+
+- Cardboardlint, obviously
+- Roberto: https://github.com/theochem/roberto (Cardboardlint also uses Roberto.)
+- IOData: https://github.com/theochem/iodata
+- CellCutoff: https://github.com/theochem/cellcutoff
+- CGrid: https://github.com/theochem/cgrid
+
 
 Usage
 -----
@@ -172,6 +188,13 @@ Usage
 
 Change log
 ----------
+
+- Version 1.2.1 April 14, 2019
+
+  - More verbose output. List of selected files for linting is always shown.
+  - Fix default location for Python command-line scripts is ./bin, not ./scripts.
+  - Wall time of linters is printed.
+  - Few cleanups.
 
 - Version 1.2.0 April 12, 2019
 

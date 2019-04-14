@@ -1,7 +1,7 @@
 project:
   name: cardboardlint
   packages:
-    - conda_name: cardboardlint
+    - dist_name: cardboardlint
       tools:
         - write-py-version
         - test-example

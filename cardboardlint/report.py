@@ -44,6 +44,7 @@ class Report:
         self.linter_name = linter_name
         self.files_lines = files_lines
         self.messages = []
+        self._start_time = None
 
     @property
     def filenames(self):
@@ -92,7 +93,7 @@ class Report:
 
     def show_header(self):
         """Print a report header."""
-        self.start_time = time.time()
+        self._start_time = time.time()
         print('~'*80)
         print('### {:^72} ###'.format(self.linter_name))
         print('~'*80)
@@ -105,8 +106,9 @@ class Report:
             for message in self.messages:
                 print(message.format())
         print()
-        print('WALL TIME          : {:.2f} seconds'.format(time.time() - self.start_time))
+        print('WALL TIME          : {:.2f} seconds'.format(time.time() - self._start_time))
         print()
+        self._start_time = None
         return len(self.messages) > 0
 
 

@@ -27,7 +27,7 @@ from .linter import Linter
 from .report import Report
 
 
-__all__ = ['LINTER']
+__all__ = []
 
 
 DEFAULT_CONFIG = {

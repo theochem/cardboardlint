@@ -19,6 +19,8 @@
 """Collection of classes and methods shared between different linters."""
 
 
+import time
+
 from .utils import matches_filefilter
 
 
@@ -90,6 +92,7 @@ class Report:
 
     def show_header(self):
         """Print a report header."""
+        self.start_time = time.time()
         print('~'*80)
         print('### {:^72} ###'.format(self.linter_name))
         print('~'*80)
@@ -101,6 +104,8 @@ class Report:
             print()
             for message in self.messages:
                 print(message.format())
+        print()
+        print('WALL TIME          : {:.2f} seconds'.format(time.time() - self.start_time))
         print()
         return len(self.messages) > 0
 

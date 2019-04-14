@@ -200,6 +200,13 @@ def run_diff(refspec_parent):
         command = ['git', 'ls-files', '--others', '--exclude-standard']
         ls_output = run_command(command)[0]
         files_lines.update({filename: None for filename in ls_output.splitlines()})
+    print('SELECTED FILES     :')
+    for filename, lines in sorted(files_lines.items()):
+        if lines is None:
+            print('  (all)   {}'.format(filename))
+        else:
+            print('  {:8d}{}'.format(len(lines), filename))
+    print()
     return files_lines
 
 

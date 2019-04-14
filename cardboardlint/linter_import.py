@@ -25,6 +25,9 @@ This script counts the number of bad imports. The following is not allowed in a 
   .. code-block:: python
 
         from package import foo
+  This is useful for packages where everything is implemented in submodules
+  and __init__.py is only used to provide a namespace of the most common
+  names from the submodules.
 """
 
 import codecs
@@ -33,7 +36,7 @@ from .linter import Linter
 from .report import Report
 
 
-__all__ = ['LINTER']
+__all__ = []
 
 
 DEFAULT_CONFIG = {
@@ -89,8 +92,6 @@ def _check_file(filename: str, config: dict, report: Report):
         for lineno, line in enumerate(f):
             for package in config['packages']:
                 # skip version import
-                if line == u'from {0} import __version__\n'.format(package):
-                    continue
                 if u'from {0} import'.format(package) in line:
                     text = 'Wrong import from {0}'.format(package)
                     report(filename, lineno+1, None, text)

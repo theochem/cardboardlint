@@ -28,7 +28,7 @@ from .report import Report
 from .utils import run_command
 
 
-__all__ = ['LINTER']
+__all__ = []
 
 
 DEFAULT_CONFIG = {

@@ -31,7 +31,7 @@ from .linter import Linter
 from .report import Report
 
 
-__all__ = ['LINTER']
+__all__ = []
 
 
 DEFAULT_CONFIG = {
@@ -60,7 +60,7 @@ def lint(config: dict, report: Report, _numproc: int = 1, _fixit: bool = False):
     """
     print('CHECKING FILES     : {0}'.format(' '.join(report.filenames)))
 
-    # Make sure we test the source tree and not some locally installed copy of HORTON.
+    # Make sure we test the source tree and not some locally installed copy.
     sys.path.insert(0, '.')
 
     # Find all module names and load namespaces

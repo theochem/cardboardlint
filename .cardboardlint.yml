@@ -8,7 +8,7 @@ linters:
       packages: ['cardboardlint']
   - namespace:
       filefilter: ['- */__init__.py', '- */test_*.py', '- *setup.py',
-                   '- cardboardlint/linter_*.py', '+ *.py', '+ *.pyx']
+                   '+ *.py', '+ *.pyx']
   - pylint:
   - pycodestyle:
       config: .pycodestylerc

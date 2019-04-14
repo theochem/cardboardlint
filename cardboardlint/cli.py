@@ -203,9 +203,9 @@ def run_diff(refspec_parent):
     print('SELECTED FILES     :')
     for filename, lines in sorted(files_lines.items()):
         if lines is None:
-            print('  (all)   {}'.format(filename))
+            print('    (all) {}'.format(filename))
         else:
-            print('  {:8d}{}'.format(len(lines), filename))
+            print('  {:8d} {}'.format(len(lines), filename))
     print()
     return files_lines
 

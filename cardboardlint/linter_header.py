@@ -36,7 +36,7 @@ __all__ = ['LINTER']
 
 DEFAULT_CONFIG = {
     # Filename filter rules
-    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd'],
+    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ bin/*'],
     # The path to the header file'
     'header': 'HEADER',
     # Comments start with:

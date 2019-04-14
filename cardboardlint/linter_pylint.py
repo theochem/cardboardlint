@@ -57,7 +57,7 @@ def lint(config: dict, report: Report, numproc: int = 1, _fixit: bool = False):
     """
     # get Pylint version
     command = ['pylint', '--version']
-    version_info = ''.join(run_command(command, verbose=False)[0].split('\n')[:2])
+    version_info = ' '.join(run_command(command, verbose=False)[0].split('\n')[:-3])
     print('USING              : {0}'.format(version_info))
 
     def has_failed(returncode, _stdout, _stderr):

@@ -31,7 +31,7 @@ __all__ = ['LINTER']
 
 DEFAULT_CONFIG = {
     # Filename filter rules
-    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ scripts/*'],
+    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ bin/*'],
     # Optional path to the config file.
     'config': None
 }

@@ -32,7 +32,7 @@ __all__ = ['LINTER']
 
 DEFAULT_CONFIG = {
     # Filename filter rules
-    'filefilter': ['+ *.py', '+ scripts/*'],
+    'filefilter': ['+ *.py', '+ bin/*'],
     # Optional path to the config file.
     'config': None,
     # The python version of interest

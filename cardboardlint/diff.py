@@ -173,7 +173,7 @@ def _parse_hunks(iline, start, lines, hunks):
     source_start = None
     while True:
         line = '' if iline == len(lines) else lines[iline]
-        if line != "" and line[0] in '+-' and not (line[:4] in ['+++ ', '--- ']):
+        if line != "" and line[0] in '+-' and line[:4] not in ['+++ ', '--- ']:
             iline += 1
             if source_start is None:
                 source_start = start

@@ -103,8 +103,13 @@ class Report:
         if self.messages:
             self.messages.sort()
             print()
+            last = None
             for message in self.messages:
-                print(message.format())
+                # Simple code to hide duplicates.
+                current = message.format()
+                if current != last:
+                    print(current)
+                last = current
         print()
         print('WALL TIME          : {:.2f} seconds'.format(time.time() - self._start_time))
         print()

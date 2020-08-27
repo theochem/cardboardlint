@@ -16,4 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 # --
-"""Cardboardlint library."""
+"""Cardboardlint package."""
+
+try:
+    from .version import __version__
+except ImportError:
+    __version__ = "0.0.0.post0"

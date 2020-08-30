@@ -8,6 +8,7 @@ project:
         - cardboardlint-static
         - cardboardlint-dynamic
         - pytest
+        - upload-codecov
         - build-py-source
         - build-conda
         - deploy-pypi

@@ -33,7 +33,8 @@ jobs:
       ROBERTO_UPLOAD_COVERAGE: 1
     steps:
       - uses: actions/checkout@v2
-        fetch-depth: 2
+        with:
+          fetch-depth: 2
       - name: Fetch base branch (usually master)
         run: |
           if [[ -n "${GITHUB_HEAD_REF}" ]]; then

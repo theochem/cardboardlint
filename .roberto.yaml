@@ -17,7 +17,6 @@ project:
 tools:
   # override the default config, add pip install from current directory
   cardboardlint-static:
-    pip_requirements: []
     commands_master:
       - pip install .
       - cardboardlinter -f static -n auto
@@ -27,7 +26,6 @@ tools:
 
   # override the default config, add pip install from current directory
   cardboardlint-dynamic:
-    pip_requirements: []
     commands_master:
       - pip install .
       - cardboardlinter -f dynamic -n auto
@@ -37,9 +35,9 @@ tools:
 
   # new tool, to run on the example directory
   test-example:
-    task: test-inplace
-    conda_requirements:
-      - coverage
+    cls: TestInPlace
+    requirements:
+      - [coverage, coverage]
     commands:
       - pip install .
       - cd tools/example; coverage erase;

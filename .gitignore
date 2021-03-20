@@ -6,6 +6,6 @@ build/
 dist/
 .coverage
 coverage*.xml
-version.py
+cardboardlint/_version.py
 activate-*-dev-*.sh
 .pytest_cache

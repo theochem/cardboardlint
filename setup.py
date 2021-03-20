@@ -31,13 +31,10 @@ NAME = 'cardboardlint'
 
 def get_version_info():
     """Read __version__ and DEV_CLASSIFIER from version.py, using exec, not import."""
-    try:
-        with open(os.path.join(NAME, 'version.py'), 'r') as f:
-            myglobals = {}
-            exec(f.read(), myglobals)  # pylint: disable=exec-used
-        return myglobals['__version__'], myglobals['DEV_CLASSIFIER']
-    except IOError:
-        return "0.0.0.post0", "Development Status :: 2 - Pre-Alpha"
+    with open(os.path.join(NAME, 'version.py'), 'r') as f:
+        myglobals = {"__name__": f"{NAME}.version"}
+        exec(f.read(), myglobals)  # pylint: disable=exec-used
+    return myglobals['__version__'], myglobals['DEV_CLASSIFIER']
 
 
 VERSION, DEV_CLASSIFIER = get_version_info()

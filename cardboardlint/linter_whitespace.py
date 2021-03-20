@@ -149,8 +149,7 @@ def _check_line(filename: str, lineno: int, msg: str, oldline: str,
         charno += 1
     if report(filename, lineno + 1, charno + 1, msg):
         return fixedline
-    else:
-        return oldline
+    return oldline
 
 
 LINTER = Linter('whitespace', lint, DEFAULT_CONFIG, can_fix=True)

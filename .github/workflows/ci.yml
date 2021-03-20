@@ -34,6 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         fetch-depth: 2
+      - name: Fetch base branch (usually master)
         run: |
           if [[ -n "${GITHUB_HEAD_REF}" ]]; then
             git fetch origin ${GITHUB_BASE_REF} --depth=2

@@ -36,16 +36,16 @@ __all__ = []
 
 DEFAULT_CONFIG = {
     # Filename filter rules
-    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd', '+ bin/*'],
+    'filefilter': ['+ *.py', '+ *.pyx', '+ *.pxd'],
     # The path to the header file'
     'header': 'HEADER',
     # Comments start with:
     'comment': '# ',
     # Format of the shebang line, only checked if a shebang line is present
-    'shebang': '#!/usr/bin/env python',
+    'shebang': '#!/usr/bin/env python3',
     # Some extra lines that should be inserted above the header (but under the shebang if
     # present)
-    'extra': ['-*- coding: utf-8 -*-'],
+    'extra': [],
 }
 
 
